@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "677302029618",
+    "project_id": "recovery-milestone-tracker",
+    "storage_bucket": "recovery-milestone-tracker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677302029618:android:6cf1aaf684d27cccd49b2b",
+        "android_client_info": {
+          "package_name": "com.mustflywithme.recovery_milestone_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeO2gy0R1wCh3t0JRDSGCIznBDB9HStGQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -137,3 +137,19 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+
+# Firebase Admin SDK Keys
+*firebase-adminsdk*.json
+firebase-service-account*.json
+service-account*.json
+
+# General sensitive files
+*.key
+*.pem
+.env
+.env.local
+.env.production
+
+# Firebase config (if you plan to store any firebase config files)
+firebase-config.json
