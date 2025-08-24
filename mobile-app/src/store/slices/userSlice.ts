@@ -1,6 +1,6 @@
 // User Slice
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { User, UserProfile, PrivacySettings } from '../../../shared/types';
+import { User, UserProfile, PrivacySettings } from '../../types';
 import { authService } from '../../services/auth';
 
 // Async thunks

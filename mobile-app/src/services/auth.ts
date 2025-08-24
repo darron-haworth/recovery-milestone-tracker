@@ -10,9 +10,9 @@ import {
   updateProfile,
   signOut
 } from '@react-native-firebase/auth';
-import { User, UserProfile, PrivacySettings } from '../../shared/types';
+import { User, UserProfile, PrivacySettings } from '../types';
 import { secureStorage } from './storage';
-import { STORAGE_KEYS } from '../../shared/constants';
+import { STORAGE_KEYS } from '../constants';
 
 class AuthService {
   private currentUser: FirebaseUser | null = null;

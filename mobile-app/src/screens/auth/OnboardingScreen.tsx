@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setOnboardingComplete } from '../../store/slices/authSlice';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../../shared/constants';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
 
 const { width, height } = Dimensions.get('window');
 
