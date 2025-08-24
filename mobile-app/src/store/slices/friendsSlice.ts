@@ -1,6 +1,6 @@
 // Friends Slice
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Friend } from '../../../shared/types';
+import { Friend } from '../../types';
 
 // Async thunks (these would be implemented with actual API calls)
 export const fetchFriends = createAsyncThunk(

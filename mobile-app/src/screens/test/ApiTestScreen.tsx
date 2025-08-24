@@ -26,6 +26,21 @@ const ApiTestScreen: React.FC = () => {
   // Test user endpoints
   const userProfileTest = useGet(API_ENDPOINTS.USER.PROFILE);
 
+  // Test friends endpoints
+  const friendsListTest = useGet(API_ENDPOINTS.FRIENDS.LIST);
+  const friendRequestsTest = useGet(API_ENDPOINTS.FRIENDS.REQUESTS);
+  const friendSuggestionsTest = useGet(API_ENDPOINTS.FRIENDS.SUGGESTIONS);
+
+  // Test milestones endpoints
+  const milestonesListTest = useGet(API_ENDPOINTS.MILESTONES.LIST);
+  const standardMilestonesTest = useGet(API_ENDPOINTS.MILESTONES.STANDARD);
+  const createMilestoneTest = usePost(API_ENDPOINTS.MILESTONES.CREATE);
+
+  // Test notifications endpoints
+  const notificationsListTest = useGet(API_ENDPOINTS.NOTIFICATIONS.LIST);
+  const unreadCountTest = useGet(API_ENDPOINTS.NOTIFICATIONS.UNREAD_COUNT);
+  const testNotificationTest = usePost(API_ENDPOINTS.NOTIFICATIONS.TEST);
+
   const handleSignupTest = async () => {
     try {
       const response = await signupTest.execute({
@@ -80,6 +95,37 @@ const ApiTestScreen: React.FC = () => {
       }
     } catch (error) {
       Alert.alert('Error', `User profile test failed: ${error}`);
+    }
+  };
+
+  const handleCreateMilestoneTest = async () => {
+    try {
+      const response = await createMilestoneTest.execute({
+        title: 'Test Milestone',
+        description: 'A test milestone for API testing',
+        daysRequired: 7,
+        category: 'weekly',
+        icon: 'star',
+        color: '#007AFF',
+      });
+      
+      if (response?.success) {
+        Alert.alert('Success', 'Create milestone test passed!');
+      }
+    } catch (error) {
+      Alert.alert('Error', `Create milestone test failed: ${error}`);
+    }
+  };
+
+  const handleTestNotificationTest = async () => {
+    try {
+      const response = await testNotificationTest.execute();
+      
+      if (response?.success) {
+        Alert.alert('Success', 'Test notification sent!');
+      }
+    } catch (error) {
+      Alert.alert('Error', `Test notification failed: ${error}`);
     }
   };
 
@@ -167,6 +213,120 @@ const ApiTestScreen: React.FC = () => {
           {renderTestResult('User Profile', userProfileTest)}
         </View>
 
+        {/* Friends Tests */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Friends Tests</Text>
+          
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => friendsListTest.execute()}
+            disabled={friendsListTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {friendsListTest.loading ? 'Testing...' : 'Test Friends List'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Friends List', friendsListTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => friendRequestsTest.execute()}
+            disabled={friendRequestsTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {friendRequestsTest.loading ? 'Testing...' : 'Test Friend Requests'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Friend Requests', friendRequestsTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => friendSuggestionsTest.execute()}
+            disabled={friendSuggestionsTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {friendSuggestionsTest.loading ? 'Testing...' : 'Test Friend Suggestions'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Friend Suggestions', friendSuggestionsTest)}
+        </View>
+
+        {/* Milestones Tests */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Milestones Tests</Text>
+          
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => milestonesListTest.execute()}
+            disabled={milestonesListTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {milestonesListTest.loading ? 'Testing...' : 'Test Milestones List'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Milestones List', milestonesListTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => standardMilestonesTest.execute()}
+            disabled={standardMilestonesTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {standardMilestonesTest.loading ? 'Testing...' : 'Test Standard Milestones'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Standard Milestones', standardMilestonesTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleCreateMilestoneTest}
+            disabled={createMilestoneTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {createMilestoneTest.loading ? 'Testing...' : 'Test Create Milestone'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Create Milestone', createMilestoneTest)}
+        </View>
+
+        {/* Notifications Tests */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Notifications Tests</Text>
+          
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => notificationsListTest.execute()}
+            disabled={notificationsListTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {notificationsListTest.loading ? 'Testing...' : 'Test Notifications List'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Notifications List', notificationsListTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={() => unreadCountTest.execute()}
+            disabled={unreadCountTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {unreadCountTest.loading ? 'Testing...' : 'Test Unread Count'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Unread Count', unreadCountTest)}
+
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleTestNotificationTest}
+            disabled={testNotificationTest.loading}
+          >
+            <Text style={styles.buttonText}>
+              {testNotificationTest.loading ? 'Testing...' : 'Test Send Notification'}
+            </Text>
+          </TouchableOpacity>
+          {renderTestResult('Send Test Notification', testNotificationTest)}
+        </View>
+
         {/* Connection Info */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Connection Information</Text>
@@ -175,6 +335,9 @@ const ApiTestScreen: React.FC = () => {
           </Text>
           <Text style={styles.infoText}>
             Environment: {__DEV__ ? 'Development' : 'Production'}
+          </Text>
+          <Text style={styles.infoText}>
+            API Version: 1.0.0
           </Text>
         </View>
       </ScrollView>

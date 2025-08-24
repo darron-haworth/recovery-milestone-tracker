@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import { COLORS, TYPOGRAPHY, SPACING } from '../../../shared/constants';
+import { COLORS, TYPOGRAPHY, SPACING } from '../../constants';
 
 interface LoadingScreenProps {
   message?: string;

@@ -10,7 +10,7 @@ import { NotificationProvider } from './src/context/NotificationContext';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/common/ErrorBoundary';
 import LoadingScreen from './src/components/common/LoadingScreen';
-import { COLORS } from '../shared/constants';
+import { COLORS } from './src/constants';
 
 // Initialize Firebase
 import './src/services/firebase';
