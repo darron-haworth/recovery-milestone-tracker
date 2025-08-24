@@ -8,53 +8,43 @@ const DEFAULT_ENCRYPTION_KEY = 'recovery-milestone-tracker-dev-key-2024';
 
 // Simple base64 implementation for React Native
 const base64Encode = (str: string): string => {
-  try {
-    return Buffer.from(str, 'utf8').toString('base64');
-  } catch {
-    // Fallback to simple base64-like encoding
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    let result = '';
-    let i = 0;
-    while (i < str.length) {
-      const char1 = str.charCodeAt(i++);
-      const char2 = str.charCodeAt(i++) || 0;
-      const char3 = str.charCodeAt(i++) || 0;
-      
-      const enc1 = char1 >> 2;
-      const enc2 = ((char1 & 3) << 4) | (char2 >> 4);
-      const enc3 = ((char2 & 15) << 2) | (char3 >> 6);
-      const enc4 = char3 & 63;
-      
-      result += chars.charAt(enc1) + chars.charAt(enc2) + chars.charAt(enc3) + chars.charAt(enc4);
-    }
-    return result;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  while (i < str.length) {
+    const char1 = str.charCodeAt(i++);
+    const char2 = str.charCodeAt(i++) || 0;
+    const char3 = str.charCodeAt(i++) || 0;
+    
+    const enc1 = char1 >> 2;
+    const enc2 = ((char1 & 3) << 4) | (char2 >> 4);
+    const enc3 = ((char2 & 15) << 2) | (char3 >> 6);
+    const enc4 = char3 & 63;
+    
+    result += chars.charAt(enc1) + chars.charAt(enc2) + chars.charAt(enc3) + chars.charAt(enc4);
   }
+  return result;
 };
 
 const base64Decode = (str: string): string => {
-  try {
-    return Buffer.from(str, 'base64').toString('utf8');
-  } catch {
-    // Fallback to simple base64-like decoding
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-    let result = '';
-    let i = 0;
-    while (i < str.length) {
-      const enc1 = chars.indexOf(str.charAt(i++));
-      const enc2 = chars.indexOf(str.charAt(i++));
-      const enc3 = chars.indexOf(str.charAt(i++));
-      const enc4 = chars.indexOf(str.charAt(i++));
-      
-      const char1 = (enc1 << 2) | (enc2 >> 4);
-      const char2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-      const char3 = ((enc3 & 3) << 6) | enc4;
-      
-      result += String.fromCharCode(char1);
-      if (enc3 !== 64) result += String.fromCharCode(char2);
-      if (enc4 !== 64) result += String.fromCharCode(char3);
-    }
-    return result;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  while (i < str.length) {
+    const enc1 = chars.indexOf(str.charAt(i++));
+    const enc2 = chars.indexOf(str.charAt(i++));
+    const enc3 = chars.indexOf(str.charAt(i++));
+    const enc4 = chars.indexOf(str.charAt(i++));
+    
+    const char1 = (enc1 << 2) | (enc2 >> 4);
+    const char2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+    const char3 = ((enc3 & 3) << 6) | enc4;
+    
+    result += String.fromCharCode(char1);
+    if (enc3 !== 64) result += String.fromCharCode(char2);
+    if (enc4 !== 64) result += String.fromCharCode(char3);
   }
+  return result;
 };
 
 class EncryptionService {
