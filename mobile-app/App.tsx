@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
@@ -13,9 +13,18 @@ import LoadingScreen from './src/components/common/LoadingScreen';
 import { COLORS } from './src/constants';
 
 // Initialize Firebase
-import './src/services/firebase';
+import { initializeFirebase } from './src/services/firebase';
 
 const App: React.FC = () => {
+  // Initialize Firebase when app starts
+  useEffect(() => {
+    try {
+      initializeFirebase();
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+    }
+  }, []);
+
   return (
     <ErrorBoundary>
       <Provider store={store}>
