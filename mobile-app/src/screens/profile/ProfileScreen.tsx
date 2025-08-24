@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, TYPOGRAPHY, SPACING } from '../../../shared/constants';
+import { COLORS, TYPOGRAPHY, SPACING } from '../../constants';
 
 const ProfileScreen: React.FC = () => {
   return (

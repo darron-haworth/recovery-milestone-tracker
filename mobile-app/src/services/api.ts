@@ -1,10 +1,12 @@
 import { authService } from './auth';
 import { storageService } from './storage';
 
+import { FIREBASE_CONFIG } from '../config/firebase';
+
 // API Configuration
 const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000' 
-  : 'https://your-production-api.com'; // Change this to your production URL
+  ? 'http://localhost:3000'  // Development: local backend
+  : 'https://recovery-milestone-tracker-default-rtdb.firebaseio.com'; // Production: Firebase
 
 const API_TIMEOUT = 10000; // 10 seconds
 
@@ -281,6 +283,7 @@ export const API_ENDPOINTS = {
     REQUESTS: '/api/friends/requests',
     ACCEPT: (requestId: string) => `/api/friends/requests/${requestId}/accept`,
     DECLINE: (requestId: string) => `/api/friends/requests/${requestId}/decline`,
+    SUGGESTIONS: '/api/friends/suggestions',
   },
   
   // Milestones
@@ -290,6 +293,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `/api/milestones/${id}`,
     DELETE: (id: string) => `/api/milestones/${id}`,
     ACHIEVE: (id: string) => `/api/milestones/${id}/achieve`,
+    STANDARD: '/api/milestones/standard',
   },
   
   // Notifications
@@ -298,11 +302,12 @@ export const API_ENDPOINTS = {
     MARK_READ: (id: string) => `/api/notifications/${id}/read`,
     MARK_ALL_READ: '/api/notifications/read-all',
     DELETE: (id: string) => `/api/notifications/${id}`,
+    UNREAD_COUNT: '/api/notifications/unread-count',
+    TEST: '/api/notifications/test',
   },
   
   // Health
   HEALTH: '/health',
 } as const;
 
-// Export types
-export type { ApiResponse, PaginatedResponse, RequestConfig };
+

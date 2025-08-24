@@ -1,7 +1,7 @@
 // Milestones Slice
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { Milestone, UserMilestone } from '../../../shared/types';
-import { calculateDaysSince, calculateNextMilestone, calculateAchievedMilestones } from '../../../shared/milestoneTypes';
+import { Milestone, UserMilestone } from '../../types';
+import { calculateDaysSince, calculateNextMilestone, calculateAchievedMilestones } from '../../milestoneTypes';
 
 // Async thunks (these would be implemented with actual API calls)
 export const fetchMilestones = createAsyncThunk(

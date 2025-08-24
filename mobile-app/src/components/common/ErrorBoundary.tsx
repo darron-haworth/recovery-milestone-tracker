@@ -7,7 +7,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../../shared/constants';
+import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
 
 interface Props {
   children: ReactNode;
