@@ -2,8 +2,9 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text } from 'react-native';
 
-// Import test screen
+// Import screens
 import ApiTestScreen from '../screens/test/ApiTestScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 // Placeholder screens
 const PlaceholderScreen: React.FC<{ title: string }> = ({ title }) => (
@@ -62,7 +63,7 @@ const TabNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={() => <PlaceholderScreen title="Profile" />}
+        component={ProfileScreen}
         options={{
           title: 'Profile',
           tabBarLabel: 'Profile',

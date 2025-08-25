@@ -58,7 +58,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   isLoading: true,
   error: null,
-  isOnboardingComplete: false,
+  isOnboardingComplete: true, // Set to true so app can navigate after auth
 };
 
 // Auth slice

@@ -4,9 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './src/store';
-import { AuthProvider } from './src/context/AuthContext';
-import { FriendsProvider } from './src/context/FriendsContext';
-import { NotificationProvider } from './src/context/NotificationContext';
+import { AuthProvider } from './src/context/AuthContext.tsx';
+import { FriendsProvider } from './src/context/FriendsContext.tsx';
+import { NotificationProvider } from './src/context/NotificationContext.tsx';
 import AppNavigator from './src/navigation/AppNavigator';
 import ErrorBoundary from './src/components/common/ErrorBoundary';
 import LoadingScreen from './src/components/common/LoadingScreen';
@@ -14,12 +14,19 @@ import { COLORS } from './src/constants';
 
 // Initialize Firebase
 import { initializeFirebase } from './src/services/firebase';
+import { authService } from './src/services/auth';
 
 const App: React.FC = () => {
-  // Initialize Firebase when app starts
+  // Initialize Firebase and services when app starts
   useEffect(() => {
     try {
+      // Initialize Firebase first
       initializeFirebase();
+      
+      // Then initialize auth service after Firebase is ready
+      setTimeout(() => {
+        authService.initialize();
+      }, 100);
     } catch (error) {
       console.error('Firebase initialization error:', error);
     }

@@ -33,6 +33,9 @@ export const FIREBASE_CONFIG = {
     // Cloud Storage
     storageBucket: 'recovery-milestone-tracker.firebasestorage.app',
     
+    // Realtime Database URL
+    databaseURL: 'https://recovery-milestone-tracker-default-rtdb.firebaseio.com',
+    
     // Cloud Firestore (default)
     firestoreSettings: {
       projectId: 'recovery-milestone-tracker',

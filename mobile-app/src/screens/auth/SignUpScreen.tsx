@@ -9,18 +9,64 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
+import { authService } from '../../services/auth';
 
 const SignUpScreen: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = () => {
-    // TODO: Implement sign up logic
-    console.log('Sign up attempt:', { name, email, password, confirmPassword });
+  const handleSignUp = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters long');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Initialize auth service if not already done
+      if (!authService.isInitialized) {
+        authService.initialize();
+      }
+
+      // Create user profile
+      const profile = {
+        firstName: name,
+        lastInitial: name.split(' ').pop()?.charAt(0) || 'U',
+        recoveryType: 'Other' as const,
+        sobrietyDate: new Date().toISOString(),
+        fellowship: 'Other' as const,
+        bio: 'New user',
+      };
+
+      // Attempt to sign up
+      const user = await authService.signUp(email, password, profile);
+      console.log('Sign up successful:', user);
+      Alert.alert('Success', 'Account created successfully!');
+      
+      // TODO: Navigate to main app or update auth state
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      Alert.alert('Sign Up Failed', error.message || 'An error occurred during sign up');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,6 +89,7 @@ const SignUpScreen: React.FC = () => {
               onChangeText={setName}
               autoCapitalize="words"
               autoCorrect={false}
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -52,6 +99,7 @@ const SignUpScreen: React.FC = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -61,6 +109,7 @@ const SignUpScreen: React.FC = () => {
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              editable={!isLoading}
             />
             <TextInput
               style={styles.input}
@@ -70,10 +119,19 @@ const SignUpScreen: React.FC = () => {
               secureTextEntry
               autoCapitalize="none"
               autoCorrect={false}
+              editable={!isLoading}
             />
 
-            <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
-              <Text style={styles.signUpButtonText}>Create Account</Text>
+            <TouchableOpacity 
+              style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]} 
+              onPress={handleSignUp}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.signUpButtonText}>Create Account</Text>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -135,6 +193,9 @@ const styles = StyleSheet.create({
     padding: SPACING.md,
     alignItems: 'center',
     marginTop: SPACING.md,
+  },
+  signUpButtonDisabled: {
+    opacity: 0.6,
   },
   signUpButtonText: {
     color: COLORS.white,

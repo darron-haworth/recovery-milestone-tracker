@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGet, usePost } from '../../hooks/useApi';
 import { API_ENDPOINTS } from '../../services/api';
+import { authService } from '../../services/auth';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../store';
+import { COLORS, TYPOGRAPHY, SPACING } from '../../constants';
+import { signOut } from '../../store/slices/authSlice';
 
 const ApiTestScreen: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   // Test health endpoint
   const healthCheck = useGet(API_ENDPOINTS.HEALTH, {
     immediate: true,
@@ -129,30 +136,59 @@ const ApiTestScreen: React.FC = () => {
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await dispatch(signOut());
+      Alert.alert('Success', 'Logged out successfully');
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to logout: ' + error.message);
+    }
+  };
+
+  const handleClearData = async () => {
+    try {
+      await authService.clearStoredData();
+      Alert.alert('Success', 'All stored data cleared. Please restart the app.');
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to clear data: ' + error.message);
+    }
+  };
+
+  const handleRestartApp = () => {
+    Alert.alert(
+      'Restart App',
+      'Please manually close and restart the app to see the login screen.',
+      [{ text: 'OK' }]
+    );
+  };
+
   const renderTestResult = (
     title: string,
-    result: { loading: boolean; error: string | null; success: boolean; data: any }
+    result: any,
+    isLoading: boolean = false
   ) => (
     <View style={styles.testResult}>
-      <Text style={styles.testTitle}>{title}</Text>
-      <View style={styles.statusContainer}>
-        {result.loading && <Text style={styles.loading}>Loading...</Text>}
-        {result.error && <Text style={styles.error}>Error: {result.error}</Text>}
-        {result.success && <Text style={styles.success}>Success!</Text>}
-        {result.data && (
-          <Text style={styles.data}>
-            Data: {JSON.stringify(result.data, null, 2)}
-          </Text>
-        )}
-      </View>
+      <Text style={styles.testResultTitle}>{title}</Text>
+      {isLoading ? (
+        <Text style={styles.testResultText}>Loading...</Text>
+      ) : (
+        <Text style={styles.testResultText}>
+          {result ? JSON.stringify(result, null, 2) : 'No result'}
+        </Text>
+      )}
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.header}>API Connection Test</Text>
-        
+        <View style={styles.header}>
+          <Text style={styles.title}>API Test Screen</Text>
+          <Text style={styles.subtitle}>
+            Test your backend API endpoints and app functionality
+          </Text>
+        </View>
+
         {/* Health Check */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Health Check</Text>
@@ -340,6 +376,38 @@ const ApiTestScreen: React.FC = () => {
             API Version: 1.0.0
           </Text>
         </View>
+
+        {/* App Management */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>App Management</Text>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleLogout}
+            disabled={false} // No loading state for logout
+          >
+            <Text style={styles.buttonText}>
+              Log Out
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleClearData}
+            disabled={false} // No loading state for clear data
+          >
+            <Text style={styles.buttonText}>
+              Clear All Data
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleRestartApp}
+            disabled={false} // No loading state for restart app
+          >
+            <Text style={styles.buttonText}>
+              Restart App
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -355,11 +423,21 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    alignItems: 'center',
     marginBottom: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
     color: '#333',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 4,
   },
   section: {
     marginBottom: 24,
@@ -381,31 +459,15 @@ const styles = StyleSheet.create({
   testResult: {
     marginBottom: 16,
   },
-  testTitle: {
+  testResultTitle: {
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 4,
     color: '#666',
   },
-  statusContainer: {
-    marginTop: 4,
-  },
-  loading: {
-    color: '#007AFF',
+  testResultText: {
     fontSize: 12,
-  },
-  error: {
-    color: '#FF3B30',
-    fontSize: 12,
-  },
-  success: {
-    color: '#34C759',
-    fontSize: 12,
-  },
-  data: {
     color: '#666',
-    fontSize: 10,
-    marginTop: 4,
     fontFamily: 'monospace',
   },
   testButton: {
