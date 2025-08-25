@@ -1,34 +1,91 @@
 // Firebase Authentication Service
-import auth, { 
-  FirebaseAuthTypes,
-  User as FirebaseUser 
-} from '@react-native-firebase/auth';
-import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updateProfile,
-  signOut
-} from '@react-native-firebase/auth';
 import { User, UserProfile, PrivacySettings } from '../types';
 import { secureStorage } from './storage';
 import { STORAGE_KEYS } from '../constants';
 
+// Lazy load Firebase auth to avoid initialization errors
+let auth: any = null;
+let createUserWithEmailAndPassword: any = null;
+let signInWithEmailAndPassword: any = null;
+let sendPasswordResetEmail: any = null;
+let updateProfile: any = null;
+let signOut: any = null;
+
+// Initialize Firebase auth when needed
+const initializeFirebaseAuth = () => {
+  if (!auth) {
+    try {
+      const firebaseAuth = require('@react-native-firebase/auth');
+      auth = firebaseAuth.default;
+      createUserWithEmailAndPassword = firebaseAuth.createUserWithEmailAndPassword;
+      signInWithEmailAndPassword = firebaseAuth.signInWithEmailAndPassword;
+      sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail;
+      updateProfile = firebaseAuth.updateProfile;
+      signOut = firebaseAuth.signOut;
+      console.log('✅ Firebase Auth initialized in auth service');
+    } catch (error) {
+      console.error('❌ Failed to initialize Firebase Auth:', error);
+    }
+  }
+};
+
 class AuthService {
-  private currentUser: FirebaseUser | null = null;
+  private currentUser: any = null;
+  private _isInitialized: boolean = false;
 
   /**
    * Initialize auth service
    */
   constructor() {
-    this.setupAuthStateListener();
+    // Don't setup auth listener in constructor - wait for Firebase to be ready
+  }
+
+  /**
+   * Initialize the auth service when Firebase is ready
+   */
+  initialize(): void {
+    if (this._isInitialized) return;
+    
+    try {
+      console.log('🚀 Initializing auth service...');
+      
+      initializeFirebaseAuth();
+      console.log('🔑 Firebase auth module loaded:', !!auth);
+      
+      if (auth) {
+        this.setupAuthStateListener();
+        this._isInitialized = true;
+        console.log('✅ Auth service initialized');
+        
+        // Test Firebase auth connection
+        try {
+          const currentUser = auth().currentUser;
+          console.log('👤 Current Firebase user:', currentUser ? 'Logged in' : 'Not logged in');
+        } catch (authTestError) {
+          console.error('❌ Firebase auth test failed:', authTestError);
+        }
+      } else {
+        console.error('❌ Firebase auth not available');
+      }
+    } catch (error) {
+      console.error('❌ Auth service initialization failed:', error);
+    }
+  }
+
+  /**
+   * Check if auth service is initialized
+   */
+  get isInitialized(): boolean {
+    return this._isInitialized;
   }
 
   /**
    * Setup authentication state listener
    */
   private setupAuthStateListener(): void {
-    auth().onAuthStateChanged((user: FirebaseUser | null) => {
+    if (!auth) return;
+    
+    auth().onAuthStateChanged((user: any) => {
       this.currentUser = user;
       console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
     });
@@ -37,7 +94,8 @@ class AuthService {
   /**
    * Get current Firebase user
    */
-  getCurrentUser(): FirebaseUser | null {
+  getCurrentUser(): any {
+    if (!auth) return null;
     return this.currentUser || auth().currentUser;
   }
 
@@ -120,26 +178,78 @@ class AuthService {
    */
   async signIn(email: string, password: string): Promise<User> {
     try {
+      console.log('🔐 Attempting sign in for:', email);
+      console.log('🔑 Auth service initialized:', this._isInitialized);
+      console.log('🔥 Firebase auth available:', !!auth);
+      
+      if (!this._isInitialized) {
+        console.log('⚠️ Auth service not initialized, initializing now...');
+        this.initialize();
+      }
+      
+      if (!auth) {
+        throw new Error('Firebase Auth not available');
+      }
+      
+      console.log('🚀 Calling Firebase signInWithEmailAndPassword...');
       const userCredential = await signInWithEmailAndPassword(
         auth(),
         email,
         password
       );
-
+      
+      console.log('✅ Firebase sign in successful:', userCredential.user.uid);
       const user = userCredential.user;
       
       // Get user data from secure storage or Firestore
       const userDataString = await secureStorage.getItem(STORAGE_KEYS.USER_DATA);
       
       if (userDataString) {
+        console.log('📱 User data found in storage');
         return JSON.parse(userDataString);
       } else {
-        // Fetch user data from Firestore if not in storage
-        // This would be implemented with Firestore service
-        throw new Error('User data not found');
+        console.log('⚠️ User data not found in storage, creating default profile');
+        // Create default user profile
+        const defaultUser: User = {
+          uid: user.uid,
+          email: user.email || email,
+          profile: {
+            recoveryType: 'Other',
+            sobrietyDate: new Date().toISOString(),
+            fellowship: 'Other',
+            anonymousId: this.generateAnonymousId(),
+            firstName: user.displayName || 'User',
+            lastInitial: 'U',
+            avatar: user.photoURL,
+            bio: 'Welcome to Recovery Milestone Tracker!'
+          },
+          privacy: {
+            isAnonymous: false,
+            shareMilestones: true,
+            allowFriendRequests: true,
+            showInDirectory: false,
+            notificationSettings: {
+              milestoneReminders: true,
+              friendRequests: true,
+              encouragementMessages: true,
+              dailyMotivation: true,
+              pushEnabled: true,
+              emailEnabled: true
+            }
+          },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        // Store user data
+        await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(defaultUser));
+        console.log('✅ Default user profile created and stored');
+        return defaultUser;
       }
     } catch (error: any) {
-      console.error('Sign in error:', error);
+      console.error('❌ Sign in error:', error);
+      console.error('❌ Error code:', error.code);
+      console.error('❌ Error message:', error.message);
       throw new Error(this.getAuthErrorMessage(error.code));
     }
   }
@@ -149,7 +259,9 @@ class AuthService {
    */
   async signOut(): Promise<void> {
     try {
-      await signOut(auth());
+      if (auth) {
+        await signOut(auth());
+      }
       
       // Clear secure storage
       await secureStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
@@ -161,6 +273,21 @@ class AuthService {
     } catch (error: any) {
       console.error('Sign out error:', error);
       throw new Error('Failed to sign out');
+    }
+  }
+
+  /**
+   * Clear all stored user data (for testing/debugging)
+   */
+  async clearStoredData(): Promise<void> {
+    try {
+      await secureStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      await secureStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+      await secureStorage.removeItem(STORAGE_KEYS.USER_DATA);
+      this.currentUser = null;
+      console.log('All stored user data cleared');
+    } catch (error: any) {
+      console.error('Clear stored data error:', error);
     }
   }
 
@@ -324,6 +451,20 @@ class AuthService {
       console.error('Reauthentication check error:', error);
       return false;
     }
+  }
+
+  /**
+   * Get test credentials for development
+   */
+  getTestCredentials() {
+    return {}; // Removed hardcoded test credentials
+  }
+
+  /**
+   * Create test user account (for development only)
+   */
+  async createTestUser(userKey: string): Promise<User> {
+    throw new Error('Test user creation has been removed. Please create users directly in Firebase.');
   }
 }
 
