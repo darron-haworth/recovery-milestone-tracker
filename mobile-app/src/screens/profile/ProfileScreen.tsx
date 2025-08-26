@@ -36,7 +36,6 @@ const ProfileScreen: React.FC = () => {
           onPress: async () => {
             try {
               await dispatch(signOut());
-              Alert.alert('Success', 'Logged out successfully');
             } catch (error: any) {
               Alert.alert('Error', 'Failed to logout: ' + error.message);
             }
