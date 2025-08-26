@@ -1,0 +1,39 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.autoSave": "onFocusChange",
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/android/build": true,
+    "**/ios/build": true,
+    "**/.gradle": true,
+    "**/build": true,
+    "**/dist": true
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/android/build": true,
+    "**/ios/build": true,
+    "**/.gradle": true,
+    "**/build": true,
+    "**/dist": true
+  },
+  "react-native-tools.projectRoot": "./mobile-app",
+  "react-native-tools.showUserTips": false,
+  "react-native-tools.enableTelemetry": false,
+  "emmet.includeLanguages": {
+    "typescript": "typescriptreact",
+    "javascript": "javascriptreact"
+  },
+  "terminal.integrated.env.linux": {
+    "ANDROID_HOME": "/home/darron/Android/Sdk",
+    "ANDROID_SDK_ROOT": "/home/darron/Android/Sdk"
+  }
+}

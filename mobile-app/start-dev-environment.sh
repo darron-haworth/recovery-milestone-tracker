@@ -16,6 +16,42 @@ echo "📍 Project root: $PROJECT_ROOT"
 echo "🔧 Backend directory: $BACKEND_DIR"
 echo "📱 Mobile app directory: $MOBILE_APP_DIR"
 
+# Set up Android environment variables
+setup_android_env() {
+    echo "🔧 Setting up Android environment variables..."
+    
+    # Source the Android environment setup script if it exists
+    if [ -f "$MOBILE_APP_DIR/setup-android-env.sh" ]; then
+        source "$MOBILE_APP_DIR/setup-android-env.sh"
+        return $?
+    fi
+    
+    # Fallback: Common Android SDK locations
+    ANDROID_LOCATIONS=(
+        "$HOME/Android/Sdk"
+        "$HOME/Library/Android/sdk"  # macOS
+        "/usr/local/android-sdk"
+        "/opt/android-sdk"
+    )
+    
+    # Find Android SDK
+    for location in "${ANDROID_LOCATIONS[@]}"; do
+        if [ -d "$location" ]; then
+            export ANDROID_HOME="$location"
+            export ANDROID_SDK_ROOT="$location"
+            export PATH="$PATH:$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools"
+            echo "✅ Android SDK found at: $location"
+            echo "   ANDROID_HOME: $ANDROID_HOME"
+            echo "   ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+            return 0
+        fi
+    done
+    
+    echo "⚠️  Android SDK not found in common locations. Please set ANDROID_HOME manually."
+    echo "   Common locations: ${ANDROID_LOCATIONS[*]}"
+    return 1
+}
+
 # Function to check if a port is in use
 check_port() {
     local port=$1
@@ -69,7 +105,7 @@ start_backend() {
     
     # Start backend server in background
     echo "🚀 Starting backend server on port 3000..."
-    npm start > "$PROJECT_ROOT/backend.log" 2>&1 &
+    nohup npm start > "$PROJECT_ROOT/backend.log" 2>&1 &
     BACKEND_PID=$!
     
     # Save PID to file for later cleanup
@@ -103,7 +139,7 @@ start_metro() {
     
     # Start Metro bundler in background
     echo "🚀 Starting Metro bundler on port 8081..."
-    npx react-native start --reset-cache > "$PROJECT_ROOT/metro.log" 2>&1 &
+    nohup npx react-native start --reset-cache > "$PROJECT_ROOT/metro.log" 2>&1 &
     METRO_PID=$!
     
     # Save PID to file for later cleanup
@@ -150,6 +186,9 @@ trap cleanup EXIT INT TERM
 
 # Main execution
 echo "🔍 Checking current environment..."
+
+# Set up Android environment
+setup_android_env
 
 # Start backend first
 start_backend

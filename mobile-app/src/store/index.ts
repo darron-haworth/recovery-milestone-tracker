@@ -61,7 +61,21 @@ export const store = configureStore({
 });
 
 // Create persistor
-export const persistor = persistStore(store);
+export const persistor = persistStore(store, null, () => {
+  console.log('💾 Redux persist store created');
+});
+
+// Add debugging for persistence
+if (__DEV__) {
+  // Log when persistence happens
+  persistor.subscribe(() => {
+    const { bootstrapped } = persistor.getState();
+    console.log('💾 Redux persist state change:', persistor.getState());
+    if (bootstrapped) {
+      console.log('💾 Redux persist bootstrapped - data loaded from storage');
+    }
+  });
+}
 
 // Export types
 export type RootState = ReturnType<typeof store.getState>;
