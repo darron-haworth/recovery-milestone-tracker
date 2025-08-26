@@ -168,7 +168,8 @@ class StorageService {
    */
   async getAllKeys(): Promise<string[]> {
     try {
-      return await AsyncStorage.getAllKeys();
+      const keys = await AsyncStorage.getAllKeys();
+      return [...keys]; // Convert readonly array to mutable array
     } catch (error) {
       console.error('Get all keys error:', error);
       return [];

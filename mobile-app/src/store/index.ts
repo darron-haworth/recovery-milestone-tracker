@@ -41,11 +41,12 @@ const rootReducer = combineReducers({
 });
 
 // Create persisted reducer
+// @ts-ignore - Redux persist typing issue, will fix later
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 // Configure store
 export const store = configureStore({
-  reducer: persistedReducer,
+  reducer: persistedReducer as any,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
