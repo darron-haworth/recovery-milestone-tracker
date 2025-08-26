@@ -14,7 +14,7 @@ import { authService } from '../../services/auth';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
 import { COLORS, TYPOGRAPHY, SPACING } from '../../constants';
-import { signOut } from '../../store/slices/authSlice';
+import { signOut, clearStoredAuthData } from '../../store/slices/authSlice';
 
 const ApiTestScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -151,6 +151,15 @@ const ApiTestScreen: React.FC = () => {
       Alert.alert('Success', 'All stored data cleared. Please restart the app.');
     } catch (error: any) {
       Alert.alert('Error', 'Failed to clear data: ' + error.message);
+    }
+  };
+
+  const handleClearStoredAuthData = async () => {
+    try {
+      await dispatch(clearStoredAuthData());
+      Alert.alert('Success', 'Stored auth data cleared. You should now see the login screen.');
+    } catch (error: any) {
+      Alert.alert('Error', 'Failed to clear auth data: ' + error.message);
     }
   };
 
@@ -396,6 +405,15 @@ const ApiTestScreen: React.FC = () => {
           >
             <Text style={styles.buttonText}>
               Clear All Data
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.testButton}
+            onPress={handleClearStoredAuthData}
+            disabled={false} // No loading state for clear auth data
+          >
+            <Text style={styles.buttonText}>
+              Clear Stored Auth Data
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

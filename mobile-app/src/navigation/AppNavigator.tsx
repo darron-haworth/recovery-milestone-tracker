@@ -21,6 +21,9 @@ const AppNavigator: React.FC = () => {
     dispatch(checkAuthState());
   }, [dispatch]);
 
+  // Add debugging
+  console.log('🔍 AppNavigator state:', { isAuthenticated, isLoading, isOnboardingComplete });
+
   if (isLoading) {
     return <LoadingScreen message="Starting Recovery Milestone Tracker..." />;
   }
