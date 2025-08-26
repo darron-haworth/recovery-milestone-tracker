@@ -1,6 +1,9 @@
 // Crypto polyfill for React Native
 // This prevents the "core.js Native crypto module could not be used" error
 
+// Declare global type for React Native
+declare const global: any;
+
 // Polyfill crypto.getRandomValues if it doesn't exist
 if (typeof global !== 'undefined' && !global.crypto) {
   global.crypto = {} as any;

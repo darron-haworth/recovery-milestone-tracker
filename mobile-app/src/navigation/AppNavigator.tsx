@@ -12,13 +12,12 @@ const Stack = createStackNavigator();
 
 const AppNavigator: React.FC = () => {
   const dispatch = useDispatch();
-  const { isAuthenticated, isLoading, isOnboardingComplete } = useSelector(
-    (state: RootState) => state.auth
-  );
+  const authState = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, isLoading, isOnboardingComplete } = authState || {};
 
   useEffect(() => {
     // Check authentication state on app start
-    dispatch(checkAuthState());
+    dispatch(checkAuthState() as any);
   }, [dispatch]);
 
   // Add debugging

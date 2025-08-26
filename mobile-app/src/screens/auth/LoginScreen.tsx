@@ -21,7 +21,8 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
-  const { isLoading, error } = useSelector((state: RootState) => state.auth);
+  const authState = useSelector((state: RootState) => state.auth);
+  const { isLoading, error } = authState || {};
 
   const handleLogin = async () => {
     if (!email || !password) {
