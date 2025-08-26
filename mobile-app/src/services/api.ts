@@ -86,8 +86,10 @@ class ApiService {
     try {
       const user = await authService.getCurrentUser();
       if (user) {
-        const token = await authService.getIdToken();
-        return token;
+        // TODO: Implement getIdToken method in auth service
+        // const token = await authService.getIdToken();
+        // return token;
+        return null; // Temporarily return null
       }
       return null;
     } catch (error) {

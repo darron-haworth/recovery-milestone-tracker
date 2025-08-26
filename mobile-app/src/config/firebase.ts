@@ -24,12 +24,6 @@ export const FIREBASE_CONFIG = {
   
   // Firebase Services
   services: {
-    // Firestore (enabled by default) - Better than Realtime Database
-    firestoreSettings: {
-      projectId: 'recovery-milestone-tracker',
-      // Firestore doesn't need a database URL
-    },
-    
     // Cloud Storage
     storageBucket: 'recovery-milestone-tracker.firebasestorage.app',
     
