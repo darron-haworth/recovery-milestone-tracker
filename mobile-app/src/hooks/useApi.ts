@@ -46,7 +46,7 @@ export function useApi<T = any>(
   });
 
   const retryCountRef = useRef(0);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Reset state
   const reset = useCallback(() => {
@@ -113,7 +113,7 @@ export function useApi<T = any>(
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         
         // Retry logic
-        if (retryCountRef.current < opts.retryCount!) {
+        if (opts.retryCount && retryCountRef.current < opts.retryCount) {
           retryCountRef.current++;
           
           setState(prev => ({
@@ -123,8 +123,8 @@ export function useApi<T = any>(
           }));
 
           // Wait before retrying
-          await new Promise(resolve => {
-            timeoutRef.current = setTimeout(resolve, opts.retryDelay);
+          await new Promise<void>(resolve => {
+            timeoutRef.current = setTimeout(() => resolve(), opts.retryDelay || 1000);
           });
 
           return execute(...args);
@@ -248,22 +248,20 @@ export function usePaginatedData<T = any>(
     if (!hasMore || state.loading) return;
 
     const response = await execute(page + 1);
-    if (response?.success && response.data) {
-      setAllData(prev => [...prev, ...response.data]);
+    if (response?.success && response.data && Array.isArray(response.data)) {
+      const newData = response.data as T[];
+      setAllData(prev => [...prev, ...newData]);
       setPage(page + 1);
       
-      // Check if there are more pages
-      if (response.pagination) {
-        setHasMore(page + 1 < response.pagination.totalPages);
-      } else {
-        setHasMore(response.data.length === 20); // Assuming 20 is the limit
-      }
+      // Check if there are more pages (assuming 20 is the limit)
+      setHasMore(newData.length === 20);
     }
   }, [execute, page, hasMore, state.loading]);
 
   return {
     ...state,
     data: allData,
+    execute,
     loadMore,
     hasMore,
     page,

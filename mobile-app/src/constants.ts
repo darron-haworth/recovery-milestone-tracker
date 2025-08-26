@@ -73,10 +73,10 @@ export const TYPOGRAPHY = {
     xxxl: 32
   },
   fontWeight: {
-    light: '300',
-    regular: '400',
-    medium: '500',
-    bold: '700'
+    light: '300' as const,
+    regular: '400' as const,
+    medium: '500' as const,
+    bold: '700' as const
   },
   lineHeight: {
     tight: 1.2,

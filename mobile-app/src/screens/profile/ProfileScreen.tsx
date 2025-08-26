@@ -16,7 +16,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const authState = useSelector((state: RootState) => state.auth);
+  const { user } = authState || {};
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
 
@@ -52,17 +53,32 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleDateChange = (event: any, selectedDate?: Date) => {
+    console.log('🔍 DateTimePicker onChange:', { event, selectedDate, platform: Platform.OS });
+    
     if (Platform.OS === 'android') {
+      // On Android, the picker automatically closes, so we need to handle the selection immediately
+      if (selectedDate) {
+        console.log('📱 Android: Date selected, auto-confirming:', selectedDate);
+        setTempSobrietyDate(selectedDate);
+        // Automatically confirm the date on Android
+        handleDateConfirm(selectedDate);
+      }
       setIsDatePickerVisible(false);
-    }
-    if (selectedDate) {
-      setTempSobrietyDate(selectedDate);
+    } else {
+      // On iOS, just update the temp date
+      if (selectedDate) {
+        console.log('🍎 iOS: Date selected, updating temp:', selectedDate);
+        setTempSobrietyDate(selectedDate);
+      }
     }
   };
 
-  const handleDateConfirm = () => {
-    if (tempSobrietyDate) {
-      const newSobrietyDate = tempSobrietyDate.toISOString();
+  const handleDateConfirm = (selectedDate?: Date) => {
+    console.log('🔍 handleDateConfirm called:', { selectedDate, tempSobrietyDate });
+    const dateToUse = selectedDate || tempSobrietyDate;
+    if (dateToUse) {
+      const newSobrietyDate = dateToUse.toISOString();
+      console.log('📅 Processing sobriety date update:', { dateToUse, newSobrietyDate });
       
       // Calculate sobriety duration
       const today = new Date();
@@ -72,7 +88,7 @@ const ProfileScreen: React.FC = () => {
       
       Alert.alert(
         'Update Sobriety Date',
-        `Are you sure you want to set your sobriety date to ${tempSobrietyDate.toLocaleDateString()}?\n\nThis will show ${diffDays} days of sobriety.`,
+        `Are you sure you want to set your sobriety date to ${dateToUse.toLocaleDateString()}?\n\nThis will show ${diffDays} days of sobriety.`,
         [
           { text: 'Cancel', style: 'cancel' },
           {
@@ -185,9 +201,10 @@ const ProfileScreen: React.FC = () => {
             <DateTimePicker
               value={tempSobrietyDate || new Date()}
               mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
               onChange={handleDateChange}
               maximumDate={new Date()}
+              textColor={COLORS.textPrimary}
             />
             {Platform.OS === 'ios' && (
               <View style={styles.modalButtons}>
