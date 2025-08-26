@@ -1,8 +1,8 @@
 // Firebase Service for Firestore Operations
-import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { FIRESTORE_COLLECTIONS } from '../config/firebase';
-import { User, UserProfile, PrivacySettings } from '../types';
+import { User, UserProfile } from '../types';
 
 class FirebaseService {
   private db = firestore();
@@ -32,7 +32,7 @@ class FirebaseService {
       // Get the users collection reference
       const userRef = this.db.collection(FIRESTORE_COLLECTIONS.users).doc(userId);
 
-      // Update the profile data
+      // Always use set() with merge: true to handle both create and update cases
       await userRef.set({
         profile: profileData,
         updatedAt: firestore.FieldValue.serverTimestamp(),
@@ -121,10 +121,11 @@ class FirebaseService {
 
       const userRef = this.db.collection(FIRESTORE_COLLECTIONS.users).doc(userId);
 
-      await userRef.update({
+      // Use set() with merge: true to handle both create and update cases
+      await userRef.set({
         [`profile.${field}`]: value,
         updatedAt: firestore.FieldValue.serverTimestamp(),
-      });
+      }, { merge: true });
 
       console.log(`✅ Firebase: Profile field '${field}' updated successfully`);
     } catch (error) {
@@ -147,36 +148,22 @@ class FirebaseService {
 
       const userRef = this.db.collection(FIRESTORE_COLLECTIONS.users).doc(userId);
       
-      // Check if user document exists first
-      const userDoc = await userRef.get();
+      // Always use set() with merge: true to handle both create and update cases
+      await userRef.set({
+        profile: {
+          sobrietyDate: sobrietyDate,
+          recoveryType: 'Other',
+          fellowship: 'Other',
+          anonymousId: '',
+          firstName: '',
+          lastInitial: '',
+          avatar: null,
+          bio: ''
+        },
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      }, { merge: true });
       
-      if (userDoc.exists) {
-        // Update existing document
-        await userRef.update({
-          'profile.sobrietyDate': sobrietyDate,
-          updatedAt: firestore.FieldValue.serverTimestamp(),
-        });
-        console.log('✅ Firebase: Sobriety date updated in existing document');
-      } else {
-        // Create new document with sobriety date
-        await userRef.set({
-          profile: {
-            sobrietyDate: sobrietyDate,
-            recoveryType: 'Other',
-            fellowship: 'Other',
-            anonymousId: '',
-            firstName: '',
-            lastInitial: '',
-            avatar: null,
-            bio: ''
-          },
-          createdAt: firestore.FieldValue.serverTimestamp(),
-          updatedAt: firestore.FieldValue.serverTimestamp(),
-        });
-        console.log('✅ Firebase: New user document created with sobriety date');
-      }
-      
-      console.log('✅ Firebase: Sobriety date updated successfully');
+      console.log('✅ Firebase: Sobriety date updated/created successfully');
     } catch (error) {
       console.error('❌ Firebase: Failed to update sobriety date:', error);
       throw error;
