@@ -1,20 +1,19 @@
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
+    Alert,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch } from 'react-redux';
 import { useGet, usePost } from '../../hooks/useApi';
 import { API_ENDPOINTS } from '../../services/api';
 import { authService } from '../../services/auth';
-import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../store';
-import { COLORS, TYPOGRAPHY, SPACING } from '../../constants';
-import { signOut, clearStoredAuthData } from '../../store/slices/authSlice';
+import { clearStoredAuthData, signOut } from '../../store/slices/authSlice';
 
 const ApiTestScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -139,7 +138,6 @@ const ApiTestScreen: React.FC = () => {
   const handleLogout = async () => {
     try {
       await dispatch(signOut());
-      Alert.alert('Success', 'Logged out successfully');
     } catch (error: any) {
       Alert.alert('Error', 'Failed to logout: ' + error.message);
     }

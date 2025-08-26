@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Alert,
     Modal,
@@ -23,6 +23,34 @@ const ProfileScreen: React.FC = () => {
   const { user } = authState || {};
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
+  // Load profile data from Firebase when component mounts
+  useEffect(() => {
+    const loadProfileFromFirebase = async () => {
+      if (authState?.isAuthenticated && authState?.user?.uid) {
+        try {
+          setIsLoadingProfile(true);
+          console.log('🔄 Loading profile from Firebase for user:', authState.user.uid);
+          
+          const profile = await firebaseService.getUserProfile();
+          if (profile) {
+            console.log('📦 Profile loaded from Firebase:', profile);
+            // Update Redux state with the loaded profile
+            dispatch(updateUserProfile({ profile }));
+          } else {
+            console.log('📭 No profile found in Firebase, user may be new');
+          }
+        } catch (error) {
+          console.error('❌ Failed to load profile from Firebase:', error);
+        } finally {
+          setIsLoadingProfile(false);
+        }
+      }
+    };
+
+    loadProfileFromFirebase();
+  }, [authState?.isAuthenticated, authState?.user?.uid, dispatch]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -256,6 +284,13 @@ const ProfileScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Profile</Text>
       
+      {/* Loading indicator */}
+      {isLoadingProfile && (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading profile from cloud...</Text>
+        </View>
+      )}
+      
       {user && (
         <View style={styles.userInfo}>
           <Text style={styles.userName}>
@@ -369,6 +404,18 @@ const styles = StyleSheet.create({
     color: COLORS.textPrimary,
     marginBottom: SPACING.lg,
     textAlign: 'center',
+  },
+  loadingContainer: {
+    backgroundColor: COLORS.info,
+    padding: SPACING.md,
+    borderRadius: BORDER_RADIUS.md,
+    marginBottom: SPACING.md,
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
   userInfo: {
     backgroundColor: COLORS.card,
