@@ -1,17 +1,16 @@
 // Redux Store Configuration
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
 import { encryptTransform } from 'redux-persist-transform-encrypt';
-import { encrypt, decrypt } from '../utils/encryption';
 
 // Import slices
 import authSlice from './slices/authSlice';
-import userSlice from './slices/userSlice';
 import friendsSlice from './slices/friendsSlice';
 import milestonesSlice from './slices/milestonesSlice';
 import notificationsSlice from './slices/notificationsSlice';
 import settingsSlice from './slices/settingsSlice';
+import userSlice from './slices/userSlice';
 
 // Create encrypted transform for sensitive data
 const encryptTransformConfig = encryptTransform({
