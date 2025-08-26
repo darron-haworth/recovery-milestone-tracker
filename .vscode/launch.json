@@ -1,0 +1,75 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Backend Server",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/server.js",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "3000"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "protocol": "inspector"
+    },
+    {
+      "name": "Debug React Native Android",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "android",
+      "target": "emulator",
+      "sourceMaps": true,
+      "outDir": "${workspaceFolder}/mobile-app/.vscode/.react",
+      "cwd": "${workspaceFolder}/mobile-app",
+      "enableDebug": true,
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "REACT_NATIVE_PACKAGER_HOSTNAME": "localhost"
+      },
+      "preLaunchTask": "start-metro"
+    },
+    {
+      "name": "Attach to React Native",
+      "type": "reactnative",
+      "request": "attach",
+      "platform": "android",
+      "sourceMaps": true,
+      "outDir": "${workspaceFolder}/mobile-app/.vscode/.react",
+      "cwd": "${workspaceFolder}/mobile-app"
+    },
+    {
+      "name": "Debug Backend (Attach)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "address": "localhost",
+      "localRoot": "${workspaceFolder}/backend",
+      "remoteRoot": "${workspaceFolder}/backend",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Quick Start Full Stack",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/mobile-app/start-dev-vscode.sh",
+      "cwd": "${workspaceFolder}/mobile-app",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack Debug",
+      "configurations": ["Debug Backend Server", "Debug React Native Android"]
+    }
+  ]
+}

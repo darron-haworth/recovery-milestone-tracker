@@ -98,8 +98,20 @@ const authSlice = createSlice({
       state.isOnboardingComplete = action.payload;
     },
     updateUserProfile: (state, action: PayloadAction<Partial<User>>) => {
+      console.log('🔄 Redux: updateUserProfile action dispatched:', action.payload);
       if (state.user) {
-        state.user = { ...state.user, ...action.payload };
+        console.log('👤 Current user state:', state.user);
+        // Handle nested profile updates properly
+        if (action.payload.profile) {
+          state.user.profile = { ...state.user.profile, ...action.payload.profile };
+          console.log('✅ Updated user profile:', state.user.profile);
+        }
+        // Handle other direct user properties
+        const { profile, ...otherUpdates } = action.payload;
+        state.user = { ...state.user, ...otherUpdates };
+        console.log('✅ Final user state:', state.user);
+      } else {
+        console.log('❌ No user in state to update');
       }
     },
     clearStoredAuthData: (state) => {
