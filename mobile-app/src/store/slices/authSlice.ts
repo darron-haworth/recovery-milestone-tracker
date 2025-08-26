@@ -43,6 +43,14 @@ export const checkAuthState = createAsyncThunk(
   }
 );
 
+export const clearStoredAuthData = createAsyncThunk(
+  'auth/clearStoredAuthData',
+  async () => {
+    // This is a synchronous action, just return success
+    return { success: true };
+  }
+);
+
 // Auth state interface
 interface AuthState {
   user: User | null;
@@ -56,7 +64,7 @@ interface AuthState {
 const initialState: AuthState = {
   user: null,
   isAuthenticated: false,
-  isLoading: true,
+  isLoading: false, // Changed from true to false
   error: null,
   isOnboardingComplete: true, // Set to true so app can navigate after auth
 };
@@ -93,6 +101,13 @@ const authSlice = createSlice({
       if (state.user) {
         state.user = { ...state.user, ...action.payload };
       }
+    },
+    clearStoredAuthData: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.isLoading = false;
+      state.error = null;
+      state.isOnboardingComplete = true;
     },
   },
   extraReducers: (builder) => {
