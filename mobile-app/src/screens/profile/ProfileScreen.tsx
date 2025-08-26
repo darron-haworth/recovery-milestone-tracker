@@ -1,18 +1,21 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-  Modal,
-  Platform,
+    Alert,
+    Modal,
+    Platform,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../store';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
+import { BORDER_RADIUS, COLORS, SPACING, TYPOGRAPHY } from '../../constants';
+import { auth, firestore } from '../../services/firebase';
+import { firebaseService } from '../../services/firebaseService';
+import { AppDispatch, RootState, store } from '../../store';
 import { signOut, updateUserProfile } from '../../store/slices/authSlice';
-import DateTimePicker from '@react-native-community/datetimepicker';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -41,6 +44,42 @@ const ProfileScreen: React.FC = () => {
         },
       ]
     );
+  };
+
+  const checkPersistedState = () => {
+    const currentState = store.getState();
+    console.log('🔍 Current Redux state:', currentState);
+    console.log('👤 Current user in state:', currentState.auth?.user);
+    console.log('📅 Current sobriety date:', currentState.auth?.user?.profile?.sobrietyDate);
+    
+    // Check AsyncStorage directly
+    AsyncStorage.getItem('persist:root').then((persistedData) => {
+      console.log('💾 Raw persisted data:', persistedData);
+      if (persistedData) {
+        try {
+          const parsed = JSON.parse(persistedData);
+          console.log('📦 Parsed persisted data:', parsed);
+        } catch (e) {
+          console.error('❌ Error parsing persisted data:', e);
+        }
+      }
+    });
+  };
+
+  const forcePersist = async () => {
+    try {
+      console.log('💾 Manually triggering persistence...');
+      // Force a state change to trigger persistence
+      await dispatch(updateUserProfile({}));
+      console.log('✅ Persistence triggered');
+      
+      // Check if data was saved
+      setTimeout(() => {
+        checkPersistedState();
+      }, 1000);
+    } catch (error) {
+      console.error('❌ Force persist error:', error);
+    }
   };
 
   const handleSobrietyDatePress = () => {
@@ -75,6 +114,10 @@ const ProfileScreen: React.FC = () => {
 
   const handleDateConfirm = (selectedDate?: Date) => {
     console.log('🔍 handleDateConfirm called:', { selectedDate, tempSobrietyDate });
+    console.log('👤 Current auth state:', authState);
+    console.log('🔑 User authenticated:', authState?.isAuthenticated);
+    console.log('👤 User object:', user);
+    
     const dateToUse = selectedDate || tempSobrietyDate;
     if (dateToUse) {
       const newSobrietyDate = dateToUse.toISOString();
@@ -95,7 +138,10 @@ const ProfileScreen: React.FC = () => {
             text: 'Update',
             onPress: async () => {
               try {
-                await dispatch(updateUserProfile({
+                console.log('🚀 Updating sobriety date...');
+                
+                // Update local Redux state
+                const actionPayload = {
                   profile: { 
                     sobrietyDate: newSobrietyDate,
                     recoveryType: user?.profile?.recoveryType || 'Other',
@@ -106,9 +152,66 @@ const ProfileScreen: React.FC = () => {
                     avatar: user?.profile?.avatar,
                     bio: user?.profile?.bio || ''
                   }
-                }));
-                Alert.alert('Success', 'Sobriety date updated successfully!');
+                };
+                console.log('📦 Redux action payload:', actionPayload);
+                
+                const result = await dispatch(updateUserProfile(actionPayload));
+                console.log('✅ Redux updateUserProfile result:', result);
+                
+                // Force a delay to ensure Redux state is updated
+                await new Promise<void>(resolve => setTimeout(resolve, 100));
+                
+                // Check the current state after update
+                const currentState = store.getState();
+                console.log('🔍 State after update:', currentState.auth?.user?.profile);
+                
+                // Also persist to Firebase
+                console.log('🔥 Persisting to Firebase...');
+                console.log('👤 Current user state:', user);
+                console.log('🔑 User ID:', user?.uid);
+                console.log('📧 User email:', user?.email);
+                console.log('🔧 Firebase service available:', !!firebaseService);
+                
+                // Check Firebase Auth state
+                try {
+                  const currentUser = auth().currentUser;
+                  console.log('🔥 Firebase Auth current user:', currentUser);
+                  console.log('🔑 Firebase Auth UID:', currentUser?.uid);
+                  console.log('🔑 Firebase Auth email:', currentUser?.email);
+                  console.log('🔑 Firebase Auth emailVerified:', currentUser?.emailVerified);
+                  
+                  if (!currentUser) {
+                    throw new Error('No Firebase user authenticated');
+                  }
+                  
+                  // Check if user document exists in Firestore
+                  const userDocRef = firestore().collection('users').doc(currentUser.uid);
+                  const userDoc = await userDocRef.get();
+                  console.log('📄 Firestore user document exists:', userDoc.exists);
+                  console.log('📄 Firestore user document data:', userDoc.data());
+                  
+                } catch (firebaseCheckError) {
+                  console.error('❌ Firebase check failed:', firebaseCheckError);
+                  throw firebaseCheckError;
+                }
+                
+                try {
+                  console.log('🚀 Calling firebaseService.updateSobrietyDate...');
+                  await firebaseService.updateSobrietyDate(newSobrietyDate);
+                  console.log('✅ Firebase update successful');
+                } catch (firebaseError: any) {
+                  console.error('❌ Firebase update failed:', firebaseError);
+                  console.error('❌ Error details:', {
+                    message: firebaseError?.message,
+                    code: firebaseError?.code,
+                    stack: firebaseError?.stack
+                  });
+                  Alert.alert('Warning', 'Data saved locally but failed to sync with cloud. Error: ' + (firebaseError?.message || 'Unknown error'));
+                }
+                
+                Alert.alert('Success', 'Sobriety date updated successfully and saved to cloud!');
               } catch (error: any) {
+                console.error('❌ Sobriety date update error:', error);
                 Alert.alert('Error', 'Failed to update sobriety date: ' + error.message);
               }
             },
@@ -185,40 +288,72 @@ const ProfileScreen: React.FC = () => {
         </View>
       )}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
+                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutButtonText}>Logout</Text>
+          </TouchableOpacity>
+          
+          {/* Debug buttons for development */}
+          {__DEV__ && (
+            <>
+              <TouchableOpacity 
+                style={[styles.logoutButton, { backgroundColor: COLORS.info, marginTop: SPACING.sm }]} 
+                onPress={checkPersistedState}
+              >
+                <Text style={styles.logoutButtonText}>Debug: Check Persisted State</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.logoutButton, { backgroundColor: COLORS.warning, marginTop: SPACING.sm }]} 
+                onPress={forcePersist}
+              >
+                <Text style={styles.logoutButtonText}>Debug: Force Persistence</Text>
+              </TouchableOpacity>
+            </>
+          )}
 
       {/* Date Picker Modal */}
-      <Modal
-        visible={isDatePickerVisible}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Set Sobriety Date</Text>
-            <DateTimePicker
-              value={tempSobrietyDate || new Date()}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
-              onChange={handleDateChange}
-              maximumDate={new Date()}
-              textColor={COLORS.textPrimary}
-            />
-            {Platform.OS === 'ios' && (
+      {Platform.OS === 'android' ? (
+        // On Android, show the date picker directly without a modal
+        isDatePickerVisible && (
+          <DateTimePicker
+            value={tempSobrietyDate || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+            maximumDate={new Date()}
+            textColor={COLORS.textPrimary}
+          />
+        )
+      ) : (
+        // On iOS, show the modal with spinner
+        <Modal
+          visible={isDatePickerVisible}
+          transparent={true}
+          animationType="slide"
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Set Sobriety Date</Text>
+              <DateTimePicker
+                value={tempSobrietyDate || new Date()}
+                mode="date"
+                display="spinner"
+                onChange={handleDateChange}
+                maximumDate={new Date()}
+                textColor={COLORS.textPrimary}
+              />
               <View style={styles.modalButtons}>
                 <TouchableOpacity style={styles.modalButton} onPress={handleDateCancel}>
                   <Text style={styles.modalButtonText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modalButton} onPress={handleDateConfirm}>
+                <TouchableOpacity style={styles.modalButton} onPress={() => handleDateConfirm()}>
                   <Text style={[styles.modalButtonText, styles.modalButtonTextPrimary]}>Confirm</Text>
                 </TouchableOpacity>
               </View>
-            )}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      )}
     </View>
   );
 };

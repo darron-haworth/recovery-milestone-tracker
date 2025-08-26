@@ -1,0 +1,90 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start-backend",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/backend && npm start",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Server running on port",
+          "endsPattern": "Server running on port"
+        }
+      }
+    },
+    {
+      "label": "start-metro",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/mobile-app && npx react-native start --reset-cache",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": ".",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "Dev server ready",
+          "endsPattern": "Dev server ready"
+        }
+      }
+    },
+    {
+      "label": "start-android-emulator",
+      "type": "shell",
+      "command": "cd ${workspaceFolder}/mobile-app && source setup-android-env.sh && emulator -avd Pixel7_API34",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      },
+      "isBackground": true
+    },
+    {
+      "label": "start-full-stack",
+      "dependsOrder": "sequence",
+      "dependsOn": ["start-backend", "start-metro", "start-android-emulator"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "new",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    }
+  ]
+}
