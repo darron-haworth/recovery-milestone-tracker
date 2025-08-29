@@ -8,7 +8,7 @@ set -e  # Exit on any error
 echo "🚀 Starting Recovery Milestone Tracker Development Environment..."
 
 # Get the project root directory
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 MOBILE_APP_DIR="$PROJECT_ROOT/mobile-app"
 
