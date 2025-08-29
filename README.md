@@ -11,57 +11,68 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 ### Tech Stack
 
 **Frontend (Mobile App)**
-- **React Native** with TypeScript
-- **Firebase SDK** (Native integration)
-- **Redux Toolkit** for state management
+- **React Native 0.81.0** with TypeScript 5.8.3
+- **Firebase SDK 22.0.0** (Native integration)
+  - Firebase Auth, Firestore, Analytics, Messaging
+- **Redux Toolkit 2.2.1** for state management
 - **React Navigation v6** for navigation
+- **React Native Vector Icons** for UI icons
+- **React Native Linear Gradient** for modern UI effects
+- **React Native Safe Area Context** for safe area handling
 - **React Native Keychain** for secure storage
-- **CryptoJS** for data encryption
+- **Redux Persist** with encryption for offline data
 
 **Backend (API)**
-- **Node.js** with Express
-- **Firebase Admin SDK**
+- **Node.js 18+** with Express 4.18.2
+- **Firebase Admin SDK 12.0.0**
 - **Firestore** for database
 - **Firebase Auth** for authentication
 - **Firebase Cloud Messaging** for push notifications
+- **Security middleware**: Helmet, CORS, Rate limiting
+- **Validation**: Joi, Express Validator
+- **Logging**: Winston, Morgan
 
 **Shared**
-- **TypeScript** for type safety
-- **Shared constants and types**
+- **TypeScript** for type safety across the stack
+- **Shared constants, types, and milestone definitions**
 
 ## 📱 Features
 
 ### Core Features
-- ✅ **Milestone Tracking**: Track recovery milestones with customizable categories
-- ✅ **Friend Connections**: Connect with friends in recovery via QR codes or manual entry
+- ✅ **User Authentication**: Secure Firebase Auth integration
+- ✅ **Profile Management**: Editable user profiles with nickname support
+- ✅ **Recovery Type Tracking**: Support for Alcoholism, Drug Addiction, Gambling, Food Addiction
+- ✅ **Sobriety Date Tracking**: Calculate and display sobriety duration
+- ✅ **Friend Connections**: Connect with friends in recovery (placeholder screens)
+- ✅ **Milestone Tracking**: Track recovery milestones (placeholder screens)
 - ✅ **Privacy-First Design**: Anonymous profiles and secure data handling
-- ✅ **Push Notifications**: Milestone reminders and encouragement messages
-- ✅ **Offline Support**: Work without internet connection
+- ✅ **Offline Support**: Redux Persist with encryption
 - ✅ **Secure Storage**: Encrypted local data storage
 
 ### Security Features
 - 🔐 **End-to-End Encryption**: Sensitive data encrypted at rest
-- 🔐 **Secure Token Storage**: Authentication tokens stored in device keychain
-- 🔐 **Privacy Controls**: Granular privacy settings for user data
+- 🔐 **Secure Token Storage**: Authentication tokens stored securely
+- 🔐 **Privacy Controls**: User-controlled data sharing settings
 - 🔐 **Anonymous Mode**: Use app without revealing personal information
+- 🔐 **Input Validation**: Comprehensive validation on all inputs
 
 ### Recovery Support
 - 🤝 **Fellowship Integration**: Support for AA, NA, GA, and other fellowships
 - 📊 **Progress Tracking**: Visual progress indicators and statistics
 - 💪 **Motivational Features**: Daily encouragement and milestone celebrations
-- 🆘 **Crisis Resources**: Quick access to support resources
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- React Native CLI
-- Android Studio (for Android development)
-- Xcode (for iOS development, macOS only)
-- Firebase project setup
+- **Node.js 18.0.0 or higher**
+- **React Native CLI** (latest)
+- **Android Studio** (for Android development)
+- **Xcode** (for iOS development, macOS only)
+- **Firebase project** setup
+- **Android SDK** (API level 24+)
 
-### Installation
+### Quick Start
 
 1. **Clone the repository**
    ```bash
@@ -69,46 +80,61 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
    cd recovery-milestone-tracker
    ```
 
-2. **Install mobile app dependencies**
+2. **Install dependencies**
    ```bash
+   # Install mobile app dependencies
    cd mobile-app
    npm install
-   ```
-
-3. **Install backend dependencies**
-   ```bash
+   
+   # Install backend dependencies
    cd ../backend
    npm install
    ```
 
-4. **Setup Firebase**
-   - Create a Firebase project
+3. **Setup Firebase**
+   - Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication, Firestore, and Cloud Messaging
    - Download `google-services.json` for Android
    - Download `GoogleService-Info.plist` for iOS
-   - Place them in the appropriate directories
-   - Download Firebase Admin SDK key for backend
+   - Place them in the appropriate directories:
+     - `mobile-app/android/app/google-services.json`
+     - `mobile-app/ios/RecoveryMilestoneTracker/GoogleService-Info.plist`
+   - Generate Firebase Admin SDK service account key for backend
 
-5. **Environment Configuration**
+4. **Environment Configuration**
    ```bash
-   # Backend .env file
+   # Backend environment
    cd backend
    cp .env.example .env
    # Edit .env with your Firebase configuration
    ```
 
-6. **Start the backend server**
+5. **Start development environment (Recommended)**
    ```bash
-   cd backend
-   npm run dev
+   # From project root
+   chmod +x start-dev-environment.sh
+   ./start-dev-environment.sh
    ```
 
-7. **Start the mobile app**
+   This script automatically:
+   - Sets up Android environment variables
+   - Starts the backend server
+   - Starts Metro bundler
+   - Launches the React Native app
+
+6. **Manual start (Alternative)**
    ```bash
+   # Terminal 1: Start backend
+   cd backend
+   npm run dev
+   
+   # Terminal 2: Start Metro
    cd mobile-app
-   # For Android
-   npm run android
-   # For iOS
-   npm run ios
+   npm start
+   
+   # Terminal 3: Launch app
+   cd mobile-app
+   npm run android  # or npm run ios
    ```
 
 ## 📁 Project Structure
@@ -118,14 +144,25 @@ recovery-milestone-tracker/
 ├── mobile-app/                    # React Native app
 │   ├── src/
 │   │   ├── components/           # Reusable UI components
+│   │   │   ├── auth/            # Authentication components
+│   │   │   ├── common/          # Common UI components
+│   │   │   ├── friends/         # Friend-related components
+│   │   │   └── milestones/      # Milestone components
 │   │   ├── screens/              # App screens
+│   │   │   ├── auth/            # Login, Signup, ForgotPassword
+│   │   │   ├── profile/         # User profile management
+│   │   │   ├── friends/         # Friend management (placeholder)
+│   │   │   └── milestones/      # Milestone tracking (placeholder)
 │   │   ├── navigation/           # Navigation configuration
 │   │   ├── services/             # Firebase and API services
 │   │   ├── store/                # Redux store and slices
 │   │   ├── context/              # React Context providers
 │   │   ├── hooks/                # Custom React hooks
 │   │   ├── utils/                # Utility functions
-│   │   └── types/                # TypeScript type definitions
+│   │   ├── types/                # TypeScript type definitions
+│   │   ├── constants.ts          # App-wide constants
+│   │   ├── recoveryTypes.ts      # Recovery type definitions
+│   │   └── milestoneTypes.ts     # Milestone type definitions
 │   ├── android/                  # Android-specific files
 │   ├── ios/                      # iOS-specific files
 │   └── package.json
@@ -134,12 +171,21 @@ recovery-milestone-tracker/
 │   │   ├── routes/               # API routes
 │   │   ├── middleware/           # Express middleware
 │   │   ├── config/               # Configuration files
-│   │   └── services/             # Business logic
+│   │   ├── controllers/          # Route controllers
+│   │   ├── models/               # Data models
+│   │   ├── services/             # Business logic
+│   │   └── utils/                # Utility functions
 │   └── package.json
-└── shared/                       # Shared types and constants
-    ├── types.ts
-    ├── constants.ts
-    └── milestoneTypes.ts
+├── shared/                       # Shared types and constants
+│   ├── types.ts
+│   ├── constants.ts
+│   ├── milestoneTypes.ts
+│   └── recoveryTypes.ts
+├── start-dev-environment.sh      # Automated dev environment setup
+├── deploy-firebase.sh            # Firebase deployment script
+├── firebase.json                 # Firebase configuration
+├── firestore.rules               # Firestore security rules
+└── storage.rules                 # Firebase Storage rules
 ```
 
 ## 🔧 Configuration
@@ -173,6 +219,16 @@ FIREBASE_STORAGE_BUCKET=your-project.appspot.com
 ALLOWED_ORIGINS=http://localhost:3000,https://your-domain.com
 ```
 
+### Android Setup
+
+The project includes automated Android environment setup:
+```bash
+# Run the setup script
+cd mobile-app
+chmod +x setup-android-env.sh
+./setup-android-env.sh
+```
+
 ## 🧪 Testing
 
 ### Mobile App Testing
@@ -204,11 +260,35 @@ npm run build:ios:release
 ## 🔒 Security Features
 
 - **Data Encryption**: All sensitive data encrypted using AES-256
-- **Secure Storage**: Authentication tokens stored in device keychain
+- **Secure Storage**: Authentication tokens stored securely
 - **Privacy Controls**: User-controlled data sharing settings
 - **Anonymous Mode**: Use app without personal identification
 - **Rate Limiting**: API endpoints protected against abuse
 - **Input Validation**: Comprehensive validation on all inputs
+- **Firestore Security Rules**: Database-level security
+
+## 🚀 Development Scripts
+
+### Automated Development Environment
+```bash
+# Start everything automatically
+./start-dev-environment.sh
+```
+
+### Manual Commands
+```bash
+# Backend
+cd backend
+npm run dev          # Development with nodemon
+npm start            # Production start
+
+# Mobile App
+cd mobile-app
+npm start            # Start Metro bundler
+npm run android      # Run on Android
+npm run ios          # Run on iOS
+npm run lint         # Run ESLint
+```
 
 ## 🤝 Contributing
 
@@ -245,3 +325,11 @@ If you're in crisis or need immediate support:
 ---
 
 **Remember**: Recovery is a journey, not a destination. This app is designed to support you every step of the way. 💪
+
+## 🔄 Recent Updates
+
+- **Modern Profile UI**: Redesigned profile screen with gradient backgrounds and improved UX
+- **Enhanced Data Persistence**: Improved Firebase integration and offline data handling
+- **Automated Development Setup**: Added `start-dev-environment.sh` for easy development
+- **Improved Error Handling**: Better error handling and user feedback
+- **Performance Optimizations**: Reduced bundle size and improved app performance
