@@ -2,20 +2,22 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Modal,
-    Platform,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { BORDER_RADIUS, COLORS, SPACING, TYPOGRAPHY } from '../../constants';
+import { RECOVERY_TYPES } from '../../recoveryTypes';
 import { auth, firestore } from '../../services/firebase';
 import { firebaseService } from '../../services/firebaseService';
 import { AppDispatch, RootState, store } from '../../store';
 import { signOut, updateUserProfile } from '../../store/slices/authSlice';
+import { RecoveryType } from '../../types';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,6 +26,7 @@ const ProfileScreen: React.FC = () => {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [isRecoveryTypePickerVisible, setIsRecoveryTypePickerVisible] = useState(false);
 
   // Load profile data from Firebase when component mounts
   useEffect(() => {
@@ -220,6 +223,48 @@ const ProfileScreen: React.FC = () => {
     setTempSobrietyDate(null);
   };
 
+  const handleRecoveryTypePress = () => {
+    setIsRecoveryTypePickerVisible(true);
+  };
+
+  const handleRecoveryTypeSelect = async (selectedType: RecoveryType) => {
+    try {
+      console.log('🚀 Updating recovery type...');
+      
+      // Update local Redux state
+      const actionPayload = {
+        profile: { 
+          recoveryType: selectedType,
+          sobrietyDate: user?.profile?.sobrietyDate || '',
+          fellowship: user?.profile?.fellowship || 'Other',
+          anonymousId: user?.profile?.anonymousId || '',
+          firstName: user?.profile?.firstName || '',
+          lastInitial: user?.profile?.lastInitial || '',
+          avatar: user?.profile?.avatar,
+          bio: user?.profile?.bio || ''
+        }
+      };
+      
+      await dispatch(updateUserProfile(actionPayload));
+      
+      // Also persist to Firebase
+      try {
+        await firebaseService.updateUserProfile({ recoveryType: selectedType });
+        console.log('✅ Firebase update successful');
+        Alert.alert('Success', 'Recovery type updated successfully and saved to cloud!');
+      } catch (firebaseError: any) {
+        console.error('❌ Firebase update failed:', firebaseError);
+        Alert.alert('Warning', 'Data saved locally but failed to sync with cloud. Error: ' + (firebaseError?.message || 'Unknown error'));
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Recovery type update error:', error);
+      Alert.alert('Error', 'Failed to update recovery type: ' + error.message);
+    }
+    
+    setIsRecoveryTypePickerVisible(false);
+  };
+
   const formatSobrietyDuration = (sobrietyDate: string) => {
     const today = new Date();
     const sobriety = new Date(sobrietyDate);
@@ -248,8 +293,6 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-      
       {/* Loading indicator */}
       {isLoadingProfile && (
         <View style={styles.loadingContainer}>
@@ -263,9 +306,22 @@ const ProfileScreen: React.FC = () => {
             {user.profile.firstName} {user.profile.lastInitial}
           </Text>
           <Text style={styles.userEmail}>{user.email}</Text>
-          <Text style={styles.userRecovery}>
-            Recovery: {user.profile.recoveryType}
-          </Text>
+          <TouchableOpacity 
+            style={styles.recoveryTypeContainer} 
+            onPress={handleRecoveryTypePress}
+          >
+            <View style={styles.recoveryTypeContent}>
+              <Text style={styles.recoveryTypeLabel}>Recovery:</Text>
+              <TouchableOpacity 
+                style={styles.recoveryTypeButton}
+                onPress={handleRecoveryTypePress}
+              >
+                                                  <Text style={styles.recoveryTypeButtonText}>
+                  {user.profile.recoveryType.replace(/_/g, ' ')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
           
           <TouchableOpacity 
             style={styles.sobrietyDateContainer} 
@@ -343,6 +399,47 @@ const ProfileScreen: React.FC = () => {
           </View>
         </Modal>
       )}
+
+      {/* Recovery Type Picker Modal */}
+      <Modal
+        visible={isRecoveryTypePickerVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select Recovery Type</Text>
+            <View style={styles.recoveryTypeList}>
+              {Object.entries(RECOVERY_TYPES).map(([type, info]) => (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.recoveryTypeOption,
+                    user?.profile?.recoveryType === type && styles.recoveryTypeOptionSelected
+                  ]}
+                  onPress={() => handleRecoveryTypeSelect(type as RecoveryType)}
+                >
+                  <Text style={[
+                    styles.recoveryTypeOptionText,
+                    user?.profile?.recoveryType === type && styles.recoveryTypeOptionTextSelected
+                  ]}>
+                    {type.replace(/_/g, ' ')}
+                  </Text>
+                  <Text style={styles.recoveryTypeOptionDescription}>
+                    {info.description}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity 
+              style={styles.modalButton} 
+              onPress={() => setIsRecoveryTypePickerVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -389,10 +486,29 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginBottom: SPACING.sm,
   },
-  userRecovery: {
+  recoveryTypeContainer: {
+    marginBottom: SPACING.sm,
+  },
+  recoveryTypeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  recoveryTypeLabel: {
     fontSize: TYPOGRAPHY.fontSize.md,
     color: COLORS.textSecondary,
-    marginBottom: SPACING.sm,
+    marginRight: SPACING.sm,
+  },
+  recoveryTypeButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  recoveryTypeButtonText: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.primary,
   },
   sobrietyDateContainer: {
     marginTop: SPACING.sm,
@@ -403,7 +519,7 @@ const styles = StyleSheet.create({
   sobrietyDateContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
   },
   sobrietyDateLabel: {
     fontSize: TYPOGRAPHY.fontSize.md,
@@ -423,13 +539,11 @@ const styles = StyleSheet.create({
   },
   sobrietyDurationContainer: {
     marginTop: SPACING.xs,
-    alignItems: 'center',
   },
   sobrietyDuration: {
     fontSize: TYPOGRAPHY.fontSize.md,
     color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    textAlign: 'center',
   },
   logoutButton: {
     backgroundColor: COLORS.error,
@@ -479,6 +593,33 @@ const styles = StyleSheet.create({
   },
   modalButtonTextPrimary: {
     color: COLORS.primary,
+  },
+  recoveryTypeList: {
+    width: '100%',
+    marginBottom: SPACING.md,
+  },
+  recoveryTypeOption: {
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: BORDER_RADIUS.sm,
+    marginBottom: SPACING.xs,
+    backgroundColor: COLORS.grayLight,
+  },
+  recoveryTypeOptionSelected: {
+    backgroundColor: COLORS.primary,
+  },
+  recoveryTypeOptionText: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.textPrimary,
+    marginBottom: SPACING.xs,
+  },
+  recoveryTypeOptionTextSelected: {
+    color: COLORS.white,
+  },
+  recoveryTypeOptionDescription: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
   },
 });
 
