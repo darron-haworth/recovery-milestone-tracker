@@ -12,6 +12,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
 import { authService } from '../../services/auth';
 
@@ -73,73 +74,149 @@ const SignUpScreen: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.content}
+        style={styles.keyboardView}
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.header}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header with gradient background */}
+          <LinearGradient
+            colors={['#6366f1', '#8b5cf6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.headerGradient}
+          >
+            <View style={styles.logoContainer}>
+              <View style={styles.logoCircle}>
+                <Text style={styles.logoText}>🚀</Text>
+              </View>
+            </View>
+            
             <Text style={styles.title}>Create Account</Text>
             <Text style={styles.subtitle}>Start your recovery journey today</Text>
-          </View>
+          </LinearGradient>
 
-          <View style={styles.form}>
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name"
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              autoCorrect={false}
-              editable={!isLoading}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              editable={!isLoading}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              editable={!isLoading}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoCorrect={false}
-              editable={!isLoading}
-            />
+          {/* Sign Up Form */}
+          <View style={styles.formContainer}>
+            {/* Name Input Card */}
+            <View style={styles.inputCard}>
+              <View style={styles.inputHeader}>
+                <View style={styles.inputIcon}>
+                  <Text style={styles.iconText}>👤</Text>
+                </View>
+                <Text style={styles.inputLabel}>Full Name</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your full name"
+                placeholderTextColor="#94a3b8"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+                autoCorrect={false}
+                editable={!isLoading}
+              />
+            </View>
 
+            {/* Email Input Card */}
+            <View style={styles.inputCard}>
+              <View style={styles.inputHeader}>
+                <View style={styles.inputIcon}>
+                  <Text style={styles.iconText}>📧</Text>
+                </View>
+                <Text style={styles.inputLabel}>Email Address</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#94a3b8"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+              />
+            </View>
+
+            {/* Password Input Card */}
+            <View style={styles.inputCard}>
+              <View style={styles.inputHeader}>
+                <View style={styles.inputIcon}>
+                  <Text style={styles.iconText}>🔒</Text>
+                </View>
+                <Text style={styles.inputLabel}>Password</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Create a password"
+                placeholderTextColor="#94a3b8"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+              />
+            </View>
+
+            {/* Confirm Password Input Card */}
+            <View style={styles.inputCard}>
+              <View style={styles.inputHeader}>
+                <View style={styles.inputIcon}>
+                  <Text style={styles.iconText}>✅</Text>
+                </View>
+                <Text style={styles.inputLabel}>Confirm Password</Text>
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm your password"
+                placeholderTextColor="#94a3b8"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+              />
+            </View>
+
+            {/* Sign Up Button */}
             <TouchableOpacity 
               style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]} 
               onPress={handleSignUp}
               disabled={isLoading}
             >
-              {isLoading ? (
-                <ActivityIndicator color={COLORS.white} />
-              ) : (
-                <Text style={styles.signUpButtonText}>Create Account</Text>
-              )}
+              <LinearGradient
+                colors={['#6366f1', '#8b5cf6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.buttonGradient}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#ffffff" size="small" />
+                ) : (
+                  <Text style={styles.signUpButtonText}>Create Account</Text>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
-          </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>Already have an account? </Text>
-            <TouchableOpacity>
-              <Text style={styles.signInText}>Sign In</Text>
-            </TouchableOpacity>
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Sign In Link */}
+            <View style={styles.signInContainer}>
+              <Text style={styles.signInText}>Already have an account? </Text>
+              <TouchableOpacity>
+                <Text style={styles.signInLink}>Sign In</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -150,72 +227,164 @@ const SignUpScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#f8fafc',
   },
-  content: {
+  keyboardView: {
     flex: 1,
-    padding: SPACING.lg,
   },
-  header: {
+  scrollContent: {
+    flexGrow: 1,
+  },
+  headerGradient: {
+    paddingTop: 20,
+    paddingBottom: 30,
+    paddingHorizontal: 20,
     alignItems: 'center',
-    marginTop: SPACING.xxl,
-    marginBottom: SPACING.xl,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 32,
+    elevation: 8,
+  },
+  logoContainer: {
+    marginBottom: 15,
+  },
+  logoCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  logoText: {
+    fontSize: 28,
   },
   title: {
-    fontSize: TYPOGRAPHY.fontSize.xxxl,
-    fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.sm,
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: TYPOGRAPHY.fontSize.md,
-    color: COLORS.textSecondary,
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 22,
   },
-  form: {
-    flex: 1,
+  formContainer: {
+    padding: 20,
+    paddingTop: 25,
+    maxWidth: 420,
+    alignSelf: 'center',
+    width: '100%',
+  },
+  inputCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 20,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  inputHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  inputIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f1f5f9',
     justifyContent: 'center',
-    marginBottom: SPACING.xl,
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  iconText: {
+    fontSize: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1e293b',
   },
   input: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#f8fafc',
     borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
-    fontSize: TYPOGRAPHY.fontSize.md,
-    color: COLORS.textPrimary,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    color: '#1e293b',
+    fontWeight: '500',
   },
   signUpButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS.md,
-    padding: SPACING.md,
-    alignItems: 'center',
-    marginTop: SPACING.md,
+    borderRadius: 16,
+    marginTop: 8,
+    marginBottom: 20,
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
   signUpButtonDisabled: {
     opacity: 0.6,
   },
-  signUpButtonText: {
-    color: COLORS.white,
-    fontSize: TYPOGRAPHY.fontSize.lg,
-    fontWeight: TYPOGRAPHY.fontWeight.medium,
+  buttonGradient: {
+    borderRadius: 16,
+    padding: 16,
+    alignItems: 'center',
   },
-  footer: {
+  signUpButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 25,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#e2e8f0',
+  },
+  dividerText: {
+    marginHorizontal: 16,
+    color: '#64748b',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  signInContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  footerText: {
-    color: COLORS.textSecondary,
-    fontSize: TYPOGRAPHY.fontSize.md,
   },
   signInText: {
-    color: COLORS.primary,
-    fontSize: TYPOGRAPHY.fontSize.md,
-    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    color: '#64748b',
+    fontSize: 16,
+  },
+  signInLink: {
+    color: '#6366f1',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 
