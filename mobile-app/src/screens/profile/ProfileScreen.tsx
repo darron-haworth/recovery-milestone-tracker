@@ -103,16 +103,27 @@ const ProfileScreen: React.FC = () => {
   };
 
   const handleNameSave = async () => {
+    // Validate input for privacy and anonymity
+    if (!tempFirstName.trim()) {
+      Alert.alert('Privacy Notice', 'First name is required for identification while maintaining anonymity.');
+      return;
+    }
+    
+    if (!tempLastInitial.trim() || tempLastInitial.length !== 1) {
+      Alert.alert('Privacy Notice', 'Last initial must be exactly 1 character for maximum anonymity protection.');
+      return;
+    }
+    
     try {
       const updatedProfile = {
-        firstName: tempFirstName,
-        lastInitial: tempLastInitial,
+        firstName: tempFirstName.trim(),
+        lastInitial: tempLastInitial.trim().toUpperCase(),
       };
       
       await firebaseService.updateUserProfile(updatedProfile);
       dispatch(updateProfile(updatedProfile));
       setIsNameModalVisible(false);
-      Alert.alert('Success', 'Name updated successfully!');
+      Alert.alert('Success', 'Name updated successfully while maintaining your privacy!');
     } catch (error: any) {
       Alert.alert('Error', `Failed to update name: ${error.message}`);
     }
@@ -614,10 +625,20 @@ const ProfileScreen: React.FC = () => {
               fontSize: 20,
               fontWeight: '700',
               color: '#1e293b',
-              marginBottom: 20,
+              marginBottom: 8,
               textAlign: 'center',
             }}>
               Edit Name
+            </Text>
+            <Text style={{
+              fontSize: 14,
+              color: '#64748b',
+              textAlign: 'center',
+              marginBottom: 20,
+              lineHeight: 20,
+              fontStyle: 'italic',
+            }}>
+              For privacy and anonymity, only your first name and last initial are stored
             </Text>
             <TextInput
               style={{
@@ -643,10 +664,16 @@ const ProfileScreen: React.FC = () => {
                 marginBottom: 24,
                 backgroundColor: '#f8fafc',
               }}
-              placeholder="Last Initial"
+              placeholder="Last Initial (1 character only)"
               value={tempLastInitial}
-              onChangeText={setTempLastInitial}
+              onChangeText={(text) => {
+                // Ensure only 1 character maximum for privacy
+                if (text.length <= 1) {
+                  setTempLastInitial(text.toUpperCase());
+                }
+              }}
               maxLength={1}
+              autoCapitalize="characters"
             />
             <View style={{
               flexDirection: 'row',
@@ -719,10 +746,20 @@ const ProfileScreen: React.FC = () => {
               fontSize: 20,
               fontWeight: '700',
               color: '#1e293b',
-              marginBottom: 20,
+              marginBottom: 8,
               textAlign: 'center',
             }}>
               Edit Nickname
+            </Text>
+            <Text style={{
+              fontSize: 14,
+              color: '#64748b',
+              textAlign: 'center',
+              marginBottom: 20,
+              lineHeight: 20,
+              fontStyle: 'italic',
+            }}>
+              For anonymity protection, the app uses your nickname when sharing with other users
             </Text>
             <TextInput
               style={{
