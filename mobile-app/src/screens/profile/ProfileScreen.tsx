@@ -211,8 +211,8 @@ const ProfileScreen: React.FC = () => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
-            paddingTop: 25,
-            paddingBottom: 20,
+            paddingTop: 15,
+            paddingBottom: 15,
             paddingHorizontal: 20,
             alignItems: 'center',
             borderBottomLeftRadius: 30,
@@ -224,11 +224,11 @@ const ProfileScreen: React.FC = () => {
             elevation: 8,
           }}
         >
-          <View style={{ marginBottom: 8 }}>
+          <View style={{ marginBottom: 5 }}>
             <View style={{
-              width: 70,
-              height: 70,
-              borderRadius: 35,
+              width: 60,
+              height: 60,
+              borderRadius: 30,
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               justifyContent: 'center',
               alignItems: 'center',
@@ -236,7 +236,7 @@ const ProfileScreen: React.FC = () => {
               borderColor: 'rgba(255, 255, 255, 0.3)',
             }}>
               <Text style={{
-                fontSize: 24,
+                fontSize: 20,
                 fontWeight: 'bold',
                 color: '#ffffff',
                 letterSpacing: 1,
@@ -247,10 +247,10 @@ const ProfileScreen: React.FC = () => {
           </View>
           
           <Text style={{
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: 'bold',
             color: '#ffffff',
-            marginBottom: 4,
+            marginBottom: 2,
             textShadowColor: 'rgba(0, 0, 0, 0.1)',
             textShadowOffset: { width: 0, height: 2 },
             textShadowRadius: 4,
@@ -258,7 +258,7 @@ const ProfileScreen: React.FC = () => {
             {displayName}
           </Text>
           <Text style={{
-            fontSize: 14,
+            fontSize: 13,
             color: 'rgba(255, 255, 255, 0.85)',
             fontWeight: '500',
           }}>
@@ -269,7 +269,7 @@ const ProfileScreen: React.FC = () => {
         {/* Profile Content */}
         <View style={{
           padding: 12,
-          paddingTop: 12,
+          paddingTop: 8,
           maxWidth: 420,
           alignSelf: 'center',
           width: '100%',
@@ -280,9 +280,9 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 12,
-              padding: 12,
-              marginTop: 2,
-              marginBottom: 8,
+              padding: 10,
+              marginTop: 1,
+              marginBottom: 6,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
@@ -331,8 +331,8 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 12,
-              padding: 12,
-              marginBottom: 8,
+              padding: 10,
+              marginBottom: 6,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
@@ -381,8 +381,8 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 12,
-              padding: 12,
-              marginBottom: 8,
+              padding: 10,
+              marginBottom: 6,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
@@ -431,8 +431,8 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 16,
-              padding: 16,
-              marginBottom: 12,
+              padding: 12,
+              marginBottom: 8,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.08,
@@ -472,8 +472,8 @@ const ProfileScreen: React.FC = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              marginVertical: 8,
-              padding: 8,
+              marginVertical: 6,
+              padding: 6,
               backgroundColor: '#f8fafc',
               borderRadius: 8,
               borderWidth: 2,
@@ -536,22 +536,13 @@ const ProfileScreen: React.FC = () => {
               </View>
             </View>
             
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: '#1e293b',
-              textAlign: 'center',
-              marginBottom: 8,
-              lineHeight: 22,
-            }}>
-              {sobrietyTime.years} years and {sobrietyTime.days} days sober
-            </Text>
             {tempSobrietyDate && (
               <Text style={{
-                fontSize: 15,
+                fontSize: 14,
                 color: '#64748b',
                 textAlign: 'center',
                 fontWeight: '500',
+                marginTop: 4,
               }}>
                 Since {tempSobrietyDate.toLocaleDateString('en-US', { 
                   year: 'numeric', 
@@ -567,7 +558,7 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 16,
-              padding: 16,
+              padding: 12,
               width: '100%',
               alignItems: 'center',
               shadowColor: '#000',
