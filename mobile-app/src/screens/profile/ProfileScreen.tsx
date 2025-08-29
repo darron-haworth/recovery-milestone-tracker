@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useEffect, useState } from 'react';
 import {
@@ -73,41 +73,7 @@ const ProfileScreen: React.FC = () => {
     );
   };
 
-  const checkPersistedState = () => {
-    const currentState = store.getState();
-    console.log('🔍 Current Redux state:', currentState);
-    console.log('👤 Current user in state:', currentState.auth?.user);
-    console.log('📅 Current sobriety date:', currentState.auth?.user?.profile?.sobrietyDate);
-    
-    // Check AsyncStorage directly
-    AsyncStorage.getItem('persist:root').then((persistedData) => {
-      console.log('💾 Raw persisted data:', persistedData);
-      if (persistedData) {
-        try {
-          const parsed = JSON.parse(persistedData);
-          console.log('📦 Parsed persisted data:', parsed);
-        } catch (e) {
-          console.error('❌ Error parsing persisted data:', e);
-        }
-      }
-    });
-  };
 
-  const forcePersist = async () => {
-    try {
-      console.log('💾 Manually triggering persistence...');
-      // Force a state change to trigger persistence
-      await dispatch(updateUserProfile({}));
-      console.log('✅ Persistence triggered');
-      
-      // Check if data was saved
-      setTimeout(() => {
-        checkPersistedState();
-      }, 1000);
-    } catch (error) {
-      console.error('❌ Force persist error:', error);
-    }
-  };
 
   const handleSobrietyDatePress = () => {
     if (user?.profile?.sobrietyDate) {
@@ -305,45 +271,34 @@ const ProfileScreen: React.FC = () => {
             style={styles.sobrietyDateContainer} 
             onPress={handleSobrietyDatePress}
           >
-            <Text style={styles.sobrietyDateLabel}>Sobriety Date:</Text>
-            <Text style={styles.sobrietyDateValue}>
-              {user.profile.sobrietyDate 
-                ? new Date(user.profile.sobrietyDate).toLocaleDateString()
-                : 'Not set'
-              }
-            </Text>
+            <View style={styles.sobrietyDateContent}>
+              <Text style={styles.sobrietyDateLabel}>Sobriety Date:</Text>
+              <TouchableOpacity 
+                style={styles.sobrietyDateButton}
+                onPress={handleSobrietyDatePress}
+              >
+                <Text style={styles.sobrietyDateButtonText}>
+                  {user.profile.sobrietyDate 
+                    ? new Date(user.profile.sobrietyDate).toLocaleDateString()
+                    : 'Set Date'
+                  }
+                </Text>
+              </TouchableOpacity>
+            </View>
             {user.profile.sobrietyDate && (
-              <Text style={styles.sobrietyDuration}>
-                {formatSobrietyDuration(user.profile.sobrietyDate)} sober
-              </Text>
+              <View style={styles.sobrietyDurationContainer}>
+                <Text style={styles.sobrietyDuration}>
+                  {formatSobrietyDuration(user.profile.sobrietyDate)} sober
+                </Text>
+              </View>
             )}
-            <Text style={styles.editHint}>Tap to edit</Text>
           </TouchableOpacity>
         </View>
       )}
 
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <Text style={styles.logoutButtonText}>Logout</Text>
-          </TouchableOpacity>
-          
-          {/* Debug buttons for development */}
-          {__DEV__ && (
-            <>
-              <TouchableOpacity 
-                style={[styles.logoutButton, { backgroundColor: COLORS.info, marginTop: SPACING.sm }]} 
-                onPress={checkPersistedState}
-              >
-                <Text style={styles.logoutButtonText}>Debug: Check Persisted State</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.logoutButton, { backgroundColor: COLORS.warning, marginTop: SPACING.sm }]} 
-                onPress={forcePersist}
-              >
-                <Text style={styles.logoutButtonText}>Debug: Force Persistence</Text>
-              </TouchableOpacity>
-            </>
-          )}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
 
       {/* Date Picker Modal */}
       {Platform.OS === 'android' ? (
@@ -440,32 +395,41 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   sobrietyDateContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginTop: SPACING.sm,
     paddingVertical: SPACING.sm,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.border,
+  },
+  sobrietyDateContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   sobrietyDateLabel: {
     fontSize: TYPOGRAPHY.fontSize.md,
     color: COLORS.textSecondary,
     marginRight: SPACING.sm,
   },
-  sobrietyDateValue: {
+  sobrietyDateButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  sobrietyDateButtonText: {
     fontSize: TYPOGRAPHY.fontSize.md,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
+    color: COLORS.primary,
+  },
+  sobrietyDurationContainer: {
+    marginTop: SPACING.xs,
+    alignItems: 'center',
   },
   sobrietyDuration: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
-  },
-  editHint: {
-    fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
-    marginTop: SPACING.xs,
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.primary,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
+    textAlign: 'center',
   },
   logoutButton: {
     backgroundColor: COLORS.error,
