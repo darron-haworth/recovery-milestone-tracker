@@ -109,6 +109,18 @@ android {
     }
 }
 
+// Add fonts configuration
+android.applicationVariants.all { variant ->
+    variant.mergeAssetsProvider.configure {
+        doLast {
+            copy {
+                from "${projectDir}/src/main/assets/fonts"
+                into "${buildDir}/intermediates/assets/${variant.dirName}/fonts"
+            }
+        }
+    }
+}
+
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
