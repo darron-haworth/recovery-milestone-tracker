@@ -23,6 +23,7 @@ export interface UserProfile {
   anonymousId: string;
   firstName?: string;
   lastInitial?: string;
+  nickname?: string;
   avatar?: string;
   bio?: string;
 }
@@ -63,6 +64,7 @@ export interface FriendProfile {
   fellowship: Fellowship;
   firstName?: string;
   lastInitial?: string;
+  nickname?: string;
   avatar?: string;
   bio?: string;
 }

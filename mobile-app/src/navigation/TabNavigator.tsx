@@ -1,10 +1,11 @@
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text } from 'react-native';
+import React from 'react';
+import { Text, View } from 'react-native';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
-import ApiTestScreen from '../screens/test/ApiTestScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import ApiTestScreen from '../screens/test/ApiTestScreen';
 
 // Placeholder screens
 const PlaceholderScreen: React.FC<{ title: string }> = ({ title }) => (
@@ -43,6 +44,9 @@ const TabNavigator: React.FC = () => {
         options={{
           title: 'API Test',
           tabBarLabel: 'API Test',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="science" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -51,6 +55,9 @@ const TabNavigator: React.FC = () => {
         options={{
           title: 'Milestones',
           tabBarLabel: 'Milestones',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="star" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -59,6 +66,9 @@ const TabNavigator: React.FC = () => {
         options={{
           title: 'Friends',
           tabBarLabel: 'Friends',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="people" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -67,6 +77,9 @@ const TabNavigator: React.FC = () => {
         options={{
           title: 'Profile',
           tabBarLabel: 'Profile',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="person" size={size} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -75,6 +88,9 @@ const TabNavigator: React.FC = () => {
         options={{
           title: 'Settings',
           tabBarLabel: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="settings" size={size} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
