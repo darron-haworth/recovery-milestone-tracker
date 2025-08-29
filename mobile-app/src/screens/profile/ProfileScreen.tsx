@@ -7,6 +7,7 @@ import {
   Platform,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -27,6 +28,11 @@ const ProfileScreen: React.FC = () => {
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [isRecoveryTypePickerVisible, setIsRecoveryTypePickerVisible] = useState(false);
+  const [isNameEditorVisible, setIsNameEditorVisible] = useState(false);
+  const [tempFirstName, setTempFirstName] = useState('');
+  const [tempLastInitial, setTempLastInitial] = useState('');
+  const [isNicknameEditorVisible, setIsNicknameEditorVisible] = useState(false);
+  const [tempNickname, setTempNickname] = useState('');
 
   // Load profile data from Firebase when component mounts
   useEffect(() => {
@@ -39,6 +45,8 @@ const ProfileScreen: React.FC = () => {
           const profile = await firebaseService.getUserProfile();
           if (profile) {
             console.log('📦 Profile loaded from Firebase:', profile);
+            console.log('👤 First Name:', profile.firstName);
+            console.log('👤 Last Initial:', profile.lastInitial);
             // Update Redux state with the loaded profile
             dispatch(updateUserProfile({ profile }));
           } else {
@@ -227,6 +235,120 @@ const ProfileScreen: React.FC = () => {
     setIsRecoveryTypePickerVisible(true);
   };
 
+  const handleNamePress = () => {
+    setTempFirstName(user?.profile?.firstName || '');
+    setTempLastInitial(user?.profile?.lastInitial || '');
+    setIsNameEditorVisible(true);
+  };
+
+  const handleNameSave = async () => {
+    if (!tempFirstName.trim() || !tempLastInitial.trim()) {
+      Alert.alert('Error', 'Please enter both first name and last initial');
+      return;
+    }
+
+    try {
+      console.log('🚀 Updating name...');
+      
+      // Update local Redux state
+      const actionPayload = {
+        profile: { 
+          firstName: tempFirstName.trim(),
+          lastInitial: tempLastInitial.trim().toUpperCase(),
+          recoveryType: user?.profile?.recoveryType || 'Other',
+          sobrietyDate: user?.profile?.sobrietyDate || '',
+          fellowship: user?.profile?.fellowship || 'Other',
+          anonymousId: user?.profile?.anonymousId || '',
+          avatar: user?.profile?.avatar,
+          bio: user?.profile?.bio || ''
+        }
+      };
+      
+      await dispatch(updateUserProfile(actionPayload));
+      
+      // Also persist to Firebase
+      try {
+        await firebaseService.updateUserProfile({ 
+          firstName: tempFirstName.trim(),
+          lastInitial: tempLastInitial.trim().toUpperCase()
+        });
+        console.log('✅ Firebase update successful');
+        Alert.alert('Success', 'Name updated successfully and saved to cloud!');
+      } catch (firebaseError: any) {
+        console.error('❌ Firebase update failed:', firebaseError);
+        Alert.alert('Warning', 'Data saved locally but failed to sync with cloud. Error: ' + (firebaseError?.message || 'Unknown error'));
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Name update error:', error);
+      Alert.alert('Error', 'Failed to update name: ' + error.message);
+    }
+    
+    setIsNameEditorVisible(false);
+  };
+
+  const handleNameCancel = () => {
+    setIsNameEditorVisible(false);
+    setTempFirstName('');
+    setTempLastInitial('');
+  };
+
+  const handleNicknamePress = () => {
+    setTempNickname(user?.profile?.nickname || '');
+    setIsNicknameEditorVisible(true);
+  };
+
+  const handleNicknameSave = async () => {
+    if (!tempNickname.trim()) {
+      Alert.alert('Error', 'Please enter a nickname');
+      return;
+    }
+
+    try {
+      console.log('🚀 Updating nickname...');
+      
+      // Update local Redux state
+      const actionPayload = {
+        profile: { 
+          nickname: tempNickname.trim(),
+          firstName: user?.profile?.firstName || '',
+          lastInitial: user?.profile?.lastInitial || '',
+          recoveryType: user?.profile?.recoveryType || 'Other',
+          sobrietyDate: user?.profile?.sobrietyDate || '',
+          fellowship: user?.profile?.fellowship || 'Other',
+          anonymousId: user?.profile?.anonymousId || '',
+          avatar: user?.profile?.avatar,
+          bio: user?.profile?.bio || ''
+        }
+      };
+      
+      await dispatch(updateUserProfile(actionPayload));
+      
+      // Also persist to Firebase
+      try {
+        await firebaseService.updateUserProfile({ 
+          nickname: tempNickname.trim()
+        });
+        console.log('✅ Firebase update successful');
+        Alert.alert('Success', 'Nickname updated successfully and saved to cloud!');
+      } catch (firebaseError: any) {
+        console.error('❌ Firebase update failed:', firebaseError);
+        Alert.alert('Warning', 'Data saved locally but failed to sync with cloud. Error: ' + (firebaseError?.message || 'Unknown error'));
+      }
+      
+    } catch (error: any) {
+      console.error('❌ Nickname update error:', error);
+      Alert.alert('Error', 'Failed to update nickname: ' + error.message);
+    }
+    
+    setIsNicknameEditorVisible(false);
+  };
+
+  const handleNicknameCancel = () => {
+    setIsNicknameEditorVisible(false);
+    setTempNickname('');
+  };
+
   const handleRecoveryTypeSelect = async (selectedType: RecoveryType) => {
     try {
       console.log('🚀 Updating recovery type...');
@@ -302,16 +424,53 @@ const ProfileScreen: React.FC = () => {
       
       {user && (
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>
-            {user.profile.firstName} {user.profile.lastInitial}
-          </Text>
-          <Text style={styles.userEmail}>{user.email}</Text>
+
+          
+          <TouchableOpacity 
+            style={styles.userNameContainer} 
+            onPress={handleNamePress}
+          >
+            <View style={styles.userNameContent}>
+              <Text style={styles.userNameLabel}>Name:</Text>
+              <TouchableOpacity 
+                style={styles.userNameButton}
+                onPress={handleNamePress}
+              >
+                <Text style={styles.userNameButtonText}>
+                  {user.profile.firstName && user.profile.lastInitial 
+                    ? `${user.profile.firstName} ${user.profile.lastInitial}`
+                    : 'Tap to set name'
+                  }
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.nicknameContainer} 
+            onPress={handleNicknamePress}
+          >
+            <View style={styles.nicknameContent}>
+              <Text style={styles.nicknameLabel}>Nickname:</Text>
+              <TouchableOpacity 
+                style={styles.nicknameButton}
+                onPress={handleNicknamePress}
+              >
+                <Text style={styles.nicknameButtonText}>
+                  {user.profile.nickname || 'Tap to set nickname'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.nicknameHint}>
+              Used when sharing with friends for anonymity
+            </Text>
+          </TouchableOpacity>
           <TouchableOpacity 
             style={styles.recoveryTypeContainer} 
             onPress={handleRecoveryTypePress}
           >
             <View style={styles.recoveryTypeContent}>
-              <Text style={styles.recoveryTypeLabel}>Recovery:</Text>
+              <Text style={styles.recoveryTypeLabel}>Recovery Type:</Text>
               <TouchableOpacity 
                 style={styles.recoveryTypeButton}
                 onPress={handleRecoveryTypePress}
@@ -354,6 +513,7 @@ const ProfileScreen: React.FC = () => {
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
+        <Text style={styles.logoutEmailText}>{user.email}</Text>
       </TouchableOpacity>
 
       {/* Date Picker Modal */}
@@ -440,6 +600,87 @@ const ProfileScreen: React.FC = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Name Editor Modal */}
+      <Modal
+        visible={isNameEditorVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Edit Name</Text>
+            
+            <View style={styles.nameInputContainer}>
+              <Text style={styles.nameInputLabel}>First Name:</Text>
+              <TextInput
+                style={styles.nameInput}
+                value={tempFirstName}
+                onChangeText={setTempFirstName}
+                placeholder="Enter first name"
+                autoFocus={true}
+              />
+            </View>
+            
+            <View style={styles.nameInputContainer}>
+              <Text style={styles.nameInputLabel}>Last Initial:</Text>
+              <TextInput
+                style={styles.nameInput}
+                value={tempLastInitial}
+                onChangeText={setTempLastInitial}
+                placeholder="Enter last initial"
+                maxLength={1}
+              />
+            </View>
+            
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleNameCancel}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleNameSave}>
+                <Text style={[styles.modalButtonText, styles.modalButtonTextPrimary]}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Nickname Editor Modal */}
+      <Modal
+        visible={isNicknameEditorVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Set Nickname</Text>
+            <Text style={styles.modalSubtitle}>
+              This nickname will be used when sharing your sobriety details with friends for anonymity
+            </Text>
+            
+            <View style={styles.nameInputContainer}>
+              <Text style={styles.nameInputLabel}>Nickname:</Text>
+              <TextInput
+                style={styles.nameInput}
+                value={tempNickname}
+                onChangeText={setTempNickname}
+                placeholder="Enter your nickname"
+                autoFocus={true}
+                maxLength={20}
+              />
+            </View>
+            
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleNicknameCancel}>
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={handleNicknameSave}>
+                <Text style={[styles.modalButtonText, styles.modalButtonTextPrimary]}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -475,16 +716,50 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS.md,
     marginBottom: SPACING.xl,
   },
-  userName: {
-    fontSize: TYPOGRAPHY.fontSize.lg,
-    fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
+  emailContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: SPACING.sm,
+    backgroundColor: COLORS.primary,
+    borderRadius: BORDER_RADIUS.lg,
+    padding: SPACING.md,
+    width: '100%',
+  },
+  emailLabel: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.white,
+    marginBottom: SPACING.xs,
+    textAlign: 'center',
+  },
+  userNameContainer: {
+    marginBottom: SPACING.sm,
+  },
+  userNameContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  userNameLabel: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.textSecondary,
+    marginRight: SPACING.sm,
+  },
+  userNameButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  userNameButtonText: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.primary,
   },
   userEmail: {
     fontSize: TYPOGRAPHY.fontSize.md,
-    color: COLORS.textSecondary,
+    color: COLORS.white,
     marginBottom: SPACING.sm,
+    textAlign: 'center',
   },
   recoveryTypeContainer: {
     marginBottom: SPACING.sm,
@@ -556,6 +831,14 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.md,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
+    marginBottom: SPACING.xs,
+  },
+  logoutEmailText: {
+    color: COLORS.white,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: TYPOGRAPHY.fontWeight.regular,
+    textAlign: 'center',
+    opacity: 0.8,
   },
   modalOverlay: {
     flex: 1,
@@ -575,6 +858,13 @@ const styles = StyleSheet.create({
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     color: COLORS.textPrimary,
     marginBottom: SPACING.md,
+  },
+  modalSubtitle: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.md,
+    textAlign: 'center',
+    lineHeight: TYPOGRAPHY.lineHeight.normal,
   },
   modalButtons: {
     flexDirection: 'row',
@@ -620,6 +910,54 @@ const styles = StyleSheet.create({
   recoveryTypeOptionDescription: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     color: COLORS.textSecondary,
+  },
+  nameInputContainer: {
+    width: '100%',
+    marginBottom: SPACING.md,
+  },
+  nameInputLabel: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.textSecondary,
+    marginBottom: SPACING.xs,
+  },
+  nameInput: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: BORDER_RADIUS.sm,
+    padding: SPACING.sm,
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.textPrimary,
+    backgroundColor: COLORS.white,
+  },
+  nicknameContainer: {
+    marginBottom: SPACING.sm,
+  },
+  nicknameContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  nicknameLabel: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    color: COLORS.textSecondary,
+    marginRight: SPACING.sm,
+  },
+  nicknameButton: {
+    paddingVertical: SPACING.xs,
+    paddingHorizontal: SPACING.sm,
+    backgroundColor: COLORS.primaryLight,
+    borderRadius: BORDER_RADIUS.sm,
+  },
+  nicknameButtonText: {
+    fontSize: TYPOGRAPHY.fontSize.md,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    color: COLORS.primary,
+  },
+  nicknameHint: {
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    color: COLORS.textSecondary,
+    fontStyle: 'italic',
+    marginTop: SPACING.xs,
   },
 });
 
