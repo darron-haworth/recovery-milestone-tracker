@@ -78,7 +78,10 @@ export interface ConnectionInfo {
 
 // Milestones
 export interface Milestone {
-  days: number;
+  days: number; // Keep for backward compatibility and calculations
+  months?: number; // Optional months for milestone display
+  years?: number; // Optional years for milestone display
+  timeUnit: 'days' | 'months' | 'years'; // Primary time unit for display
   label: string;
   category: MilestoneCategory;
   date?: string;
