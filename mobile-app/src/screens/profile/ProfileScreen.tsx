@@ -275,13 +275,113 @@ const ProfileScreen: React.FC = () => {
           width: '100%',
         }}>
           
-          {/* Recovery Type Card */}
+          {/* Name Card */}
           <TouchableOpacity
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 12,
               padding: 12,
               marginTop: 2,
+              marginBottom: 8,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 20,
+              elevation: 4,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.8)',
+            }}
+            onPress={() => setIsNameModalVisible(true)}
+          >
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 6,
+            }}>
+              <View style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: '#f1f5f9',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginRight: 8,
+              }}>
+                <Text style={{ fontSize: 16 }}>👤</Text>
+              </View>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: '#1e293b',
+              }}>
+                Name
+              </Text>
+            </View>
+            <Text style={{
+              fontSize: 16,
+              color: '#64748b',
+              fontWeight: '600',
+            }}>
+              {displayName}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Nickname Card */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: 12,
+              padding: 12,
+              marginBottom: 8,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08,
+              shadowRadius: 20,
+              elevation: 4,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.8)',
+            }}
+            onPress={() => setIsNicknameModalVisible(true)}
+          >
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 6,
+            }}>
+              <View style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: '#f1f5f9',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginRight: 8,
+              }}>
+                <Text style={{ fontSize: 16 }}>🏷️</Text>
+              </View>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '700',
+                color: '#1e293b',
+              }}>
+                Nickname
+              </Text>
+            </View>
+            <Text style={{
+              fontSize: 16,
+              color: '#64748b',
+              fontWeight: '600',
+            }}>
+              @{tempNickname || 'Set nickname'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Recovery Type Card */}
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: 12,
+              padding: 12,
               marginBottom: 8,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
