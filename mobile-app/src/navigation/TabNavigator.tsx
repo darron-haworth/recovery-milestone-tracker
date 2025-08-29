@@ -5,7 +5,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
 import ProfileScreen from '../screens/profile/ProfileScreen';
-import ApiTestScreen from '../screens/test/ApiTestScreen';
+
 
 // Placeholder screens
 const PlaceholderScreen: React.FC<{ title: string }> = ({ title }) => (
@@ -20,6 +20,7 @@ const Tab = createBottomTabNavigator();
 const TabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
+      initialRouteName="Profile"
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',
@@ -39,16 +40,17 @@ const TabNavigator: React.FC = () => {
       }}
     >
       <Tab.Screen
-        name="API Test"
-        component={ApiTestScreen}
+        name="Profile"
+        component={ProfileScreen}
         options={{
-          title: 'API Test',
-          tabBarLabel: 'API Test',
+          title: 'Profile',
+          tabBarLabel: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="science" size={size} color={color} />
+            <MaterialIcons name="person" size={size} color={color} />
           ),
         }}
       />
+      
       <Tab.Screen
         name="Milestones"
         component={() => <PlaceholderScreen title="Milestones" />}
@@ -68,17 +70,6 @@ const TabNavigator: React.FC = () => {
           tabBarLabel: 'Friends',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="people" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile',
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" size={size} color={color} />
           ),
         }}
       />

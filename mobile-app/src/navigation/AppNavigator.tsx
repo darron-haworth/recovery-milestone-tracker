@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import LoadingScreen from '../components/common/LoadingScreen';
+import OnboardingScreen from '../screens/auth/OnboardingScreen';
 import { RootState } from '../store';
 import { checkAuthState } from '../store/slices/authSlice';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
-import OnboardingScreen from '../screens/auth/OnboardingScreen';
-import LoadingScreen from '../components/common/LoadingScreen';
 
 const Stack = createStackNavigator();
 
@@ -40,8 +40,12 @@ const AppNavigator: React.FC = () => {
         // Authentication flow
         <Stack.Screen name="Auth" component={AuthNavigator} />
       ) : (
-        // Main app flow
-        <Stack.Screen name="Main" component={TabNavigator} />
+        // Main app flow - use key to force re-render and reset tab state
+        <Stack.Screen 
+          name="Main" 
+          component={TabNavigator} 
+          key={`main-${isAuthenticated}`}
+        />
       )}
     </Stack.Navigator>
   );
