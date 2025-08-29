@@ -13,35 +13,34 @@ export const MILESTONE_CATEGORIES: Record<MilestoneCategory, string> = {
 // Standard Milestones by Category
 export const STANDARD_MILESTONES: Record<MilestoneCategory, Milestone[]> = {
   early: [
-    { days: 1, label: '24 Hours', category: 'early', description: 'One day at a time' },
-    { days: 7, label: '1 Week', category: 'early', description: 'First week complete' },
-    { days: 30, label: '1 Month', category: 'early', description: 'One month milestone' },
-    { days: 60, label: '2 Months', category: 'early', description: 'Two months strong' },
-    { days: 90, label: '3 Months', category: 'early', description: 'Quarter year achievement' }
+    { days: 1, timeUnit: 'days', label: '24 Hours', category: 'early', description: 'One day at a time' },
+    { days: 30, timeUnit: 'days', label: '30 Days', category: 'early', description: 'One month milestone' },
+    { days: 60, timeUnit: 'days', label: '60 Days', category: 'early', description: 'Two months strong' },
+    { days: 90, timeUnit: 'days', label: '90 Days', category: 'early', description: 'Quarter year achievement' }
   ],
   foundation: [
-    { days: 180, label: '6 Months', category: 'foundation', description: 'Half year foundation' },
-    { days: 365, label: '1 Year', category: 'foundation', description: 'First year complete' },
-    { days: 547, label: '1.5 Years', category: 'foundation', description: 'Eighteen months' },
-    { days: 730, label: '2 Years', category: 'foundation', description: 'Two years strong' }
+    { days: 180, timeUnit: 'months', months: 6, label: '6 Months', category: 'foundation', description: 'Half year foundation' },
+    { days: 365, timeUnit: 'years', years: 1, label: '1 Year', category: 'foundation', description: 'First year complete' },
+    { days: 547, timeUnit: 'months', months: 18, label: '18 Months', category: 'foundation', description: 'Eighteen months' },
+    { days: 730, timeUnit: 'years', years: 2, label: '2 Years', category: 'foundation', description: 'Two years strong' }
   ],
   extended: [
-    { days: 1095, label: '3 Years', category: 'extended', description: 'Three years of recovery' },
-    { days: 1460, label: '4 Years', category: 'extended', description: 'Four years milestone' },
-    { days: 1825, label: '5 Years', category: 'extended', description: 'Five years achievement' },
-    { days: 2555, label: '7 Years', category: 'extended', description: 'Seven years strong' }
+    { days: 1095, timeUnit: 'years', years: 3, label: '3 Years', category: 'extended', description: 'Three years of recovery' },
+    { days: 1460, timeUnit: 'years', years: 4, label: '4 Years', category: 'extended', description: 'Four years milestone' },
+    { days: 1825, timeUnit: 'years', years: 5, label: '5 Years', category: 'extended', description: 'Five years achievement' },
+    { days: 2555, timeUnit: 'years', years: 7, label: '7 Years', category: 'extended', description: 'Seven years strong' }
   ],
   annual: [
-    { days: 365, label: '1 Year', category: 'annual', description: 'First year complete' },
-    { days: 730, label: '2 Years', category: 'annual', description: 'Two years strong' },
-    { days: 1095, label: '3 Years', category: 'annual', description: 'Three years of recovery' },
-    { days: 1460, label: '4 Years', category: 'annual', description: 'Four years milestone' },
-    { days: 1825, label: '5 Years', category: 'annual', description: 'Five years achievement' },
-    { days: 2190, label: '6 Years', category: 'annual', description: 'Six years strong' },
-    { days: 2555, label: '7 Years', category: 'annual', description: 'Seven years milestone' },
-    { days: 2920, label: '8 Years', category: 'annual', description: 'Eight years achievement' },
-    { days: 3285, label: '9 Years', category: 'annual', description: 'Nine years strong' },
-    { days: 3650, label: '10 Years', category: 'annual', description: 'Decade of recovery' }
+    { days: 365, timeUnit: 'years', years: 1, label: '1 Year', category: 'annual', description: 'First year complete' },
+    { days: 730, timeUnit: 'years', years: 2, label: '2 Years', category: 'annual', description: 'Two years strong' },
+    { days: 1095, timeUnit: 'years', years: 3, label: '3 Years', category: 'annual', description: 'Three years of recovery' },
+    { days: 1460, timeUnit: 'years', years: 4, label: '4 Years', category: 'annual', description: 'Four years milestone' },
+    { days: 1825, timeUnit: 'years', years: 5, label: '5 Years', category: 'annual', description: 'Five years achievement' },
+    { days: 2190, timeUnit: 'years', years: 6, label: '6 Years', category: 'annual', description: 'Six years strong' },
+    { days: 2555, timeUnit: 'years', years: 7, label: '7 Years', category: 'annual', description: 'Seven years milestone' },
+    { days: 2920, timeUnit: 'years', years: 8, label: '8 Years', category: 'annual', description: 'Eight years achievement' },
+    { days: 3285, timeUnit: 'years', years: 9, label: '9 Years', category: 'annual', description: 'Nine years strong' },
+    { days: 3650, timeUnit: 'years', years: 10, label: '10 Years', category: 'annual', description: 'Decade of recovery' }
   ]
 };
 
@@ -125,6 +124,20 @@ export const getMilestoneMessage = (milestone: Milestone): string => {
   return categoryMessages[randomIndex];
 };
 
+// Get milestone display text based on time unit
+export const getMilestoneDisplayText = (milestone: Milestone): string => {
+  switch (milestone.timeUnit) {
+    case 'days':
+      return `${milestone.days} Days`;
+    case 'months':
+      return `${milestone.months} Months`;
+    case 'years':
+      return `${milestone.years} Years`;
+    default:
+      return milestone.label;
+  }
+};
+
 // Milestone Icons
 export const getMilestoneIcon = (milestone: Milestone): string => {
   const icons: Record<MilestoneCategory, string[]> = {
@@ -154,6 +167,7 @@ export const createCustomMilestone = (
   color?: string
 ): CustomMilestone => ({
   days,
+  timeUnit: 'days', // Default to days for custom milestones
   label,
   category: 'early', // Default category for custom milestones
   description,
