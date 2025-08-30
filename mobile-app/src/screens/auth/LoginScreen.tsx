@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
 import { signIn } from '../../store/slices/authSlice';
@@ -65,16 +65,11 @@ const LoginScreen: React.FC = () => {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with gradient background */}
-          <LinearGradient
-            colors={['#6366f1', '#8b5cf6']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.headerGradient}
-          >
+          {/* Header with primary color background */}
+          <View style={styles.headerGradient}>
             {/* App Title and Tagline */}
             <Text style={styles.appTitle}>Our Time Recovered</Text>
-            <Text style={styles.tagline}>Celebrating milestones, 24 hours at a time.</Text>
+            <Text style={styles.tagline}>Celebrating our recovery milestones</Text>
             
             {/* Logo Section */}
             <View style={styles.logoSection}>
@@ -84,14 +79,12 @@ const LoginScreen: React.FC = () => {
                   <Text style={styles.alarmClock}>⏰</Text>
                   
                   {/* 24 hrs label */}
-                  <Text style={styles.hours24}>24 hrs</Text>
+                  <Text style={styles.hours24}>24 hrs at a time</Text>
                 </View>
-                <Text style={styles.logoDescription}>Clean Time-Focused Logo</Text>
+                <Text style={styles.logoDescription}>Sign up or login to continue.</Text>
               </View>
             </View>
-            
-
-          </LinearGradient>
+          </View>
 
           {/* Login Form */}
           <View style={styles.formContainer}>
@@ -99,9 +92,9 @@ const LoginScreen: React.FC = () => {
             <View style={styles.inputCard}>
               <View style={styles.inputHeader}>
                 <View style={styles.inputIcon}>
-                  <Text style={styles.iconText}>📧</Text>
+                  <Icon name="alternate-email" size={16} color="#8b5cf6" />
                 </View>
-                <Text style={styles.inputLabel}>Email Address</Text>
+                <Text style={styles.inputLabel}>Login ID</Text>
               </View>
               <TextInput
                 style={styles.input}
@@ -119,7 +112,7 @@ const LoginScreen: React.FC = () => {
             <View style={styles.inputCard}>
               <View style={styles.inputHeader}>
                 <View style={styles.inputIcon}>
-                  <Text style={styles.iconText}>🔒</Text>
+                  <Icon name="lock" size={16} color="#8b5cf6" />
                 </View>
                 <Text style={styles.inputLabel}>Password</Text>
               </View>
@@ -141,18 +134,13 @@ const LoginScreen: React.FC = () => {
               onPress={handleLogin}
               disabled={isLoading}
             >
-              <LinearGradient
-                colors={['#6366f1', '#8b5cf6']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.buttonGradient}
-              >
+              <View style={styles.buttonGradient}>
                 {isLoading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
                   <Text style={styles.loginButtonText}>Sign In</Text>
                 )}
-              </LinearGradient>
+              </View>
             </TouchableOpacity>
 
             {/* Forgot Password */}
@@ -199,6 +187,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
+    backgroundColor: '#2E8B57',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.15,
@@ -245,9 +234,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
   },
-  iconText: {
-    fontSize: 16,
-  },
+
   inputLabel: {
     fontSize: 16,
     fontWeight: '700',
@@ -267,11 +254,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginTop: 8,
     marginBottom: 20,
-    shadowColor: '#6366f1',
+    shadowColor: '#2E8B57',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
     elevation: 8,
+    overflow: 'hidden',
   },
   loginButtonDisabled: {
     opacity: 0.6,
@@ -280,6 +268,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
+    backgroundColor: '#2E8B57',
+    overflow: 'hidden',
   },
   loginButtonText: {
     color: '#ffffff',
@@ -292,7 +282,7 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   forgotPasswordText: {
-    color: '#6366f1',
+    color: '#2E8B57',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -322,7 +312,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   signUpLink: {
-    color: '#6366f1',
+    color: '#2E8B57',
     fontSize: 16,
     fontWeight: '700',
   },
