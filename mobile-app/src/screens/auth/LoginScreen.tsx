@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  ActivityIndicator,
-  ScrollView,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
 import { signIn } from '../../store/slices/authSlice';
 
 const LoginScreen: React.FC = () => {
@@ -73,16 +72,25 @@ const LoginScreen: React.FC = () => {
             end={{ x: 1, y: 1 }}
             style={styles.headerGradient}
           >
-            <View style={styles.logoContainer}>
-              <View style={styles.logoCircle}>
-                <Text style={styles.logoText}>🎯</Text>
+            {/* App Title and Tagline */}
+            <Text style={styles.appTitle}>Our Time Recovered</Text>
+            <Text style={styles.tagline}>Celebrating milestones, 24 hours at a time.</Text>
+            
+            {/* Logo Section */}
+            <View style={styles.logoSection}>
+              <View style={styles.logoContainer}>
+                <View style={styles.mainLogo}>
+                  {/* Simple Alarm Clock Emoji */}
+                  <Text style={styles.alarmClock}>⏰</Text>
+                  
+                  {/* 24 hrs label */}
+                  <Text style={styles.hours24}>24 hrs</Text>
+                </View>
+                <Text style={styles.logoDescription}>Clean Time-Focused Logo</Text>
               </View>
             </View>
             
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>
-              Sign in to continue your recovery journey
-            </Text>
+
           </LinearGradient>
 
           {/* Login Form */}
@@ -199,36 +207,10 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     marginBottom: 15,
-  },
-  logoCircle: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    maxWidth: 400,
   },
-  logoText: {
-    fontSize: 28,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 8,
-    textShadowColor: 'rgba(0, 0, 0, 0.1)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    fontWeight: '500',
-    lineHeight: 22,
-  },
+
   formContainer: {
     padding: 20,
     paddingTop: 25,
@@ -344,6 +326,49 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
+  appTitle: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  tagline: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
+    textAlign: 'center',
+    fontWeight: '500',
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+  logoSection: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  mainLogo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  alarmClock: {
+    fontSize: 40,
+    marginRight: 5,
+  },
+  hours24: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
+  logoDescription: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 5,
+  },
+
 });
 
 export default LoginScreen;
