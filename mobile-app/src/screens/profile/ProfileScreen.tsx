@@ -1,13 +1,13 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -567,36 +567,44 @@ const ProfileScreen: React.FC = () => {
           {/* Logout Section */}
           <TouchableOpacity
             style={{
-              backgroundColor: '#ffffff',
               borderRadius: 16,
-              padding: 12,
-              width: '100%',
-              alignItems: 'center',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 20,
-              elevation: 4,
-              borderWidth: 2,
-              borderColor: '#fee2e2',
+              marginTop: 8,
+              marginBottom: 20,
+              shadowColor: '#6366f1',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              elevation: 8,
             }}
             onPress={handleLogout}
           >
-            <Text style={{
-              fontSize: 18,
-              fontWeight: '700',
-              color: '#dc2626',
-              marginBottom: 6,
-            }}>
-              Logout
-            </Text>
-            <Text style={{
-              fontSize: 15,
-              color: '#64748b',
-              fontWeight: '500',
-            }}>
-              {user.email}
-            </Text>
+            <LinearGradient
+              colors={['#6366f1', '#8b5cf6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={{
+                borderRadius: 16,
+                padding: 16,
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{
+                color: '#ffffff',
+                fontSize: 18,
+                fontWeight: '700',
+                letterSpacing: 0.5,
+                marginBottom: 6,
+              }}>
+                Logout
+              </Text>
+              <Text style={{
+                fontSize: 15,
+                color: 'rgba(255, 255, 255, 0.8)',
+                fontWeight: '500',
+              }}>
+                {user.email}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </ScrollView>
