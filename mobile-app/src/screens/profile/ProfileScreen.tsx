@@ -256,6 +256,26 @@ const ProfileScreen: React.FC = () => {
             paddingHorizontal: 20,
           }}
         >
+          {/* Title Row */}
+          <View style={{ alignItems: 'center', marginBottom: 20 }}>
+            <Text style={{
+              fontSize: 28,
+              fontWeight: 'bold',
+              color: '#FFFFFF',
+              marginBottom: 8,
+            }}>
+              OTR - Profile
+            </Text>
+            <Text style={{
+              fontSize: 16,
+              color: '#FFFFFF',
+              opacity: 0.9,
+              textAlign: 'center',
+            }}>
+              Manage your recovery profile
+            </Text>
+          </View>
+
           <View style={{ 
             flexDirection: 'row', 
             justifyContent: 'space-between', 
@@ -491,6 +511,10 @@ const ProfileScreen: React.FC = () => {
               </Text>
             </TouchableOpacity>
           </View>
+
+
+
+
 
           {/* Recovery Type Card */}
           <TouchableOpacity

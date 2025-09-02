@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store';
@@ -65,26 +66,30 @@ const LoginScreen: React.FC = () => {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with primary color background */}
-          <View style={styles.headerGradient}>
-            {/* App Title and Tagline */}
-            <Text style={styles.appTitle}>Our Time Recovered</Text>
-            <Text style={styles.tagline}>🚀 Celebrating our recovery milestones</Text>
-            
-            {/* Logo Section */}
-            <View style={styles.logoSection}>
-              <View style={styles.logoContainer}>
-                <View style={styles.mainLogo}>
-                  {/* Simple Alarm Clock Emoji */}
-                  <Text style={styles.alarmClock}>⏰</Text>
-                  
-                  {/* 24 hrs label */}
-                  <Text style={styles.hours24}>24 hrs at a time</Text>
+          {/* Header with gradient background - tight spacing */}
+          <LinearGradient
+            colors={['#2E8B57', '#66CDAA']}
+            style={styles.headerGradient}
+          >
+            <View style={styles.header}>
+              <Text style={styles.appTitle}>Our Time Recovered</Text>
+              <Text style={styles.tagline}>🚀 Celebrating our recovery milestones</Text>
+              
+              {/* Logo Section */}
+              <View style={styles.logoSection}>
+                <View style={styles.logoContainer}>
+                  <View style={styles.mainLogo}>
+                    {/* Simple Alarm Clock Emoji */}
+                    <Text style={styles.alarmClock}>⏰</Text>
+                    
+                    {/* 24 hrs label */}
+                    <Text style={styles.hours24}>24 hrs at a time</Text>
+                  </View>
+                  <Text style={styles.logoDescription}>Sign up or login to continue! 🚀</Text>
                 </View>
-                <Text style={styles.logoDescription}>Sign up or login to continue! 🚀</Text>
               </View>
             </View>
-          </View>
+          </LinearGradient>
 
           {/* Login Form */}
           <View style={styles.formContainer}>
@@ -128,19 +133,20 @@ const LoginScreen: React.FC = () => {
               />
             </View>
 
-            {/* Login Button */}
+            {/* Login Button - matching Encourage button style */}
             <TouchableOpacity
               style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
               onPress={handleLogin}
               disabled={isLoading}
             >
-              <View style={styles.buttonGradient}>
-                {isLoading ? (
-                  <ActivityIndicator color="#ffffff" size="small" />
-                ) : (
+              {isLoading ? (
+                <ActivityIndicator color="#2E8B57" size="small" />
+              ) : (
+                <>
+                  <Icon name="login" size={16} color="#2E8B57" />
                   <Text style={styles.loginButtonText}>Sign In Now</Text>
-                )}
-              </View>
+                </>
+              )}
             </TouchableOpacity>
 
             {/* Sign Up Link */}
@@ -172,7 +178,7 @@ const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#f8f9fa',
   },
   keyboardView: {
     flex: 1,
@@ -181,18 +187,14 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerGradient: {
-    paddingTop: 6,
-    paddingBottom: 2,
+    paddingTop: 20,
+    paddingBottom: 20,
     paddingHorizontal: 20,
-    alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
-    backgroundColor: '#2E8B57',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 32,
-    elevation: 8,
+  },
+  header: {
+    alignItems: 'center',
   },
   logoContainer: {
     marginBottom: 2,
@@ -209,16 +211,14 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 16,
-    marginBottom: 16,
+    marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   inputHeader: {
     flexDirection: 'row',
@@ -241,41 +241,34 @@ const styles = StyleSheet.create({
     color: '#1e293b',
   },
   input: {
-    backgroundColor: '#f8fafc',
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    borderRadius: 12,
-    padding: 14,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     fontSize: 16,
     color: '#1e293b',
-    fontWeight: '500',
   },
   loginButton: {
-    borderRadius: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f9f0',
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#2E8B57',
     marginTop: 8,
     marginBottom: 20,
-    shadowColor: '#2E8B57',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-    overflow: 'hidden',
   },
   loginButtonDisabled: {
     opacity: 0.6,
   },
-  buttonGradient: {
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    backgroundColor: '#2E8B57',
-    overflow: 'hidden',
-  },
   loginButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    color: '#2E8B57',
+    fontWeight: '500',
+    marginLeft: 6,
+    fontSize: 16,
   },
   forgotPassword: {
     alignItems: 'center',
