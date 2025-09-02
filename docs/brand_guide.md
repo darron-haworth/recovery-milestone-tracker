@@ -25,6 +25,7 @@
 | **Medium Aqua** | `#66CDAA` | Accent - gradients, highlights | Hope & Progress |
 | **Sky Blue** | `#87CEEB` | Support - notifications, backgrounds | Peace & Support |
 | **Slate Gray** | `#708090` | Neutral - text, UI elements | Professional contrast |
+| **Coral Red** | `#E74C3C` | Warning - logout, alerts, important actions | Caution & Attention |
 
 ## Typography
 
@@ -154,6 +155,7 @@ Share your time progress with trusted friends while maintaining complete privacy
   --medium-aqua: #66CDAA;
   --sky-blue: #87CEEB;
   --slate-gray: #708090;
+  --coral-red: #E74C3C;
   --white: #FFFFFF;
   --light-gray: #F8F9FA;
   --dark-gray: #333333;
