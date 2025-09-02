@@ -2,16 +2,17 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Modal,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Modal,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { firebaseService } from '../../services/firebaseService';
 import { AppDispatch, RootState } from '../../store';
@@ -244,28 +245,23 @@ const ProfileScreen: React.FC = () => {
   const initials = displayName !== 'Set Your Name' ? displayName.split(' ').map(n => n[0]).join('') : '?';
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8fafc' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <ScrollView style={{ flex: 1 }}>
         {/* Header with gradient background */}
         <LinearGradient
-          colors={['#2E8B57', '#2E8B57']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          colors={['#2E8B57', '#66CDAA']}
           style={{
-            paddingTop: 15,
-            paddingBottom: 15,
+            paddingTop: 20,
+            paddingBottom: 24,
             paddingHorizontal: 20,
-            alignItems: 'center',
-            borderBottomLeftRadius: 30,
-            borderBottomRightRadius: 30,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.15,
-            shadowRadius: 32,
-            elevation: 8,
           }}
         >
-          <View style={{ marginBottom: 5 }}>
+          <View style={{ 
+            flexDirection: 'row', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            width: '100%',
+          }}>
             <View style={{
               width: 60,
               height: 60,
@@ -273,7 +269,7 @@ const ProfileScreen: React.FC = () => {
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               justifyContent: 'center',
               alignItems: 'center',
-              borderWidth: 3,
+              borderWidth: 2,
               borderColor: 'rgba(255, 255, 255, 0.3)',
             }}>
               <Text style={{
@@ -285,42 +281,118 @@ const ProfileScreen: React.FC = () => {
                 {initials}
               </Text>
             </View>
+            
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#FFFFFF',
+                marginBottom: 2,
+              }}>
+                {sobrietyTime.totalDays.toLocaleString()}
+              </Text>
+              <Text style={{
+                fontSize: 12,
+                color: '#FFFFFF',
+                opacity: 0.9,
+                textAlign: 'center',
+              }}>
+                days sober
+              </Text>
+            </View>
+            
+            <View style={{ alignItems: 'flex-end' }}>
+              <Text style={{
+                fontSize: 22,
+                fontWeight: 'bold',
+                color: '#FFFFFF',
+                marginBottom: 2,
+              }}>
+                {displayName}
+              </Text>
+              <Text style={{
+                fontSize: 14,
+                color: '#FFFFFF',
+                opacity: 0.9,
+              }}>
+                @{tempNickname || 'nickname'}
+              </Text>
+            </View>
           </View>
-          
-          <Text style={{
-            fontSize: 20,
-            fontWeight: 'bold',
-            color: '#ffffff',
-            marginBottom: 2,
-            textShadowColor: 'rgba(0, 0, 0, 0.1)',
-            textShadowOffset: { width: 0, height: 2 },
-            textShadowRadius: 4,
-          }}>
-            {displayName}
-          </Text>
-          <Text style={{
-            fontSize: 13,
-            color: 'rgba(255, 255, 255, 0.85)',
-            fontWeight: '500',
-          }}>
-            @{tempNickname || 'nickname'}
-          </Text>
         </LinearGradient>
 
-        {/* Profile Content */}
+        {/* Stats Container */}
         <View style={{
-          padding: 12,
-          paddingTop: 8,
-          maxWidth: 420,
-          alignSelf: 'center',
-          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          paddingVertical: 20,
+          backgroundColor: '#FFFFFF',
+          marginHorizontal: 16,
+          marginTop: -15,
+          borderRadius: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 3,
         }}>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: '#2E8B57',
+            }}>
+              {sobrietyTime.years}
+            </Text>
+            <Text style={{
+              fontSize: 12,
+              color: '#708090',
+              marginTop: 4,
+            }}>
+              Years
+            </Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: '#2E8B57',
+            }}>
+              {sobrietyTime.months}
+            </Text>
+            <Text style={{
+              fontSize: 12,
+              color: '#708090',
+              marginTop: 4,
+            }}>
+              Months
+            </Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <Text style={{
+              fontSize: 24,
+              fontWeight: 'bold',
+              color: '#2E8B57',
+            }}>
+              {sobrietyTime.days}
+            </Text>
+            <Text style={{
+              fontSize: 12,
+              color: '#708090',
+              marginTop: 4,
+            }}>
+              Days
+            </Text>
+          </View>
+        </View>
+
+        {/* Profile Content */}
+        <View style={{ padding: 16 }}>
           
           {/* Name and Nickname Cards Row */}
           <View style={{
             flexDirection: 'row',
-            marginTop: 1,
-            marginBottom: 6,
+            marginBottom: 16,
             gap: 8,
           }}>
             {/* Name Card */}
@@ -328,22 +400,20 @@ const ProfileScreen: React.FC = () => {
               style={{
                 backgroundColor: '#ffffff',
                 borderRadius: 12,
-                padding: 10,
+                padding: 16,
                 flex: 1,
                 shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.08,
-                shadowRadius: 20,
-                elevation: 4,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.8)',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
               }}
               onPress={() => setIsNameModalVisible(true)}
             >
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginBottom: 6,
+                marginBottom: 8,
               }}>
                 <View style={{
                   width: 28,
@@ -352,13 +422,13 @@ const ProfileScreen: React.FC = () => {
                   backgroundColor: '#f1f5f9',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginRight: 6,
+                  marginRight: 8,
                 }}>
                   <Text style={{ fontSize: 14 }}>👤</Text>
                 </View>
                 <Text style={{
                   fontSize: 14,
-                  fontWeight: '700',
+                  fontWeight: '600',
                   color: '#1e293b',
                 }}>
                   Name
@@ -367,7 +437,7 @@ const ProfileScreen: React.FC = () => {
               <Text style={{
                 fontSize: 14,
                 color: '#64748b',
-                fontWeight: '600',
+                fontWeight: '500',
               }}>
                 {displayName}
               </Text>
@@ -378,22 +448,20 @@ const ProfileScreen: React.FC = () => {
               style={{
                 backgroundColor: '#ffffff',
                 borderRadius: 12,
-                padding: 10,
+                padding: 16,
                 flex: 1,
                 shadowColor: '#000',
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.08,
-                shadowRadius: 20,
-                elevation: 4,
-                borderWidth: 1,
-                borderColor: 'rgba(255, 255, 255, 0.8)',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
               }}
               onPress={() => setIsNicknameModalVisible(true)}
             >
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                marginBottom: 6,
+                marginBottom: 8,
               }}>
                 <View style={{
                   width: 28,
@@ -402,13 +470,13 @@ const ProfileScreen: React.FC = () => {
                   backgroundColor: '#f1f5f9',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginRight: 6,
+                  marginRight: 8,
                 }}>
                   <Text style={{ fontSize: 14 }}>🏷️</Text>
                 </View>
                 <Text style={{
                   fontSize: 14,
-                  fontWeight: '700',
+                  fontWeight: '600',
                   color: '#1e293b',
                 }}>
                   Nickname
@@ -417,7 +485,7 @@ const ProfileScreen: React.FC = () => {
               <Text style={{
                 fontSize: 14,
                 color: '#64748b',
-                fontWeight: '600',
+                fontWeight: '500',
               }}>
                 @{tempNickname || 'Set nickname'}
               </Text>
@@ -429,15 +497,13 @@ const ProfileScreen: React.FC = () => {
             style={{
               backgroundColor: '#ffffff',
               borderRadius: 12,
-              padding: 10,
-              marginBottom: 6,
+              padding: 16,
+              marginBottom: 16,
               shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 20,
-              elevation: 4,
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.8)',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 3,
             }}
             onPress={() => setIsRecoveryTypeModalVisible(true)}
           >
@@ -452,28 +518,28 @@ const ProfileScreen: React.FC = () => {
                 flex: 1,
               }}>
                 <View style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
                   backgroundColor: '#f1f5f9',
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginRight: 8,
                 }}>
-                  <Text style={{ fontSize: 16 }}>🎯</Text>
+                  <Text style={{ fontSize: 14 }}>🎯</Text>
                 </View>
                 <Text style={{
-                  fontSize: 16,
-                  fontWeight: '700',
+                  fontSize: 14,
+                  fontWeight: '600',
                   color: '#1e293b',
                 }}>
                   Recovery Journey
                 </Text>
               </View>
               <Text style={{
-                fontSize: 18,
-                color: '#64748b',
-                fontWeight: '600',
+                fontSize: 14,
+                color: '#4169E1',
+                fontWeight: '500',
                 marginLeft: 8,
               }}>
                 {tempRecoveryType.replace(/_/g, ' ')}
@@ -481,20 +547,18 @@ const ProfileScreen: React.FC = () => {
             </View>
           </TouchableOpacity>
 
-          {/* Sobriety Stats Card */}
+          {/* Sobriety Date Card */}
           <TouchableOpacity
             style={{
               backgroundColor: '#ffffff',
-              borderRadius: 16,
-              padding: 12,
-              marginBottom: 8,
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 16,
               shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 20,
-              elevation: 4,
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.8)',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
+              elevation: 3,
             }}
             onPress={() => setIsSobrietyDateModalVisible(true)}
           >
@@ -502,198 +566,78 @@ const ProfileScreen: React.FC = () => {
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: 6,
             }}>
               <View style={{
                 flexDirection: 'row',
                 alignItems: 'center',
+                flex: 1,
               }}>
                 <View style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
                   backgroundColor: '#f1f5f9',
                   justifyContent: 'center',
                   alignItems: 'center',
                   marginRight: 8,
                 }}>
-                  <Text style={{ fontSize: 16 }}>🏆</Text>
+                  <Text style={{ fontSize: 14 }}>📅</Text>
                 </View>
                 <Text style={{
-                  fontSize: 16,
-                  fontWeight: '700',
+                  fontSize: 14,
+                  fontWeight: '600',
                   color: '#1e293b',
                 }}>
-                  Sobriety Time
+                  Sobriety Date
                 </Text>
               </View>
               <Text style={{
                 fontSize: 14,
-                fontWeight: '600',
                 color: '#64748b',
-              }}>
-                {sobrietyTime.totalDays} days total
-              </Text>
-            </View>
-            
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginVertical: 6,
-              padding: 6,
-              backgroundColor: '#f8fafc',
-              borderRadius: 8,
-              borderWidth: 2,
-              borderColor: '#e2e8f0',
-            }}>
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-              }}>
-                <Text style={{
-                  fontSize: 32,
-                  fontWeight: 'bold',
-                  color: '#2E8B57',
-                  lineHeight: 32,
-                }}>
-                  {sobrietyTime.years}
-                </Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: '#64748b',
-                  marginTop: 6,
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>
-                  Years
-                </Text>
-              </View>
-              
-              <View style={{
-                width: 2,
-                height: 50,
-                backgroundColor: '#d1d5db',
-                marginHorizontal: 12,
-                borderRadius: 2,
-              }} />
-              
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-              }}>
-                <Text style={{
-                  fontSize: 32,
-                  fontWeight: 'bold',
-                  color: '#2E8B57',
-                  lineHeight: 32,
-                }}>
-                  {sobrietyTime.months}
-                </Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: '#64748b',
-                  marginTop: 6,
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>
-                  Months
-                </Text>
-              </View>
-              
-              <View style={{
-                width: 2,
-                height: 50,
-                backgroundColor: '#d1d5db',
-                marginHorizontal: 12,
-                borderRadius: 2,
-              }} />
-              
-              <View style={{
-                flex: 1,
-                alignItems: 'center',
-              }}>
-                <Text style={{
-                  fontSize: 32,
-                  fontWeight: 'bold',
-                  color: '#2E8B57',
-                  lineHeight: 32,
-                }}>
-                  {sobrietyTime.days}
-                </Text>
-                <Text style={{
-                  fontSize: 14,
-                  color: '#64748b',
-                  marginTop: 6,
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: 0.5,
-                }}>
-                  Days
-                </Text>
-              </View>
-            </View>
-            
-            {tempSobrietyDate && (
-              <Text style={{
-                fontSize: 14,
-                color: '#64748b',
-                textAlign: 'center',
                 fontWeight: '500',
-                marginTop: 4,
+                marginLeft: 8,
               }}>
-                Since {tempSobrietyDate.toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
+                {tempSobrietyDate ? tempSobrietyDate.toLocaleDateString() : 'Set date'}
               </Text>
-            )}
+            </View>
           </TouchableOpacity>
 
           {/* Logout Section */}
           <TouchableOpacity
             style={{
-              borderRadius: 16,
-              marginTop: 8,
+              backgroundColor: '#fef2f2',
+              paddingVertical: 12,
+              paddingHorizontal: 16,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: '#E74C3C',
               marginBottom: 20,
-              shadowColor: '#6366f1',
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.3,
-              shadowRadius: 16,
-              elevation: 8,
+              alignItems: 'center',
             }}
             onPress={handleLogout}
           >
-            <LinearGradient
-              colors={['#2E8B57', '#2E8B57']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={{
-                borderRadius: 16,
-                padding: 16,
-                alignItems: 'center',
-              }}
-            >
+            <View style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: 4,
+            }}>
+              <MaterialIcons name="warning" size={16} color="#E74C3C" />
               <Text style={{
-                color: '#ffffff',
-                fontSize: 18,
-                fontWeight: '700',
-                letterSpacing: 0.5,
-                marginBottom: 6,
+                fontSize: 16,
+                fontWeight: '500',
+                color: '#E74C3C',
+                marginLeft: 6,
               }}>
                 Logout
               </Text>
-              <Text style={{
-                fontSize: 15,
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontWeight: '500',
-              }}>
-                {user.email}
-              </Text>
-            </LinearGradient>
+            </View>
+            <Text style={{
+              fontSize: 12,
+              color: '#E74C3C',
+              opacity: 0.8,
+            }}>
+              {user.email}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -1171,7 +1115,7 @@ const ProfileScreen: React.FC = () => {
                     dropdownIconColor="#64748b"
                   >
                     <Picker.Item label="Year" value="" />
-                    {Array.from({ length: 50 }, (_, i) => {
+                    {Array.from({ length: 90 }, (_, i) => {
                       const year = new Date().getFullYear() - i;
                       return <Picker.Item key={year} label={`${year}`} value={`${year}`} />;
                     })}
