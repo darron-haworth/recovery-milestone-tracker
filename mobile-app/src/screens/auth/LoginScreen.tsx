@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -69,7 +69,7 @@ const LoginScreen: React.FC = () => {
           <View style={styles.headerGradient}>
             {/* App Title and Tagline */}
             <Text style={styles.appTitle}>Our Time Recovered</Text>
-            <Text style={styles.tagline}>Celebrating our recovery milestones</Text>
+            <Text style={styles.tagline}>🚀 Celebrating our recovery milestones</Text>
             
             {/* Logo Section */}
             <View style={styles.logoSection}>
@@ -81,7 +81,7 @@ const LoginScreen: React.FC = () => {
                   {/* 24 hrs label */}
                   <Text style={styles.hours24}>24 hrs at a time</Text>
                 </View>
-                <Text style={styles.logoDescription}>Sign up or login to continue.</Text>
+                <Text style={styles.logoDescription}>Sign up or login to continue! 🚀</Text>
               </View>
             </View>
           </View>
@@ -138,22 +138,10 @@ const LoginScreen: React.FC = () => {
                 {isLoading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={styles.loginButtonText}>Sign In</Text>
+                  <Text style={styles.loginButtonText}>Sign In Now</Text>
                 )}
               </View>
             </TouchableOpacity>
-
-            {/* Forgot Password */}
-            <TouchableOpacity style={styles.forgotPassword}>
-              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-            </TouchableOpacity>
-
-            {/* Divider */}
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
-            </View>
 
             {/* Sign Up Link */}
             <View style={styles.signUpContainer}>
@@ -162,6 +150,18 @@ const LoginScreen: React.FC = () => {
                 <Text style={styles.signUpLink}>Sign Up</Text>
               </TouchableOpacity>
             </View>
+
+            {/* Divider */}
+            <View style={styles.divider}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
+            {/* Forgot Password */}
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -181,8 +181,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerGradient: {
-    paddingTop: 20,
-    paddingBottom: 30,
+    paddingTop: 6,
+    paddingBottom: 2,
     paddingHorizontal: 20,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
@@ -195,14 +195,14 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   logoContainer: {
-    marginBottom: 15,
+    marginBottom: 2,
     alignItems: 'center',
     maxWidth: 400,
   },
 
   formContainer: {
-    padding: 20,
-    paddingTop: 25,
+    padding: 16,
+    paddingTop: 16,
     maxWidth: 420,
     alignSelf: 'center',
     width: '100%',
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 16,
   },
   forgotPasswordText: {
     color: '#2E8B57',
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 25,
+    marginBottom: 16,
   },
   dividerLine: {
     flex: 1,
@@ -306,6 +306,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 16,
   },
   signUpText: {
     color: '#64748b',
