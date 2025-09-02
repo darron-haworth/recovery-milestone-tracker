@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import LoadingScreen from '../components/common/LoadingScreen';
+import IconPicker from '../components/IconPicker';
 import OnboardingScreen from '../screens/auth/OnboardingScreen';
 import { RootState } from '../store';
 import { checkAuthState } from '../store/slices/authSlice';
@@ -41,11 +42,31 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Auth" component={AuthNavigator} />
       ) : (
         // Main app flow - use key to force re-render and reset tab state
-        <Stack.Screen 
-          name="Main" 
-          component={TabNavigator} 
-          key={`main-${isAuthenticated}`}
-        />
+        <>
+          <Stack.Screen 
+            name="Main" 
+            component={TabNavigator} 
+            key={`main-${isAuthenticated}`}
+          />
+          <Stack.Screen 
+            name="IconBrowser" 
+            component={IconPicker}
+            options={{
+              title: 'Icon Browser',
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: '#FFFFFF',
+                height: 24,
+              },
+              headerTintColor: '#000000',
+              headerTitleAlign: 'center',
+              headerTitleStyle: {
+                fontSize: 12,
+                fontWeight: '500',
+              },
+            }}
+          />
+        </>
       )}
     </Stack.Navigator>
   );
