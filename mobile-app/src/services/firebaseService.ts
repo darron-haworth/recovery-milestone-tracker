@@ -62,7 +62,7 @@ class FirebaseService {
         .doc(userId)
         .get();
 
-      if (userDoc.exists) {
+      if (userDoc.exists()) {
         const userData = userDoc.data();
         console.log('📦 Firebase: Retrieved user data:', userData);
         return userData?.profile || null;
@@ -187,7 +187,7 @@ class FirebaseService {
       // Check if user document exists
       const userDoc = await userRef.get();
 
-      if (userDoc.exists) {
+      if (userDoc.exists()) {
         // Update existing document
         await userRef.update({
           profile: localUser.profile,
@@ -227,7 +227,7 @@ class FirebaseService {
         .doc(userId)
         .onSnapshot(
           (doc) => {
-            if (doc.exists) {
+            if (doc.exists()) {
               const userData = doc.data();
               const profile = userData?.profile || null;
               console.log('📡 Firebase: Profile update received:', profile);

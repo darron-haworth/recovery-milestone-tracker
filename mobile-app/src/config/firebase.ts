@@ -8,7 +8,7 @@ export const FIREBASE_CONFIG = {
   
   // Android Configuration
   android: {
-    packageName: 'com.mustflywithme.recovery_milestone_tracker',
+    packageName: 'com.recoverymilestonetracker',
     googleServicesFile: 'google-services.json',
     apiKey: 'AIzaSyBeO2gy0R1wCh3t0JRDSGCIznBDB9HStGQ',
     appId: '1:677302029618:android:6cf1aaf684d27cccd49b2b',
