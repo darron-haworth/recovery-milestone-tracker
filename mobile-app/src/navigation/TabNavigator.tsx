@@ -4,7 +4,10 @@ import { Text, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 // Import screens
+import FriendsScreen from '../screens/friends/FriendsScreen';
+import MilestonesScreen from '../screens/milestones/MilestonesScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 
 // Placeholder screens
@@ -20,7 +23,7 @@ const Tab = createBottomTabNavigator();
 const TabNavigator: React.FC = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Profile"
+      initialRouteName="Milestones"
       screenOptions={{
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',
@@ -34,11 +37,38 @@ const TabNavigator: React.FC = () => {
         },
         headerStyle: {
           backgroundColor: '#FFFFFF',
+          height: 24, // Absolute minimum height
         },
         headerTintColor: '#000000',
         headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontSize: 12, // Minimal font size for ultra-compact header
+          fontWeight: '500',
+        },
       }}
     >
+      <Tab.Screen
+        name="Milestones"
+        component={MilestonesScreen}
+        options={{
+          title: 'Milestones',
+          tabBarLabel: 'Milestones',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="emoji-events" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Friends"
+        component={FriendsScreen}
+        options={{
+          title: 'Friends',
+          tabBarLabel: 'Friends',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="people" size={size} color={color} />
+          ),
+        }}
+      />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}
@@ -50,32 +80,9 @@ const TabNavigator: React.FC = () => {
           ),
         }}
       />
-      
-      <Tab.Screen
-        name="Milestones"
-        component={() => <PlaceholderScreen title="Milestones" />}
-        options={{
-          title: 'Milestones',
-          tabBarLabel: 'Milestones',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="star" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Friends"
-        component={() => <PlaceholderScreen title="Friends" />}
-        options={{
-          title: 'Friends',
-          tabBarLabel: 'Friends',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="people" size={size} color={color} />
-          ),
-        }}
-      />
       <Tab.Screen
         name="Settings"
-        component={() => <PlaceholderScreen title="Settings" />}
+        component={SettingsScreen}
         options={{
           title: 'Settings',
           tabBarLabel: 'Settings',
