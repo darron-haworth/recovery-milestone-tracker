@@ -51,7 +51,7 @@ const TabNavigator: React.FC = () => {
         name="Milestones"
         component={MilestonesScreen}
         options={{
-          title: 'Milestones',
+          title: 'Our Time Recovered - Milestones',
           tabBarLabel: 'Milestones',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="emoji-events" size={size} color={color} />
@@ -62,7 +62,7 @@ const TabNavigator: React.FC = () => {
         name="Friends"
         component={FriendsScreen}
         options={{
-          title: 'Friends',
+          title: 'Our Time Recovered - Friends',
           tabBarLabel: 'Friends',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="people" size={size} color={color} />
@@ -73,7 +73,7 @@ const TabNavigator: React.FC = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          title: 'Profile',
+          title: 'Our Time Recovered - Profile',
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person" size={size} color={color} />
@@ -84,7 +84,7 @@ const TabNavigator: React.FC = () => {
         name="Settings"
         component={SettingsScreen}
         options={{
-          title: 'Settings',
+          title: 'Our Time Recovered - Settings',
           tabBarLabel: 'Settings',
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="settings" size={size} color={color} />
