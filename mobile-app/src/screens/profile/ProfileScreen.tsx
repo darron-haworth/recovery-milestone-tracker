@@ -1,13 +1,14 @@
 
+import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -95,11 +96,40 @@ const ProfileScreen: React.FC = () => {
 
   const calculateSobrietyTime = (startDate: Date) => {
     const now = new Date();
+    
+    // Get the components of both dates
+    const startYear = startDate.getFullYear();
+    const startMonth = startDate.getMonth();
+    const startDay = startDate.getDate();
+    
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDay = now.getDate();
+    
+    // Calculate years
+    let years = currentYear - startYear;
+    let months = currentMonth - startMonth;
+    let days = currentDay - startDay;
+    
+    // Adjust for negative days
+    if (days < 0) {
+      months--;
+      // Get the number of days in the previous month
+      const prevMonth = new Date(currentYear, currentMonth, 0);
+      days += prevMonth.getDate();
+    }
+    
+    // Adjust for negative months
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
+    
+    // Calculate total days for reference
     const diffTime = Math.abs(now.getTime() - startDate.getTime());
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const years = Math.floor(diffDays / 365);
-    const remainingDays = diffDays % 365;
-    return { years, days: remainingDays, totalDays: diffDays };
+    const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    return { years, months, days, totalDays };
   };
 
   const handleNameSave = async () => {
@@ -209,7 +239,7 @@ const ProfileScreen: React.FC = () => {
     );
   }
 
-  const sobrietyTime = tempSobrietyDate ? calculateSobrietyTime(tempSobrietyDate) : { years: 0, days: 0, totalDays: 0 };
+  const sobrietyTime = tempSobrietyDate ? calculateSobrietyTime(tempSobrietyDate) : { years: 0, months: 0, days: 0, totalDays: 0 };
   const displayName = tempFirstName && tempLastInitial ? `${tempFirstName} ${tempLastInitial}` : 'Set Your Name';
   const initials = displayName !== 'Set Your Name' ? displayName.split(' ').map(n => n[0]).join('') : '?';
 
@@ -218,7 +248,7 @@ const ProfileScreen: React.FC = () => {
       <ScrollView style={{ flex: 1 }}>
         {/* Header with gradient background */}
         <LinearGradient
-          colors={['#6366f1', '#8b5cf6']}
+          colors={['#2E8B57', '#2E8B57']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -286,106 +316,113 @@ const ProfileScreen: React.FC = () => {
           width: '100%',
         }}>
           
-          {/* Name Card */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: 12,
-              padding: 10,
-              marginTop: 1,
-              marginBottom: 6,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 20,
-              elevation: 4,
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.8)',
-            }}
-            onPress={() => setIsNameModalVisible(true)}
-          >
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 6,
-            }}>
+          {/* Name and Nickname Cards Row */}
+          <View style={{
+            flexDirection: 'row',
+            marginTop: 1,
+            marginBottom: 6,
+            gap: 8,
+          }}>
+            {/* Name Card */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: 12,
+                padding: 10,
+                flex: 1,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.08,
+                shadowRadius: 20,
+                elevation: 4,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.8)',
+              }}
+              onPress={() => setIsNameModalVisible(true)}
+            >
               <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                justifyContent: 'center',
+                flexDirection: 'row',
                 alignItems: 'center',
-                marginRight: 8,
+                marginBottom: 6,
               }}>
-                <Text style={{ fontSize: 16 }}>👤</Text>
+                <View style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: '#f1f5f9',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 6,
+                }}>
+                  <Text style={{ fontSize: 14 }}>👤</Text>
+                </View>
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: '700',
+                  color: '#1e293b',
+                }}>
+                  Name
+                </Text>
               </View>
               <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: '#1e293b',
+                fontSize: 14,
+                color: '#64748b',
+                fontWeight: '600',
               }}>
-                Name
+                {displayName}
               </Text>
-            </View>
-            <Text style={{
-              fontSize: 16,
-              color: '#64748b',
-              fontWeight: '600',
-            }}>
-              {displayName}
-            </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
 
-          {/* Nickname Card */}
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#ffffff',
-              borderRadius: 12,
-              padding: 10,
-              marginBottom: 6,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 20,
-              elevation: 4,
-              borderWidth: 1,
-              borderColor: 'rgba(255, 255, 255, 0.8)',
-            }}
-            onPress={() => setIsNicknameModalVisible(true)}
-          >
-            <View style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginBottom: 6,
-            }}>
+            {/* Nickname Card */}
+            <TouchableOpacity
+              style={{
+                backgroundColor: '#ffffff',
+                borderRadius: 12,
+                padding: 10,
+                flex: 1,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.08,
+                shadowRadius: 20,
+                elevation: 4,
+                borderWidth: 1,
+                borderColor: 'rgba(255, 255, 255, 0.8)',
+              }}
+              onPress={() => setIsNicknameModalVisible(true)}
+            >
               <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                justifyContent: 'center',
+                flexDirection: 'row',
                 alignItems: 'center',
-                marginRight: 8,
+                marginBottom: 6,
               }}>
-                <Text style={{ fontSize: 16 }}>🏷️</Text>
+                <View style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: '#f1f5f9',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 6,
+                }}>
+                  <Text style={{ fontSize: 14 }}>🏷️</Text>
+                </View>
+                <Text style={{
+                  fontSize: 14,
+                  fontWeight: '700',
+                  color: '#1e293b',
+                }}>
+                  Nickname
+                </Text>
               </View>
               <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: '#1e293b',
+                fontSize: 14,
+                color: '#64748b',
+                fontWeight: '600',
               }}>
-                Nickname
+                @{tempNickname || 'Set nickname'}
               </Text>
-            </View>
-            <Text style={{
-              fontSize: 16,
-              color: '#64748b',
-              fontWeight: '600',
-            }}>
-              @{tempNickname || 'Set nickname'}
-            </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
 
           {/* Recovery Type Card */}
           <TouchableOpacity
@@ -407,34 +444,41 @@ const ProfileScreen: React.FC = () => {
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
-              marginBottom: 6,
+              justifyContent: 'space-between',
             }}>
               <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                justifyContent: 'center',
+                flexDirection: 'row',
                 alignItems: 'center',
-                marginRight: 8,
+                flex: 1,
               }}>
-                <Text style={{ fontSize: 16 }}>🎯</Text>
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: '#f1f5f9',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 8,
+                }}>
+                  <Text style={{ fontSize: 16 }}>🎯</Text>
+                </View>
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: '#1e293b',
+                }}>
+                  Recovery Journey
+                </Text>
               </View>
               <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: '#1e293b',
+                fontSize: 18,
+                color: '#64748b',
+                fontWeight: '600',
+                marginLeft: 8,
               }}>
-                Recovery Journey
+                {tempRecoveryType.replace(/_/g, ' ')}
               </Text>
             </View>
-            <Text style={{
-              fontSize: 18,
-              color: '#64748b',
-              fontWeight: '600',
-            }}>
-              {tempRecoveryType.replace(/_/g, ' ')}
-            </Text>
           </TouchableOpacity>
 
           {/* Sobriety Stats Card */}
@@ -457,25 +501,38 @@ const ProfileScreen: React.FC = () => {
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
+              justifyContent: 'space-between',
               marginBottom: 6,
             }}>
               <View style={{
-                width: 32,
-                height: 32,
-                borderRadius: 16,
-                backgroundColor: '#f1f5f9',
-                justifyContent: 'center',
+                flexDirection: 'row',
                 alignItems: 'center',
-                marginRight: 8,
               }}>
-                <Text style={{ fontSize: 16 }}>🏆</Text>
+                <View style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: '#f1f5f9',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginRight: 8,
+                }}>
+                  <Text style={{ fontSize: 16 }}>🏆</Text>
+                </View>
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: '700',
+                  color: '#1e293b',
+                }}>
+                  Sobriety Time
+                </Text>
               </View>
               <Text style={{
-                fontSize: 16,
-                fontWeight: '700',
-                color: '#1e293b',
+                fontSize: 14,
+                fontWeight: '600',
+                color: '#64748b',
               }}>
-                Sobriety Time
+                {sobrietyTime.totalDays} days total
               </Text>
             </View>
             
@@ -495,17 +552,17 @@ const ProfileScreen: React.FC = () => {
                 alignItems: 'center',
               }}>
                 <Text style={{
-                  fontSize: 40,
+                  fontSize: 32,
                   fontWeight: 'bold',
-                  color: '#6366f1',
-                  lineHeight: 40,
+                  color: '#2E8B57',
+                  lineHeight: 32,
                 }}>
                   {sobrietyTime.years}
                 </Text>
                 <Text style={{
-                  fontSize: 16,
+                  fontSize: 14,
                   color: '#64748b',
-                  marginTop: 8,
+                  marginTop: 6,
                   fontWeight: '600',
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
@@ -516,9 +573,9 @@ const ProfileScreen: React.FC = () => {
               
               <View style={{
                 width: 2,
-                height: 60,
+                height: 50,
                 backgroundColor: '#d1d5db',
-                marginHorizontal: 24,
+                marginHorizontal: 12,
                 borderRadius: 2,
               }} />
               
@@ -527,17 +584,49 @@ const ProfileScreen: React.FC = () => {
                 alignItems: 'center',
               }}>
                 <Text style={{
-                  fontSize: 40,
+                  fontSize: 32,
                   fontWeight: 'bold',
-                  color: '#6366f1',
-                  lineHeight: 40,
+                  color: '#2E8B57',
+                  lineHeight: 32,
+                }}>
+                  {sobrietyTime.months}
+                </Text>
+                <Text style={{
+                  fontSize: 14,
+                  color: '#64748b',
+                  marginTop: 6,
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                }}>
+                  Months
+                </Text>
+              </View>
+              
+              <View style={{
+                width: 2,
+                height: 50,
+                backgroundColor: '#d1d5db',
+                marginHorizontal: 12,
+                borderRadius: 2,
+              }} />
+              
+              <View style={{
+                flex: 1,
+                alignItems: 'center',
+              }}>
+                <Text style={{
+                  fontSize: 32,
+                  fontWeight: 'bold',
+                  color: '#2E8B57',
+                  lineHeight: 32,
                 }}>
                   {sobrietyTime.days}
                 </Text>
                 <Text style={{
-                  fontSize: 16,
+                  fontSize: 14,
                   color: '#64748b',
-                  marginTop: 8,
+                  marginTop: 6,
                   fontWeight: '600',
                   textTransform: 'uppercase',
                   letterSpacing: 0.5,
@@ -579,7 +668,7 @@ const ProfileScreen: React.FC = () => {
             onPress={handleLogout}
           >
             <LinearGradient
-              colors={['#6366f1', '#8b5cf6']}
+              colors={['#2E8B57', '#2E8B57']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={{
@@ -711,7 +800,7 @@ const ProfileScreen: React.FC = () => {
                   flex: 1,
                   padding: 16,
                   borderRadius: 12,
-                  backgroundColor: '#6366f1',
+                  backgroundColor: '#2E8B57',
                   marginLeft: 8,
                   alignItems: 'center',
                 }}
@@ -811,7 +900,7 @@ const ProfileScreen: React.FC = () => {
                   flex: 1,
                   padding: 16,
                   borderRadius: 12,
-                  backgroundColor: '#6366f1',
+                  backgroundColor: '#2E8B57',
                   marginLeft: 8,
                   alignItems: 'center',
                 }}
@@ -867,10 +956,10 @@ const ProfileScreen: React.FC = () => {
                   style={{
                     padding: 16,
                     borderRadius: 12,
-                    backgroundColor: tempRecoveryType === type ? '#6366f1' : '#f8fafc',
+                    backgroundColor: tempRecoveryType === type ? '#2E8B57' : '#f8fafc',
                     marginBottom: 8,
                     borderWidth: 1,
-                    borderColor: tempRecoveryType === type ? '#6366f1' : '#e2e8f0',
+                    borderColor: tempRecoveryType === type ? '#2E8B57' : '#e2e8f0',
                   }}
                   onPress={() => setTempRecoveryType(type as RecoveryType)}
                 >
@@ -913,7 +1002,7 @@ const ProfileScreen: React.FC = () => {
                   flex: 1,
                   padding: 16,
                   borderRadius: 12,
-                  backgroundColor: '#6366f1',
+                  backgroundColor: '#2E8B57',
                   marginLeft: 8,
                   alignItems: 'center',
                 }}
@@ -949,8 +1038,8 @@ const ProfileScreen: React.FC = () => {
             backgroundColor: '#ffffff',
             borderRadius: 20,
             padding: 24,
-            width: '80%',
-            maxWidth: 400,
+            width: '95%',
+            maxWidth: 500,
           }}>
             <Text style={{
               fontSize: 20,
@@ -976,62 +1065,118 @@ const ProfileScreen: React.FC = () => {
                 color: '#64748b',
                 marginBottom: 8,
               }}>
-                Enter your sobriety date:
+                Select your sobriety date:
               </Text>
               <View style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
+                backgroundColor: '#f8fafc',
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#e2e8f0',
+                padding: 4,
+                gap: 4,
               }}>
-                <TextInput
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: '#e2e8f0',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16,
-                    backgroundColor: '#f8fafc',
-                    marginRight: 8,
-                  }}
-                  placeholder="MM"
-                  value={tempMonth}
-                  onChangeText={setTempMonth}
-                  maxLength={2}
-                  keyboardType="numeric"
-                />
-                <TextInput
-                  style={{
-                    flex: 1,
-                    borderWidth: 1,
-                    borderColor: '#e2e8f0',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16,
-                    backgroundColor: '#f8fafc',
-                    marginRight: 8,
-                  }}
-                  placeholder="DD"
-                  value={tempDay}
-                  onChangeText={setTempDay}
-                  maxLength={2}
-                  keyboardType="numeric"
-                />
-                <TextInput
-                  style={{
-                    flex: 1.5,
-                    borderWidth: 1,
-                    borderColor: '#e2e8f0',
-                    borderRadius: 8,
-                    padding: 12,
-                    fontSize: 16,
-                    backgroundColor: '#f8fafc',
-                  }}
-                  placeholder="YYYY"
-                  value={tempYear}
-                  onChangeText={setTempYear}
-                  maxLength={4}
-                  keyboardType="numeric"
-                />
+                <View style={{ flex: 1.5, minWidth: 60 }}>
+                  <Text style={{
+                    fontSize: 10,
+                    fontWeight: '600',
+                    color: '#64748b',
+                    textAlign: 'center',
+                    marginBottom: 2,
+                  }}>
+                    Month
+                  </Text>
+                  <Picker
+                    selectedValue={tempMonth}
+                    onValueChange={setTempMonth}
+                    style={{
+                      height: 50,
+                      backgroundColor: '#ffffff',
+                      borderRadius: 4,
+                    }}
+                    itemStyle={{
+                      fontSize: 12,
+                      color: '#1e293b',
+                    }}
+                    dropdownIconColor="#64748b"
+                  >
+                    <Picker.Item label="Month" value="" />
+                    <Picker.Item label="Jan" value="1" />
+                    <Picker.Item label="Feb" value="2" />
+                    <Picker.Item label="Mar" value="3" />
+                    <Picker.Item label="Apr" value="4" />
+                    <Picker.Item label="May" value="5" />
+                    <Picker.Item label="Jun" value="6" />
+                    <Picker.Item label="Jul" value="7" />
+                    <Picker.Item label="Aug" value="8" />
+                    <Picker.Item label="Sep" value="9" />
+                    <Picker.Item label="Oct" value="10" />
+                    <Picker.Item label="Nov" value="11" />
+                    <Picker.Item label="Dec" value="12" />
+                  </Picker>
+                </View>
+                <View style={{ flex: 1, minWidth: 50 }}>
+                  <Text style={{
+                    fontSize: 10,
+                    fontWeight: '600',
+                    color: '#64748b',
+                    textAlign: 'center',
+                    marginBottom: 2,
+                  }}>
+                    Day
+                  </Text>
+                  <Picker
+                    selectedValue={tempDay}
+                    onValueChange={setTempDay}
+                    style={{
+                      height: 50,
+                      backgroundColor: '#ffffff',
+                      borderRadius: 4,
+                    }}
+                    itemStyle={{
+                      fontSize: 12,
+                      color: '#1e293b',
+                    }}
+                    dropdownIconColor="#64748b"
+                  >
+                    <Picker.Item label="Day" value="" />
+                    {Array.from({ length: 31 }, (_, i) => (
+                      <Picker.Item key={i + 1} label={`${i + 1}`} value={`${i + 1}`} />
+                    ))}
+                  </Picker>
+                </View>
+                <View style={{ flex: 1.5, minWidth: 70 }}>
+                  <Text style={{
+                    fontSize: 10,
+                    fontWeight: '600',
+                    color: '#64748b',
+                    textAlign: 'center',
+                    marginBottom: 2,
+                  }}>
+                    Year
+                  </Text>
+                  <Picker
+                    selectedValue={tempYear}
+                    onValueChange={setTempYear}
+                    style={{
+                      height: 50,
+                      backgroundColor: '#ffffff',
+                      borderRadius: 4,
+                    }}
+                    itemStyle={{
+                      fontSize: 12,
+                      color: '#1e293b',
+                    }}
+                    dropdownIconColor="#64748b"
+                  >
+                    <Picker.Item label="Year" value="" />
+                    {Array.from({ length: 50 }, (_, i) => {
+                      const year = new Date().getFullYear() - i;
+                      return <Picker.Item key={year} label={`${year}`} value={`${year}`} />;
+                    })}
+                  </Picker>
+                </View>
               </View>
             </View>
             <View style={{
@@ -1062,7 +1207,7 @@ const ProfileScreen: React.FC = () => {
                   flex: 1,
                   padding: 16,
                   borderRadius: 12,
-                  backgroundColor: '#6366f1',
+                  backgroundColor: '#2E8B57',
                   marginLeft: 8,
                   alignItems: 'center',
                 }}

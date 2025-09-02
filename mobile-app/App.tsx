@@ -1,20 +1,20 @@
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './src/store';
+import ErrorBoundary from './src/components/common/ErrorBoundary';
+import LoadingScreen from './src/components/common/LoadingScreen';
+import { COLORS } from './src/constants';
 import { AuthProvider } from './src/context/AuthContext.tsx';
 import { FriendsProvider } from './src/context/FriendsContext.tsx';
 import { NotificationProvider } from './src/context/NotificationContext.tsx';
 import AppNavigator from './src/navigation/AppNavigator';
-import ErrorBoundary from './src/components/common/ErrorBoundary';
-import LoadingScreen from './src/components/common/LoadingScreen';
-import { COLORS } from './src/constants';
+import { persistor, store } from './src/store';
 
 // Initialize Firebase
-import { initializeFirebase } from './src/services/firebase';
 import { authService } from './src/services/auth';
+import { initializeFirebase } from './src/services/firebase';
 
 const App: React.FC = () => {
   // Initialize Firebase and services when app starts
