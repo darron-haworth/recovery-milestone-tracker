@@ -254,6 +254,8 @@ const ProfileScreen: React.FC = () => {
             paddingTop: 20,
             paddingBottom: 24,
             paddingHorizontal: 20,
+            borderBottomLeftRadius: 30,
+            borderBottomRightRadius: 30,
           }}
         >
           {/* Title Row */}
