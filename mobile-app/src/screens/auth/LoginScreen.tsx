@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
     ActivityIndicator,
@@ -22,6 +23,7 @@ const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
   const { isLoading, error } = authState || {};
 
@@ -55,6 +57,14 @@ const LoginScreen: React.FC = () => {
     }
   }, [error]);
 
+  const handleSignUpPress = () => {
+    navigation.navigate('SignUp' as never);
+  };
+
+  const handleForgotPasswordPress = () => {
+    navigation.navigate('ForgotPassword' as never);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -78,18 +88,23 @@ const LoginScreen: React.FC = () => {
               {/* Logo Section */}
               <View style={styles.logoSection}>
                 <View style={styles.logoContainer}>
-                  <View style={styles.mainLogo}>
-                    {/* Simple Alarm Clock Emoji */}
-                    <Text style={styles.alarmClock}>⏰</Text>
-                    
-                    {/* 24 hrs label */}
-                    <Text style={styles.hours24}>24 hrs at a time</Text>
-                  </View>
-                  <Text style={styles.logoDescription}>Sign up or login to continue! 🚀</Text>
+                  {/* Empty space for visual balance */}
                 </View>
               </View>
             </View>
           </LinearGradient>
+
+          {/* White Overlay Box with Clock/Prayer Icons and Sign-up Text */}
+          <View style={styles.overlayBox}>
+            <View style={styles.overlayContent}>
+              <View style={styles.iconRow}>
+                <Text style={styles.overlayIcon}>⏰</Text>
+                <Text style={styles.hoursText}>24 hours at a time</Text>
+                <Text style={styles.overlayIcon}>🙏</Text>
+              </View>
+              <Text style={styles.signUpPrompt}>Sign up or login to continue! 🚀</Text>
+            </View>
+          </View>
 
           {/* Login Form */}
           <View style={styles.formContainer}>
@@ -152,7 +167,7 @@ const LoginScreen: React.FC = () => {
             {/* Sign Up Link */}
             <View style={styles.signUpContainer}>
               <Text style={styles.signUpText}>Don't have an account? </Text>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleSignUpPress}>
                 <Text style={styles.signUpLink}>Sign Up</Text>
               </TouchableOpacity>
             </View>
@@ -165,7 +180,7 @@ const LoginScreen: React.FC = () => {
             </View>
 
             {/* Forgot Password */}
-            <TouchableOpacity style={styles.forgotPassword}>
+            <TouchableOpacity style={styles.forgotPassword} onPress={handleForgotPasswordPress}>
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
           </View>
@@ -187,8 +202,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerGradient: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingTop: 16,
+    paddingBottom: 12,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
@@ -314,7 +329,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 8,
+    marginBottom: 4,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
@@ -324,33 +339,56 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
     fontWeight: '500',
-    lineHeight: 22,
-    marginBottom: 20,
+    lineHeight: 20,
+    marginBottom: 16,
   },
   logoSection: {
-    marginBottom: 20,
+    marginBottom: 8,
     alignItems: 'center',
   },
-  mainLogo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  alarmClock: {
-    fontSize: 40,
-    marginRight: 5,
-  },
-  hours24: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
+
   logoDescription: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#ffffff',
     marginBottom: 5,
+  },
+  overlayBox: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: -25,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  overlayContent: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  iconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 12,
+  },
+  overlayIcon: {
+    fontSize: 24,
+  },
+  hoursText: {
+    fontSize: 16,
+    color: '#2E8B57',
+    fontWeight: 'bold',
+    marginHorizontal: 12,
+  },
+  signUpPrompt: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2E8B57',
+    textAlign: 'center',
   },
 
 });
