@@ -98,21 +98,25 @@ const ProfileScreen: React.FC = () => {
   const calculateSobrietyTime = (startDate: Date) => {
     const now = new Date();
     
+    // Calculate total days first
+    const diffTime = Math.abs(now.getTime() - startDate.getTime());
+    const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
     // Get the components of both dates
     const startYear = startDate.getFullYear();
-    const startMonth = startDate.getMonth();
+    const startMonth = startDate.getMonth(); // 0-indexed
     const startDay = startDate.getDate();
     
     const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
+    const currentMonth = now.getMonth(); // 0-indexed
     const currentDay = now.getDate();
     
-    // Calculate years
+    // Calculate years and months
     let years = currentYear - startYear;
     let months = currentMonth - startMonth;
     let days = currentDay - startDay;
     
-    // Adjust for negative days
+    // If the current day is less than the start day, we need to borrow from the month
     if (days < 0) {
       months--;
       // Get the number of days in the previous month
@@ -120,15 +124,12 @@ const ProfileScreen: React.FC = () => {
       days += prevMonth.getDate();
     }
     
-    // Adjust for negative months
+    // If the current month is less than the start month, we need to borrow from the year
     if (months < 0) {
       years--;
       months += 12;
     }
     
-    // Calculate total days for reference
-    const diffTime = Math.abs(now.getTime() - startDate.getTime());
-    const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
     return { years, months, days, totalDays };
   };
@@ -273,84 +274,28 @@ const ProfileScreen: React.FC = () => {
               color: '#FFFFFF',
               opacity: 0.9,
               textAlign: 'center',
+              marginBottom: 8,
             }}>
               Manage your recovery profile
             </Text>
+            <Text style={{
+              fontSize: 14,
+              fontWeight: 'bold',
+              color: '#FFFFFF',
+              opacity: 0.9,
+              textAlign: 'center',
+            }}>
+              {displayName}, @{tempNickname || 'nickname'}
+            </Text>
           </View>
 
-          <View style={{ 
-            flexDirection: 'row', 
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            width: '100%',
-          }}>
-            <View style={{
-              width: 60,
-              height: 60,
-              borderRadius: 30,
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderWidth: 2,
-              borderColor: 'rgba(255, 255, 255, 0.3)',
-            }}>
-              <Text style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: '#ffffff',
-                letterSpacing: 1,
-              }}>
-                {initials}
-              </Text>
-            </View>
-            
-            <View style={{ alignItems: 'center' }}>
-              <Text style={{
-                fontSize: 24,
-                fontWeight: 'bold',
-                color: '#FFFFFF',
-                marginBottom: 2,
-              }}>
-                {sobrietyTime.totalDays.toLocaleString()}
-              </Text>
-              <Text style={{
-                fontSize: 12,
-                color: '#FFFFFF',
-                opacity: 0.9,
-                textAlign: 'center',
-              }}>
-                days sober
-              </Text>
-            </View>
-            
-            <View style={{ alignItems: 'flex-end' }}>
-              <Text style={{
-                fontSize: 22,
-                fontWeight: 'bold',
-                color: '#FFFFFF',
-                marginBottom: 2,
-              }}>
-                {displayName}
-              </Text>
-              <Text style={{
-                fontSize: 14,
-                color: '#FFFFFF',
-                opacity: 0.9,
-              }}>
-                @{tempNickname || 'nickname'}
-              </Text>
-            </View>
-          </View>
         </LinearGradient>
 
         {/* Stats Container */}
         <View style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          paddingVertical: 20,
           backgroundColor: '#FFFFFF',
           marginHorizontal: 16,
-          marginTop: -15,
+          marginTop: -35,
           borderRadius: 12,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 2 },
@@ -358,52 +303,89 @@ const ProfileScreen: React.FC = () => {
           shadowRadius: 4,
           elevation: 3,
         }}>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: '#2E8B57',
-            }}>
-              {sobrietyTime.years}
-            </Text>
-            <Text style={{
-              fontSize: 12,
-              color: '#708090',
-              marginTop: 4,
-            }}>
-              Years
-            </Text>
+          {/* Years | Months | Days Row */}
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            paddingVertical: 20,
+          }}>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#2E8B57',
+              }}>
+                {sobrietyTime.years}
+              </Text>
+              <Text style={{
+                fontSize: 12,
+                color: '#708090',
+                marginTop: 4,
+              }}>
+                Years
+              </Text>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#2E8B57',
+              }}>
+                {sobrietyTime.months}
+              </Text>
+              <Text style={{
+                fontSize: 12,
+                color: '#708090',
+                marginTop: 4,
+              }}>
+                Months
+              </Text>
+            </View>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: 'bold',
+                color: '#2E8B57',
+              }}>
+                {sobrietyTime.days}
+              </Text>
+              <Text style={{
+                fontSize: 12,
+                color: '#708090',
+                marginTop: 4,
+              }}>
+                Days
+              </Text>
+            </View>
           </View>
-          <View style={{ alignItems: 'center' }}>
+          
+          {/* Horizontal Line */}
+          <View style={{
+            height: 1,
+            backgroundColor: '#e2e8f0',
+            marginHorizontal: 20,
+          }} />
+          
+          {/* Total Days Count */}
+          <View style={{
+            alignItems: 'center',
+            paddingVertical: 16,
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}>
             <Text style={{
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: 'bold',
               color: '#2E8B57',
+              marginRight: 8,
             }}>
-              {sobrietyTime.months}
+              {sobrietyTime.totalDays.toLocaleString()}
             </Text>
             <Text style={{
-              fontSize: 12,
+              fontSize: 14,
               color: '#708090',
-              marginTop: 4,
             }}>
-              Months
-            </Text>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <Text style={{
-              fontSize: 24,
-              fontWeight: 'bold',
-              color: '#2E8B57',
-            }}>
-              {sobrietyTime.days}
-            </Text>
-            <Text style={{
-              fontSize: 12,
-              color: '#708090',
-              marginTop: 4,
-            }}>
-              Days
+              days
             </Text>
           </View>
         </View>
