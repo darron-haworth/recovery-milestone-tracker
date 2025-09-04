@@ -106,8 +106,14 @@ const SignUpScreen: React.FC = () => {
             </View>
             
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Start your recovery journey today</Text>
           </LinearGradient>
+
+          {/* White Overlay Box with Tagline */}
+          <View style={styles.overlayBox}>
+            <View style={styles.overlayContent}>
+              <Text style={styles.taglineText}>🚀 Celebrating our recovery milestones</Text>
+            </View>
+          </View>
 
           {/* Sign Up Form */}
           <View style={styles.formContainer}>
@@ -417,6 +423,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1e293b',
     fontWeight: '500',
+    textAlign: 'center',
+  },
+  overlayBox: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: -15,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  overlayContent: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  taglineText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2E8B57',
     textAlign: 'center',
   },
   signUpButton: {
