@@ -82,8 +82,8 @@ android {
         applicationId "com.recoverymilestonetracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "1.1"
+        versionCode 3
+        versionName "1.1.0"
     }
     
 
@@ -109,17 +109,8 @@ android {
     }
 }
 
-// Add fonts configuration
-android.applicationVariants.all { variant ->
-    variant.mergeAssetsProvider.configure {
-        doLast {
-            copy {
-                from "${projectDir}/src/main/assets/fonts"
-                into "${buildDir}/intermediates/assets/${variant.dirName}/fonts"
-            }
-        }
-    }
-}
+// Add fonts configuration for react-native-vector-icons
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin

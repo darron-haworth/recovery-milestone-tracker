@@ -1,5 +1,6 @@
 
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
     Alert,
@@ -22,6 +23,7 @@ import { RecoveryType } from '../../types';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigation = useNavigation();
   const authState = useSelector((state: RootState) => state.auth);
   const user = authState.user;
   const isAuthenticated = authState.isAuthenticated;
@@ -274,18 +276,8 @@ const ProfileScreen: React.FC = () => {
               color: '#FFFFFF',
               opacity: 0.9,
               textAlign: 'center',
-              marginBottom: 8,
             }}>
-              Manage your recovery profile
-            </Text>
-            <Text style={{
-              fontSize: 14,
-              fontWeight: 'bold',
-              color: '#FFFFFF',
-              opacity: 0.9,
-              textAlign: 'center',
-            }}>
-              {displayName}, @{tempNickname || 'nickname'}
+              Manage recovery profile for {displayName}
             </Text>
           </View>
 
@@ -609,6 +601,8 @@ const ProfileScreen: React.FC = () => {
               </Text>
             </View>
           </TouchableOpacity>
+
+
 
           {/* Logout Section */}
           <TouchableOpacity

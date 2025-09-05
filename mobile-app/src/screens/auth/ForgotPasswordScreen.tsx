@@ -256,6 +256,8 @@ const styles = StyleSheet.create({
   },
   backToLogin: {
     alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   backToLoginText: {
     color: '#6366f1',
