@@ -1,1 +1,12 @@
-{}
+{
+  "ignore_dirs": [
+    "node_modules/@react-native-async-storage/async-storage/android/build",
+    "node_modules/@react-native-vector-icons/android/build",
+    "android/build",
+    "android/app/build",
+    "ios/build",
+    ".git",
+    "node_modules/.cache",
+    "node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen"
+  ]
+}

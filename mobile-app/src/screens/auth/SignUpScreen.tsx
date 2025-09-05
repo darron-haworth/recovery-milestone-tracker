@@ -271,7 +271,7 @@ const SignUpScreen: React.FC = () => {
             {/* Sign In Link */}
             <View style={styles.signInContainer}>
               <Text style={styles.signInText}>Already have an account? </Text>
-              <TouchableOpacity onPress={handleSignInPress}>
+              <TouchableOpacity style={styles.signInTouchable} onPress={handleSignInPress}>
                 <Text style={styles.signInLink}>Sign In</Text>
               </TouchableOpacity>
             </View>
@@ -494,6 +494,10 @@ const styles = StyleSheet.create({
   signInText: {
     color: '#64748b',
     fontSize: 16,
+  },
+  signInTouchable: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   signInLink: {
     color: '#6366f1',

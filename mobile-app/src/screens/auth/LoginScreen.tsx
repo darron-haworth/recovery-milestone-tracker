@@ -83,7 +83,7 @@ const LoginScreen: React.FC = () => {
           >
             <View style={styles.header}>
               <Text style={styles.appTitle}>Our Time Recovered</Text>
-              <Text style={styles.tagline}>🚀 Celebrating our recovery milestones</Text>
+              <Text style={styles.tagline}>Sign up or login to continue! 🚀</Text>
               
               {/* Logo Section */}
               <View style={styles.logoSection}>
@@ -97,12 +97,13 @@ const LoginScreen: React.FC = () => {
           {/* White Overlay Box with Clock/Prayer Icons and Sign-up Text */}
           <View style={styles.overlayBox}>
             <View style={styles.overlayContent}>
-              <View style={styles.iconRow}>
+              <Text style={styles.signUpPrompt}>🚀 Celebrating our recovery milestones</Text>
+              <View style={{ height: 16 }} />
+              <View style={[styles.iconRow, { marginBottom: -8 }]}>
                 <Text style={styles.overlayIcon}>⏰</Text>
                 <Text style={styles.hoursText}>24 hours at a time</Text>
                 <Text style={styles.overlayIcon}>🙏</Text>
               </View>
-              <Text style={styles.signUpPrompt}>Sign up or login to continue! 🚀</Text>
             </View>
           </View>
 
@@ -167,7 +168,7 @@ const LoginScreen: React.FC = () => {
             {/* Sign Up Link */}
             <View style={styles.signUpContainer}>
               <Text style={styles.signUpText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={handleSignUpPress}>
+              <TouchableOpacity style={styles.signUpTouchable} onPress={handleSignUpPress}>
                 <Text style={styles.signUpLink}>Sign Up</Text>
               </TouchableOpacity>
             </View>
@@ -288,6 +289,8 @@ const styles = StyleSheet.create({
   forgotPassword: {
     alignItems: 'center',
     marginBottom: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   forgotPasswordText: {
     color: '#2E8B57',
@@ -319,6 +322,10 @@ const styles = StyleSheet.create({
   signUpText: {
     color: '#64748b',
     fontSize: 16,
+  },
+  signUpTouchable: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   signUpLink: {
     color: '#2E8B57',
