@@ -153,3 +153,4 @@ service-account*.json
 
 # Firebase config (if you plan to store any firebase config files)
 firebase-config.json
+*.apk
