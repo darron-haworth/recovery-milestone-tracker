@@ -12,25 +12,31 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 
 **Frontend (Mobile App)**
 - **React Native 0.81.0** with TypeScript 5.8.3
-- **Firebase SDK 22.0.0** (Native integration)
+- **React Native CLI 20.0.1** for development tools
+- **Firebase SDK 22.4.0** (Native integration)
   - Firebase Auth, Firestore, Analytics, Messaging
 - **Redux Toolkit 2.2.1** for state management
 - **React Navigation v6** for navigation
-- **React Native Vector Icons** for UI icons
-- **React Native Linear Gradient** for modern UI effects
-- **React Native Safe Area Context** for safe area handling
-- **React Native Keychain** for secure storage
-- **Redux Persist** with encryption for offline data
+- **React Native Vector Icons 10.1.0** for UI icons
+- **React Native Linear Gradient 2.8.3** for modern UI effects
+- **React Native Safe Area Context 5.6.1** for safe area handling
+- **React Native Keychain 8.1.3** for secure storage
+- **Redux Persist 6.0.0** with encryption for offline data
+- **React Native Gesture Handler 2.28.0** for touch interactions
+- **React Native Screens 4.15.4** for native screen management
+- **React Native SVG 15.12.1** for vector graphics
+- **React Native Haptic Feedback 2.3.3** for tactile feedback
 
 **Backend (API)**
-- **Node.js 18+** with Express 4.18.2
+- **Node.js 20.19.4** with Express 4.18.2
 - **Firebase Admin SDK 12.0.0**
 - **Firestore** for database
 - **Firebase Auth** for authentication
 - **Firebase Cloud Messaging** for push notifications
-- **Security middleware**: Helmet, CORS, Rate limiting
-- **Validation**: Joi, Express Validator
-- **Logging**: Winston, Morgan
+- **Security middleware**: Helmet 7.1.0, CORS 2.8.5, Rate limiting
+- **Validation**: Joi 17.11.0, Express Validator 7.0.1
+- **Logging**: Winston 3.11.0, Morgan 1.10.0
+- **Additional tools**: Nodemailer 6.9.7, Twilio 4.19.0, Moment 2.29.4
 
 **Shared**
 - **TypeScript** for type safety across the stack
@@ -65,12 +71,14 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 
 ### Prerequisites
 
-- **Node.js 18.0.0 or higher**
-- **React Native CLI** (latest)
+- **Node.js 20.19.4 or higher** (tested with v20.19.4)
+- **React Native CLI 20.0.1** (latest)
 - **Android Studio** (for Android development)
 - **Xcode** (for iOS development, macOS only)
 - **Firebase project** setup
-- **Android SDK** (API level 24+)
+- **Android SDK** (API level 24+, Target API 35)
+- **Java Development Kit (JDK)** for Android development
+- **CocoaPods** (for iOS development)
 
 ### Quick Start
 
@@ -126,6 +134,7 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
    ```bash
    # Terminal 1: Start backend
    cd backend
+   export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/firebase-admin-key.json"
    npm run dev
    
    # Terminal 2: Start Metro
@@ -137,6 +146,12 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
    npm run android  # or npm run ios
    ```
 
+7. **Stop all processes**
+   ```bash
+   # From project root
+   ./stop-everything.sh
+   ```
+
 ## 📁 Project Structure
 
 ```
@@ -144,48 +159,60 @@ recovery-milestone-tracker/
 ├── mobile-app/                    # React Native app
 │   ├── src/
 │   │   ├── components/           # Reusable UI components
-│   │   │   ├── auth/            # Authentication components
-│   │   │   ├── common/          # Common UI components
-│   │   │   ├── friends/         # Friend-related components
-│   │   │   └── milestones/      # Milestone components
+│   │   │   └── common/          # Common UI components (ErrorBoundary, LoadingScreen)
 │   │   ├── screens/              # App screens
-│   │   │   ├── auth/            # Login, Signup, ForgotPassword
+│   │   │   ├── auth/            # Login, Signup, ForgotPassword, Onboarding
 │   │   │   ├── profile/         # User profile management
-│   │   │   ├── friends/         # Friend management (placeholder)
-│   │   │   └── milestones/      # Milestone tracking (placeholder)
-│   │   ├── navigation/           # Navigation configuration
+│   │   │   ├── friends/         # Friend management
+│   │   │   ├── milestones/      # Milestone tracking
+│   │   │   └── SettingsScreen.tsx
+│   │   ├── navigation/           # Navigation configuration (AppNavigator, AuthNavigator, TabNavigator)
 │   │   ├── services/             # Firebase and API services
 │   │   ├── store/                # Redux store and slices
-│   │   ├── context/              # React Context providers
+│   │   ├── context/              # React Context providers (Auth, Friends, Notifications)
 │   │   ├── hooks/                # Custom React hooks
-│   │   ├── utils/                # Utility functions
-│   │   ├── types/                # TypeScript type definitions
+│   │   ├── utils/                # Utility functions (encryption, crypto-polyfill)
+│   │   ├── config/               # Firebase configuration
 │   │   ├── constants.ts          # App-wide constants
 │   │   ├── recoveryTypes.ts      # Recovery type definitions
-│   │   └── milestoneTypes.ts     # Milestone type definitions
+│   │   ├── milestoneTypes.ts     # Milestone type definitions
+│   │   └── types.ts              # TypeScript type definitions
 │   ├── android/                  # Android-specific files
 │   ├── ios/                      # iOS-specific files
-│   └── package.json
+│   ├── __tests__/                # Test files
+│   ├── App.tsx                   # Main app component
+│   ├── package.json
+│   └── tsconfig.json
 ├── backend/                      # Node.js backend
 │   ├── src/
-│   │   ├── routes/               # API routes
-│   │   ├── middleware/           # Express middleware
-│   │   ├── config/               # Configuration files
+│   │   ├── routes/               # API routes (auth, user, friends, milestones, notifications)
+│   │   ├── middleware/           # Express middleware (auth, error handling)
+│   │   ├── config/               # Configuration files (Firebase Admin SDK)
 │   │   ├── controllers/          # Route controllers
 │   │   ├── models/               # Data models
 │   │   ├── services/             # Business logic
 │   │   └── utils/                # Utility functions
+│   ├── server.js                 # Main server file
+│   ├── setup-env.sh              # Environment setup script
+│   ├── test-all-endpoints.sh     # API testing script
 │   └── package.json
 ├── shared/                       # Shared types and constants
 │   ├── types.ts
 │   ├── constants.ts
 │   ├── milestoneTypes.ts
 │   └── recoveryTypes.ts
+├── docs/                         # Documentation
+│   ├── CONTRIBUTING.md           # Contribution guidelines
+│   └── brand_guide.md            # Brand guidelines
+├── functions/                    # Firebase Cloud Functions (if used)
 ├── start-dev-environment.sh      # Automated dev environment setup
+├── stop-everything.sh            # Stop all running processes
 ├── deploy-firebase.sh            # Firebase deployment script
 ├── firebase.json                 # Firebase configuration
 ├── firestore.rules               # Firestore security rules
-└── storage.rules                 # Firebase Storage rules
+├── firestore.indexes.json        # Firestore indexes
+├── storage.rules                 # Firebase Storage rules
+└── README.md                     # Project documentation
 ```
 
 ## 🔧 Configuration
@@ -206,6 +233,56 @@ recovery-milestone-tracker/
    - Generate Firebase Admin SDK service account key
    - Place the key file in the backend directory
    - Update environment variables
+   - See [Backend Setup](#backend-setup) for detailed instructions
+
+## 🔧 Backend Setup
+
+### Firebase Admin SDK Configuration
+
+The backend uses Firebase Admin SDK for server-side authentication and user management. Follow these steps to set it up:
+
+#### 1. Generate Service Account Key
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Select your project
+3. Go to **Project Settings** → **Service Accounts**
+4. Click **Generate New Private Key**
+5. Download the JSON file
+6. Place it in a secure location (e.g., `~/firebase-keys/`)
+
+#### 2. Set Environment Variables
+
+```bash
+# Set the path to your service account key
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/firebase-admin-key.json"
+
+# Or set it in your .env file
+echo "GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/firebase-admin-key.json" >> .env
+```
+
+#### 3. Run Backend Setup Script
+
+```bash
+cd backend
+chmod +x setup-env.sh
+./setup-env.sh
+```
+
+This script will:
+- Create a `.env` file with proper configuration
+- Set up Firebase project settings
+- Configure CORS and security settings
+
+#### 4. Start the Backend Server
+
+```bash
+# With environment variable
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/firebase-admin-key.json"
+npm start
+
+# Or using the setup script
+./setup-env.sh && npm start
+```
 
 ### Environment Variables
 
@@ -213,11 +290,57 @@ recovery-milestone-tracker/
 ```env
 NODE_ENV=development
 PORT=3000
-FIREBASE_SERVICE_ACCOUNT_PATH=./firebase-admin-key.json
-FIREBASE_DATABASE_URL=https://your-project.firebaseio.com
-FIREBASE_STORAGE_BUCKET=your-project.appspot.com
-ALLOWED_ORIGINS=http://localhost:3000,https://your-domain.com
+FIREBASE_PROJECT_ID=your-project-id
+FIREBASE_STORAGE_BUCKET=your-project-id.firebasestorage.app
+USE_FIRESTORE=true
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8081,http://localhost:19006
+JWT_SECRET=dev-jwt-secret-change-in-production
+ENCRYPTION_KEY=dev-encryption-key-change-in-production
 ```
+
+**Required Environment Variables:**
+- `GOOGLE_APPLICATION_CREDENTIALS`: Path to Firebase service account key
+- `FIREBASE_PROJECT_ID`: Your Firebase project ID (replace `your-project-id`)
+- `FIREBASE_STORAGE_BUCKET`: Your Firebase storage bucket (replace `your-project-id`)
+
+#### 5. Test Backend API
+
+Once the backend is running, test the authentication endpoints:
+
+```bash
+# Test health endpoint
+curl http://localhost:3000/health
+
+# Test user signup
+curl -X POST http://localhost:3000/api/auth/signup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "testpassword123",
+    "displayName": "Test User"
+  }'
+
+# Test user login
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "testpassword123"
+  }'
+
+# Test password reset
+curl -X POST http://localhost:3000/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com"
+  }'
+```
+
+**Expected Responses:**
+- **Health**: `{"status":"OK","timestamp":"...","uptime":...}`
+- **Signup**: `{"success":true,"message":"User registered successfully","data":{...}}`
+- **Login**: `{"success":true,"message":"Login successful","data":{...}}`
+- **Password Reset**: `{"success":true,"message":"Password reset email sent"}`
 
 ### Android Setup
 
@@ -251,11 +374,15 @@ cd mobile-app
 npm run build:android:release
 ```
 
+The APK will be generated at `android/app/build/outputs/apk/release/app-release.apk`
+
 ### iOS
 ```bash
 cd mobile-app
 npm run build:ios:release
 ```
+
+The iOS archive will be created at `ios/RecoveryMilestoneTracker.xcarchive`
 
 ## 🔒 Security Features
 
@@ -281,13 +408,19 @@ npm run build:ios:release
 cd backend
 npm run dev          # Development with nodemon
 npm start            # Production start
+npm test             # Run tests
+npm run lint         # Run ESLint
 
 # Mobile App
 cd mobile-app
 npm start            # Start Metro bundler
 npm run android      # Run on Android
 npm run ios          # Run on iOS
+npm test             # Run tests
 npm run lint         # Run ESLint
+npm run build:android:release  # Build Android APK
+npm run build:ios:release      # Build iOS archive
+npm run bundle:analyze         # Analyze bundle size
 ```
 
 ## 🤝 Contributing
@@ -334,8 +467,25 @@ If you're in crisis or need immediate support:
 
 ## 🔄 Recent Updates
 
-- **Modern Profile UI**: Redesigned profile screen with gradient backgrounds and improved UX
+- **Version 2.2.0**: Major and minor version increment with UI/UX improvements
+- **Firebase Admin SDK Integration**: Complete backend authentication with Firebase Admin SDK
+- **Enhanced Profile UI**: Redesigned profile screen with gradient backgrounds and improved UX
+- **Improved Touch Targets**: Larger, more accessible touch areas for navigation
 - **Enhanced Data Persistence**: Improved Firebase integration and offline data handling
 - **Automated Development Setup**: Added `start-dev-environment.sh` for easy development
-- **Improved Error Handling**: Better error handling and user feedback
+- **Release APK Generation**: Automated APK build with version numbering
+- **Comprehensive Documentation**: Updated README and CONTRIBUTING guides
 - **Performance Optimizations**: Reduced bundle size and improved app performance
+
+## 📱 Current Build Status
+
+- **App Version**: 2.2.0
+- **Version Code**: 4
+- **Package Name**: `com.recoverymilestonetracker`
+- **Bundle ID**: `com.recoverymilestonetracker` (iOS)
+- **Last Release APK**: Available at `mobile-app/android/app/build/outputs/apk/release/app-release.apk`
+- **APK Size**: ~69MB
+- **Target SDK**: 35 (Android 14)
+- **Minimum SDK**: 24 (Android 7.0)
+- **React Native Version**: 0.81.0
+- **Node.js Version**: 20.19.4
