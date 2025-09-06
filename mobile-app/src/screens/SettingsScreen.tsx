@@ -5,8 +5,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity,
-    View,
+    View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -14,10 +13,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const SettingsScreen: React.FC = () => {
   const navigation = useNavigation();
 
-  const navigateToIconBrowser = () => {
-    // Navigate to the icon browser screen
-    navigation.navigate('IconBrowser' as never);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -32,25 +27,6 @@ const SettingsScreen: React.FC = () => {
           </View>
         </LinearGradient>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Development Tools</Text>
-          
-          <TouchableOpacity 
-            style={styles.settingItem}
-            onPress={navigateToIconBrowser}
-          >
-            <View style={styles.settingLeft}>
-              <MaterialIcons name="palette" size={24} color="#4169E1" />
-              <View style={styles.settingText}>
-                <Text style={styles.settingTitle}>Icon Browser</Text>
-                <Text style={styles.settingDescription}>
-                  Browse and test Material Icons
-                </Text>
-              </View>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color="#64748b" />
-          </TouchableOpacity>
-        </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>App Settings</Text>
@@ -67,6 +43,7 @@ const SettingsScreen: React.FC = () => {
             </View>
             <MaterialIcons name="chevron-right" size={24} color="#64748b" />
           </View>
+
 
           <View style={styles.settingItem}>
             <View style={styles.settingLeft}>
@@ -128,6 +105,8 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   header: {
     alignItems: 'center',

@@ -1,31 +1,39 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
-  ActivityIndicator,
+    ActivityIndicator,
+    Alert,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
 import { authService } from '../../services/auth';
 
 const SignUpScreen: React.FC = () => {
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastInitial, setLastInitial] = useState('');
+  const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const navigation = useNavigation();
 
   const handleSignUp = async () => {
-    if (!name || !email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!firstName || !lastInitial || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all required fields');
+      return;
+    }
+
+    if (lastInitial.length !== 1) {
+      Alert.alert('Privacy Notice', 'Last initial must be exactly 1 character for maximum anonymity protection.');
       return;
     }
 
@@ -48,12 +56,11 @@ const SignUpScreen: React.FC = () => {
 
       // Create user profile
       const profile = {
-        firstName: name,
-        lastInitial: name.split(' ').pop()?.charAt(0) || 'U',
-        recoveryType: 'Other' as const,
+        firstName: firstName.trim(),
+        lastInitial: lastInitial.trim().toUpperCase(),
+        nickname: nickname.trim() || firstName.trim(),
+        recoveryType: 'Alcoholism' as const,
         sobrietyDate: new Date().toISOString(),
-        fellowship: 'Other' as const,
-        bio: 'New user',
       };
 
       // Attempt to sign up
@@ -70,6 +77,10 @@ const SignUpScreen: React.FC = () => {
     }
   };
 
+  const handleSignInPress = () => {
+    navigation.navigate('Login' as never);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -83,7 +94,7 @@ const SignUpScreen: React.FC = () => {
         >
           {/* Header with gradient background */}
           <LinearGradient
-            colors={['#6366f1', '#8b5cf6']}
+            colors={['#2E8B57', '#66CDAA']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.headerGradient}
@@ -95,8 +106,14 @@ const SignUpScreen: React.FC = () => {
             </View>
             
             <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Start your recovery journey today</Text>
           </LinearGradient>
+
+          {/* White Overlay Box with Tagline */}
+          <View style={styles.overlayBox}>
+            <View style={styles.overlayContent}>
+              <Text style={styles.taglineText}>🚀 Celebrating our recovery milestones</Text>
+            </View>
+          </View>
 
           {/* Sign Up Form */}
           <View style={styles.formContainer}>
@@ -106,14 +123,55 @@ const SignUpScreen: React.FC = () => {
                 <View style={styles.inputIcon}>
                   <Text style={styles.iconText}>👤</Text>
                 </View>
-                <Text style={styles.inputLabel}>Full Name</Text>
+                <View style={styles.nameLabelsRow}>
+                  <Text style={styles.inputLabel}>First Name</Text>
+                  <Text style={styles.inputLabel}>Initial</Text>
+                </View>
+              </View>
+              <View style={styles.nameInputsRow}>
+                <TextInput
+                  style={styles.firstNameInput}
+                  placeholder="First name"
+                  placeholderTextColor="#94a3b8"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                  editable={!isLoading}
+                />
+                <TextInput
+                  style={styles.initialInput}
+                  placeholder="L"
+                  placeholderTextColor="#94a3b8"
+                  value={lastInitial}
+                  onChangeText={(text) => {
+                    // Ensure only 1 character maximum for privacy
+                    if (text.length <= 1) {
+                      setLastInitial(text.toUpperCase());
+                    }
+                  }}
+                  maxLength={1}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  editable={!isLoading}
+                />
+              </View>
+            </View>
+
+            {/* Nickname Input Card */}
+            <View style={styles.inputCard}>
+              <View style={styles.inputHeader}>
+                <View style={styles.inputIcon}>
+                  <Text style={styles.iconText}>🏷️</Text>
+                </View>
+                <Text style={styles.inputLabel}>Nickname (Optional)</Text>
               </View>
               <TextInput
                 style={styles.input}
-                placeholder="Enter your full name"
+                placeholder="Enter a nickname (optional)"
                 placeholderTextColor="#94a3b8"
-                value={name}
-                onChangeText={setName}
+                value={nickname}
+                onChangeText={setNickname}
                 autoCapitalize="words"
                 autoCorrect={false}
                 editable={!isLoading}
@@ -126,7 +184,7 @@ const SignUpScreen: React.FC = () => {
                 <View style={styles.inputIcon}>
                   <Text style={styles.iconText}>📧</Text>
                 </View>
-                <Text style={styles.inputLabel}>Email Address</Text>
+                <Text style={styles.inputLabel}>Login Id</Text>
               </View>
               <TextInput
                 style={styles.input}
@@ -190,7 +248,7 @@ const SignUpScreen: React.FC = () => {
               disabled={isLoading}
             >
               <LinearGradient
-                colors={['#6366f1', '#8b5cf6']}
+                colors={['#2E8B57', '#66CDAA']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.buttonGradient}
@@ -213,7 +271,7 @@ const SignUpScreen: React.FC = () => {
             {/* Sign In Link */}
             <View style={styles.signInContainer}>
               <Text style={styles.signInText}>Already have an account? </Text>
-              <TouchableOpacity>
+              <TouchableOpacity style={styles.signInTouchable} onPress={handleSignInPress}>
                 <Text style={styles.signInLink}>Sign In</Text>
               </TouchableOpacity>
             </View>
@@ -332,6 +390,62 @@ const styles = StyleSheet.create({
     color: '#1e293b',
     fontWeight: '500',
   },
+  nameLabelsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flex: 1,
+    marginLeft: 10,
+  },
+  nameInputsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  firstNameInput: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    color: '#1e293b',
+    fontWeight: '500',
+  },
+  initialInput: {
+    width: 60,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    padding: 14,
+    fontSize: 16,
+    color: '#1e293b',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  overlayBox: {
+    backgroundColor: '#FFFFFF',
+    marginHorizontal: 16,
+    marginTop: -15,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  overlayContent: {
+    padding: 16,
+    alignItems: 'center',
+  },
+  taglineText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#2E8B57',
+    textAlign: 'center',
+  },
   signUpButton: {
     borderRadius: 16,
     marginTop: 8,
@@ -380,6 +494,10 @@ const styles = StyleSheet.create({
   signInText: {
     color: '#64748b',
     fontSize: 16,
+  },
+  signInTouchable: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   signInLink: {
     color: '#6366f1',

@@ -1,20 +1,22 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { COLORS, TYPOGRAPHY, SPACING, BORDER_RADIUS } from '../../constants';
+import { SPACING } from '../../constants';
 
 const ForgotPasswordScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const navigation = useNavigation();
 
   const handleResetPassword = () => {
     // TODO: Implement password reset logic
@@ -23,8 +25,7 @@ const ForgotPasswordScreen: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    // TODO: Navigate back to login
-    console.log('Navigate back to login');
+    navigation.navigate('Login' as never);
   };
 
   if (isSubmitted) {
@@ -41,7 +42,7 @@ const ForgotPasswordScreen: React.FC = () => {
             </Text>
             <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
               <LinearGradient
-                colors={['#6366f1', '#8b5cf6']}
+                colors={['#2E8B57', '#66CDAA']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.buttonGradient}
@@ -63,7 +64,7 @@ const ForgotPasswordScreen: React.FC = () => {
       >
         {/* Header with gradient background */}
         <LinearGradient
-          colors={['#6366f1', '#8b5cf6']}
+          colors={['#2E8B57', '#66CDAA']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.headerGradient}
@@ -105,7 +106,7 @@ const ForgotPasswordScreen: React.FC = () => {
           {/* Reset Button */}
           <TouchableOpacity style={styles.resetButton} onPress={handleResetPassword}>
             <LinearGradient
-              colors={['#6366f1', '#8b5cf6']}
+              colors={['#2E8B57', '#66CDAA']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.buttonGradient}
@@ -255,6 +256,8 @@ const styles = StyleSheet.create({
   },
   backToLogin: {
     alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
   },
   backToLoginText: {
     color: '#6366f1',
