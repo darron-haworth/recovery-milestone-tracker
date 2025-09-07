@@ -13,7 +13,40 @@ const authenticateToken = async (req, res, next) => {
     }
 
     try {
-      // Verify Firebase ID token
+      // Check if it's a custom API token (format: user_uid_timestamp)
+      if (token.startsWith('user_') && token.includes('_')) {
+        const parts = token.split('_');
+        if (parts.length >= 3) {
+          const uid = parts[1];
+          const timestamp = parseInt(parts[2]);
+          
+          // Check if token is not too old (24 hours)
+          const now = Date.now();
+          const maxAge = 24 * 60 * 60 * 1000; // 24 hours
+          
+          if (now - timestamp < maxAge) {
+            console.log(`🔐 Custom API token authenticated (UID: ${uid})`);
+            
+            // Get user data from Firestore to get email
+            const { getFirestore } = require('../config/firebase-functions');
+            const db = getFirestore();
+            const userDoc = await db.collection('users').doc(uid).get();
+            
+            if (userDoc.exists) {
+              const userData = userDoc.data();
+              req.user = {
+                uid: uid,
+                email: userData.email || 'unknown@example.com',
+                emailVerified: userData.emailVerified || false,
+              };
+              next();
+              return;
+            }
+          }
+        }
+      }
+
+      // Try Firebase ID token verification as fallback
       const decodedToken = await verifyIdToken(token);
       
       // Add user info to request
@@ -36,6 +69,7 @@ const authenticateToken = async (req, res, next) => {
         };
         next();
       } else {
+        console.error('Token verification failed:', tokenError.message);
         return res.status(401).json({
           success: false,
           error: 'Invalid or expired token',
