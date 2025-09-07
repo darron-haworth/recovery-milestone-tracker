@@ -36,14 +36,19 @@ const TabNavigator: React.FC = () => {
           height: 80,
         },
         headerStyle: {
-          backgroundColor: '#FFFFFF',
-          height: 24, // Absolute minimum height
+          backgroundColor: '#757575', // Even lighter gray
+          height: 40, // Increased height to accommodate positioning
+          paddingTop: 0, // Remove space above text
+          paddingBottom: 0, // Remove default bottom padding
         },
-        headerTintColor: '#000000',
+        headerTintColor: '#FFFFFF', // White text
         headerTitleAlign: 'center',
         headerTitleStyle: {
           fontSize: 12, // Minimal font size for ultra-compact header
           fontWeight: '500',
+          color: '#FFFFFF', // White text
+          marginTop: -10, // Move text up
+          marginBottom: 10, // Add space below text
         },
       }}
     >

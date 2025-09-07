@@ -47,7 +47,7 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 ### Core Features
 - ✅ **User Authentication**: Secure Firebase Auth integration
 - ✅ **Profile Management**: Editable user profiles with nickname support
-- ✅ **Recovery Type Tracking**: Support for Alcoholism, Drug Addiction, Gambling, Food Addiction
+- ✅ **Recovery Type Tracking**: Support for Alcoholism, Drug Addiction, Gambling, Sex Addiction, Food Addiction, Undisclosed, and Other
 - ✅ **Sobriety Date Tracking**: Calculate and display sobriety duration
 - ✅ **Friend Connections**: Connect with friends in recovery (placeholder screens)
 - ✅ **Milestone Tracking**: Track recovery milestones (placeholder screens)
@@ -63,9 +63,42 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 - 🔐 **Input Validation**: Comprehensive validation on all inputs
 
 ### Recovery Support
-- 🤝 **Fellowship Integration**: Support for AA, NA, GA, and other fellowships
+- 🤝 **Program Integration**: Support for AA, NA, GA, CA, MA, HA, SA, and other programs
 - 📊 **Progress Tracking**: Visual progress indicators and statistics
 - 💪 **Motivational Features**: Daily encouragement and milestone celebrations
+
+## 🏥 Recovery Types & Programs
+
+The app supports multiple recovery types with associated recovery programs:
+
+### Recovery Types
+| **Recovery Type** | **Description** | **Available Programs** |
+|------------------|-----------------|---------------------------|
+| **Alcoholism** | Recovery from alcohol addiction and alcoholism | AA, Unaffiliated, Other |
+| **Drug Addiction** | Recovery from drug addiction and substance use disorders | NA, AA, CA, MA, HA, Unaffiliated, Other |
+| **Gambling** | Recovery from gambling addiction and compulsive gambling | GA, Unaffiliated, Other |
+| **Sex Addiction** | Recovery from sex addiction and compulsive sexual behavior | SA, Unaffiliated, Other |
+| **Food Addiction** | Recovery from food addiction and compulsive eating behaviors | Unaffiliated, Other |
+| **Undisclosed** | Recovery journey details are kept private | Unaffiliated, Other |
+| **Other** | Recovery from other types of addiction and compulsive behaviors | CA, MA, HA, SA, Unaffiliated, Other |
+
+### Recovery Programs
+| **Program** | **Full Name** | **Website** | **Phone** |
+|-------------|---------------|-------------|-----------|
+| **AA** | Alcoholics Anonymous | [aa.org](https://www.aa.org) | 1-212-870-3400 |
+| **NA** | Narcotics Anonymous | [na.org](https://www.na.org) | 1-818-773-9999 |
+| **GA** | Gamblers Anonymous | [gamblersanonymous.org](https://www.gamblersanonymous.org) | 1-213-386-8789 |
+| **CA** | Cocaine Anonymous | [ca.org](https://ca.org) | 1-310-559-5833 |
+| **MA** | Marijuana Anonymous | [marijuana-anonymous.org](https://www.marijuana-anonymous.org) | 1-800-766-6779 |
+| **HA** | Heroin Anonymous | [heroin-anonymous.org](https://heroin-anonymous.org) | 1-855-437-4626 |
+| **SA** | Sexaholics Anonymous | [sa.org](https://www.sa.org) | 1-866-424-8777 |
+| **Unaffiliated** | Self-sponsorship, therapy, medical treatment, or other non-program approaches | - | - |
+| **Other** | Other Program | - | - |
+
+### Crisis Resources
+- **National Suicide Prevention Lifeline**: 988
+- **Crisis Text Line**: Text HOME to 741741
+- **SAMHSA National Helpline**: 1-800-662-HELP
 
 ## 🚀 Getting Started
 
@@ -120,8 +153,8 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 5. **Start development environment (Recommended)**
    ```bash
    # From project root
-   chmod +x start-dev-environment.sh
-   ./start-dev-environment.sh
+   chmod +x dev-scripts/start-dev-environment.sh
+   ./dev-scripts/start-dev-environment.sh
    ```
 
    This script automatically:
@@ -149,7 +182,7 @@ The Recovery Milestone Tracker is a mobile application that helps individuals tr
 7. **Stop all processes**
    ```bash
    # From project root
-   ./stop-everything.sh
+   ./dev-scripts/stop-everything.sh
    ```
 
 ## 📁 Project Structure
@@ -203,11 +236,25 @@ recovery-milestone-tracker/
 │   └── recoveryTypes.ts
 ├── docs/                         # Documentation
 │   ├── CONTRIBUTING.md           # Contribution guidelines
-│   └── brand_guide.md            # Brand guidelines
+│   ├── brand_guide.md            # Brand guidelines
+│   ├── PRODUCTION_DEPLOYMENT.md  # Production deployment guide
+│   ├── deployment-config.md      # Mobile app deployment configuration
+│   └── FIREBASE_SETUP.md         # Firebase setup instructions
 ├── functions/                    # Firebase Cloud Functions (if used)
-├── start-dev-environment.sh      # Automated dev environment setup
-├── stop-everything.sh            # Stop all running processes
-├── deploy-firebase.sh            # Firebase deployment script
+├── dev-scripts/                  # Development and deployment scripts
+│   ├── start-dev-environment.sh  # Automated dev environment setup
+│   ├── stop-everything.sh        # Stop all running processes
+│   ├── deploy-firebase.sh        # Firebase deployment script
+│   ├── deploy-backend-production.sh # Backend production deployment
+│   ├── setup-android-env.sh      # Android environment setup
+│   ├── run-android.sh            # Run Android app
+│   ├── run-android-auto.sh       # Auto-run Android app
+│   ├── launch-dev.sh             # Development launcher
+│   ├── start-dev-vscode.sh       # VS Code development setup
+│   ├── start-dev-environment-nonblocking.sh # Non-blocking dev setup
+│   ├── setup-env.sh              # Environment setup
+│   ├── setup-production.sh       # Production setup
+│   └── test-all-endpoints.sh     # API endpoint testing
 ├── firebase.json                 # Firebase configuration
 ├── firestore.rules               # Firestore security rules
 ├── firestore.indexes.json        # Firestore indexes
@@ -399,7 +446,7 @@ The iOS archive will be created at `ios/RecoveryMilestoneTracker.xcarchive`
 ### Automated Development Environment
 ```bash
 # Start everything automatically
-./start-dev-environment.sh
+./dev-scripts/start-dev-environment.sh
 ```
 
 ### Manual Commands
@@ -453,7 +500,7 @@ If you're in crisis or need immediate support:
 
 - Recovery community members for feedback and guidance
 - Open source contributors
-- Fellowship organizations (AA, NA, GA, etc.) for their support
+- Recovery program organizations (AA, NA, GA, etc.) for their support
 
 ## 📞 Contact
 
@@ -467,12 +514,16 @@ If you're in crisis or need immediate support:
 
 ## 🔄 Recent Updates
 
-- **Version 2.2.0**: Major and minor version increment with UI/UX improvements
+- **Version 3.0.0**: Major version increment with comprehensive recovery type system
+- **Recovery Type Expansion**: Added Sex Addiction, Food Addiction, and Undisclosed recovery types
+- **Program Terminology Update**: Renamed "Fellowship" to "Program" throughout the application
+- **Enhanced Recovery Support**: Comprehensive program integration with AA, NA, GA, CA, MA, HA, SA, Unaffiliated, and Other
+- **Data Migration**: Automated migration script for updating existing user data
 - **Firebase Admin SDK Integration**: Complete backend authentication with Firebase Admin SDK
 - **Enhanced Profile UI**: Redesigned profile screen with gradient backgrounds and improved UX
 - **Improved Touch Targets**: Larger, more accessible touch areas for navigation
 - **Enhanced Data Persistence**: Improved Firebase integration and offline data handling
-- **Automated Development Setup**: Added `start-dev-environment.sh` for easy development
+- **Automated Development Setup**: Added `dev-scripts/start-dev-environment.sh` for easy development
 - **Release APK Generation**: Automated APK build with version numbering
 - **Comprehensive Documentation**: Updated README and CONTRIBUTING guides
 - **Performance Optimizations**: Reduced bundle size and improved app performance

@@ -24,13 +24,23 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
     const userData = userDoc.data();
     
+    // Extract profile data from nested profile object (new schema format)
+    const profileData = {
+      firstName: userData.profile?.firstName || userData.firstName || '',
+      lastInitial: userData.profile?.lastInitial || userData.lastInitial || '',
+      nickname: userData.profile?.nickname || userData.nickname || '',
+      recoveryType: userData.profile?.recoveryType || userData.recoveryType || 'Alcoholism',
+      program: userData.profile?.program || userData.program || '',
+      sobrietyDate: userData.profile?.sobrietyDate || userData.sobrietyDate || null,
+    };
+    
     res.json({
       success: true,
       data: {
         uid,
         email: req.user.email,
         emailVerified: req.user.emailVerified,
-        ...userData,
+        profile: profileData,
       },
     });
   } catch (error) {

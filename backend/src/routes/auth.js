@@ -59,11 +59,11 @@ router.post('/signup', [
         anonymousId: '',
         avatar: null,
         bio: '',
-        fellowship: 'Other',
+        program: profile?.program || '',
         firstName: profile?.firstName || '',
         lastInitial: profile?.lastInitial || '',
         nickname: profile?.nickname || profile?.firstName || '',
-        recoveryType: profile?.recoveryType || 'Alcoholism',
+        recoveryType: profile?.recoveryType || 'Undisclosed',
         sobrietyDate: profile?.sobrietyDate || null,
       },
       // Additional user fields
@@ -76,9 +76,7 @@ router.post('/signup', [
       }
     };
 
-    console.log('💾 Storing user data in Firestore:', userData);
     await db.collection('users').doc(userRecord.uid).set(userData);
-    console.log('✅ User data stored successfully in Firestore');
 
     res.status(201).json({
       success: true,

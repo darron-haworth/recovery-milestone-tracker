@@ -27,7 +27,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
             anonymousId: '',
             avatar: null,
             bio: '',
-            fellowship: 'Other',
+            program: 'Other',
             firstName: '',
             lastInitial: '',
             nickname: '',
@@ -39,7 +39,6 @@ router.get('/profile', authenticateToken, async (req, res) => {
     }
 
     const userData = userDoc.data();
-    console.log('📋 User data from Firestore:', userData);
     
     // Extract profile data from nested profile object (new schema format)
     const profileData = {
@@ -47,9 +46,9 @@ router.get('/profile', authenticateToken, async (req, res) => {
       lastInitial: userData.profile?.lastInitial || userData.lastInitial || '',
       nickname: userData.profile?.nickname || userData.nickname || '',
       recoveryType: userData.profile?.recoveryType || userData.recoveryType || 'Alcoholism',
+      program: userData.profile?.program || userData.program || '',
       sobrietyDate: userData.profile?.sobrietyDate || userData.sobrietyDate || null,
     };
-    console.log('📤 Returning profile data:', profileData);
     
     res.json({
       success: true,
