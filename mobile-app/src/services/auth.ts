@@ -111,6 +111,7 @@ class AuthService {
           anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
           firstName: (response.data as any).profile?.firstName || profile.firstName,
           lastInitial: (response.data as any).profile?.lastInitial || profile.lastInitial,
+          nickname: (response.data as any).profile?.nickname || profile.nickname || profile.firstName || 'User',
           avatar: (response.data as any).profile?.avatar || profile.avatar,
           bio: (response.data as any).profile?.bio || profile.bio
         },
@@ -188,6 +189,7 @@ class AuthService {
           anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
           firstName: (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
           lastInitial: (response.data as any).profile?.lastInitial || 'U',
+          nickname: (response.data as any).profile?.nickname || (response.data as any).profile?.firstName || 'User',
           avatar: (response.data as any).profile?.avatar || undefined,
           bio: (response.data as any).profile?.bio || 'Welcome to Recovery Milestone Tracker!'
         },
@@ -399,37 +401,38 @@ class AuthService {
         throw new Error(response.error || 'Failed to fetch profile');
       }
 
-        // Update local user data with backend data
-        const userData: User = {
-          uid: (response.data as any).uid,
-          email: (response.data as any).email,
-          profile: {
-            recoveryType: (response.data as any).profile?.recoveryType || 'Other',
-            sobrietyDate: (response.data as any).profile?.sobrietyDate || new Date().toISOString(),
-            program: (response.data as any).profile?.program || 'Other',
-            anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
-            firstName: (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
-            lastInitial: (response.data as any).profile?.lastInitial || 'U',
-            avatar: (response.data as any).profile?.avatar || undefined,
-            bio: (response.data as any).profile?.bio || 'Welcome to Recovery Milestone Tracker!'
-          },
-          privacy: {
-            isAnonymous: false,
-            shareMilestones: true,
-            allowFriendRequests: true,
-            showInDirectory: false,
-            notificationSettings: {
-              milestoneReminders: true,
-              friendRequests: true,
-              encouragementMessages: true,
-              dailyMotivation: true,
-              pushEnabled: true,
-              emailEnabled: true
-            }
-          },
-          createdAt: (response.data as any).createdAt || new Date().toISOString(),
-          updatedAt: (response.data as any).updatedAt || new Date().toISOString()
-        };
+      // Update local user data with backend data
+      const userData: User = {
+        uid: response.data.uid,
+        email: response.data.email,
+        profile: {
+          recoveryType: response.data.profile?.recoveryType || 'Other',
+          sobrietyDate: response.data.profile?.sobrietyDate || new Date().toISOString(),
+          program: response.data.profile?.program || 'Other',
+          anonymousId: response.data.profile?.anonymousId || this.generateAnonymousId(),
+          firstName: response.data.profile?.firstName || response.data.displayName || 'User',
+          lastInitial: response.data.profile?.lastInitial || 'U',
+          nickname: response.data.profile?.nickname || response.data.profile?.firstName || 'User',
+          avatar: response.data.profile?.avatar || undefined,
+          bio: response.data.profile?.bio || 'Welcome to Recovery Milestone Tracker!'
+        },
+        privacy: {
+          isAnonymous: false,
+          shareMilestones: true,
+          allowFriendRequests: true,
+          showInDirectory: false,
+          notificationSettings: {
+            milestoneReminders: true,
+            friendRequests: true,
+            encouragementMessages: true,
+            dailyMotivation: true,
+            pushEnabled: true,
+            emailEnabled: true
+          }
+        },
+        createdAt: response.data.createdAt || new Date().toISOString(),
+        updatedAt: response.data.updatedAt || new Date().toISOString()
+      };
       
       // Store updated user data
       await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
