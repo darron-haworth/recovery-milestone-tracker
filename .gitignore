@@ -151,6 +151,9 @@ service-account*.json
 .env.local
 .env.production
 
-# Firebase config (if you plan to store any firebase config files)
+# Firebase config files (contain sensitive information)
 firebase-config.json
+google-services.json
+GoogleService-Info.plist
+firebase-admin-key.json
 *.apk
