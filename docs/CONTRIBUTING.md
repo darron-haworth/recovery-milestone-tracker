@@ -185,6 +185,40 @@ Once set up, the pre-commit hook will automatically:
 
 This ensures that code statistics are always up-to-date and accurately reflect the current state of the codebase.
 
+## Codebase Structure & Types
+
+### Recovery Types & Programs
+
+The app supports multiple recovery types with associated recovery programs. When adding new recovery types or programs, ensure consistency across all files:
+
+#### Key Files
+- `mobile-app/src/types.ts` - Core type definitions
+- `mobile-app/src/recoveryTypes.ts` - Recovery type configurations
+- `shared/types.ts` - Shared type definitions
+- `shared/recoveryTypes.ts` - Shared recovery type configurations
+
+#### Recovery Types
+- **Alcoholism**: AA, Unaffiliated, Other
+- **Drug_Addiction**: NA, AA, CA, MA, HA, Unaffiliated, Other
+- **Gambling**: GA, Unaffiliated, Other
+- **Sex_Addiction**: SA, Unaffiliated, Other
+- **Food_Addiction**: Unaffiliated, Other
+- **Undisclosed**: Unaffiliated, Other
+- **Other**: CA, MA, HA, SA, Unaffiliated, Other
+
+#### Recovery Programs
+- **AA**: Alcoholics Anonymous
+- **NA**: Narcotics Anonymous
+- **GA**: Gamblers Anonymous
+- **CA**: Cocaine Anonymous
+- **MA**: Marijuana Anonymous
+- **HA**: Heroin Anonymous
+- **SA**: Sexaholics Anonymous
+- **Unaffiliated**: Self-sponsorship, therapy, medical treatment, or other non-program approaches
+- **Other**: Other Program
+
+When modifying recovery types or programs, update all four files to maintain consistency.
+
 ## Troubleshooting
 
 ### Common Issues

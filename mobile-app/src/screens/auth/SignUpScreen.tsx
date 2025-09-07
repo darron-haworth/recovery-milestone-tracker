@@ -60,7 +60,8 @@ const SignUpScreen: React.FC = () => {
         firstName: firstName.trim(),
         lastInitial: lastInitial.trim().toUpperCase(),
         nickname: nickname.trim() || firstName.trim(),
-        recoveryType: 'Alcoholism' as const,
+        recoveryType: 'Undisclosed' as const,
+        program: '',
         sobrietyDate: new Date().toISOString(),
       };
 

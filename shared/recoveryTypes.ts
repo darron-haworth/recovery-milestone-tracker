@@ -1,13 +1,13 @@
 // Recovery Types and Constants for Recovery Milestone Tracker
 
-import { RecoveryType, Fellowship } from './types';
+import { Program, RecoveryType } from './types';
 
 // Recovery Type Information
 export interface RecoveryTypeInfo {
   type: RecoveryType;
   label: string;
   description: string;
-  fellowships: Fellowship[];
+  programs: Program[];
   resources: RecoveryResource[];
 }
 
@@ -19,9 +19,9 @@ export interface RecoveryResource {
   description: string;
 }
 
-// Fellowship Information
-export interface FellowshipInfo {
-  fellowship: Fellowship;
+// Program Information
+export interface ProgramInfo {
+  program: Program;
   fullName: string;
   description: string;
   website: string;
@@ -39,7 +39,7 @@ export const RECOVERY_TYPES: Record<RecoveryType, RecoveryTypeInfo> = {
     type: 'Alcoholism',
     label: 'Alcohol Addiction',
     description: 'Recovery from alcohol addiction and alcoholism',
-    fellowships: ['AA', 'Other'],
+    programs: ['AA', 'Unaffiliated', 'Other'],
     resources: [
       {
         name: 'Alcoholics Anonymous',
@@ -59,13 +59,31 @@ export const RECOVERY_TYPES: Record<RecoveryType, RecoveryTypeInfo> = {
     type: 'Drug_Addiction',
     label: 'Drug Addiction',
     description: 'Recovery from drug addiction and substance use disorders',
-    fellowships: ['NA', 'AA', 'Other'],
+    programs: ['NA', 'AA', 'CA', 'MA', 'HA', 'Unaffiliated', 'Other'],
     resources: [
       {
         name: 'Narcotics Anonymous',
         type: 'website',
         url: 'https://www.na.org',
         description: 'International fellowship of recovering addicts'
+      },
+      {
+        name: 'Cocaine Anonymous',
+        type: 'website',
+        url: 'https://ca.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'Marijuana Anonymous',
+        type: 'website',
+        url: 'https://www.marijuana-anonymous.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'Heroin Anonymous',
+        type: 'website',
+        url: 'https://heroin-anonymous.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
       },
       {
         name: 'SAMHSA National Helpline',
@@ -79,7 +97,7 @@ export const RECOVERY_TYPES: Record<RecoveryType, RecoveryTypeInfo> = {
     type: 'Gambling',
     label: 'Gambling Addiction',
     description: 'Recovery from gambling addiction and compulsive gambling',
-    fellowships: ['GA', 'Other'],
+    programs: ['GA', 'Unaffiliated', 'Other'],
     resources: [
       {
         name: 'Gamblers Anonymous',
@@ -95,11 +113,77 @@ export const RECOVERY_TYPES: Record<RecoveryType, RecoveryTypeInfo> = {
       }
     ]
   },
+  Sex_Addiction: {
+    type: 'Sex_Addiction',
+    label: 'Sex Addiction',
+    description: 'Recovery from sex addiction and compulsive sexual behavior',
+    programs: ['SA', 'Unaffiliated', 'Other'],
+    resources: [
+      {
+        name: 'Sexaholics Anonymous',
+        type: 'website',
+        url: 'https://www.sa.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'Sex Addicts Anonymous',
+        type: 'website',
+        url: 'https://saa-recovery.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'SAMHSA National Helpline',
+        type: 'phone',
+        phone: '1-800-662-HELP',
+        description: 'Treatment referral and information service'
+      }
+    ]
+  },
+  Food_Addiction: {
+    type: 'Food_Addiction',
+    label: 'Food Addiction',
+    description: 'Recovery from food addiction and compulsive eating behaviors',
+    programs: ['Unaffiliated', 'Other'],
+    resources: [
+      {
+        name: 'Overeaters Anonymous',
+        type: 'website',
+        url: 'https://oa.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'Food Addicts Anonymous',
+        type: 'website',
+        url: 'https://foodaddictsanonymous.org',
+        description: 'Fellowship of men and women who share their experience, strength and hope'
+      },
+      {
+        name: 'SAMHSA National Helpline',
+        type: 'phone',
+        phone: '1-800-662-HELP',
+        description: 'Treatment referral and information service'
+      }
+    ]
+  },
+  Undisclosed: {
+    type: 'Undisclosed',
+    label: 'Undisclosed',
+    description: 'Recovery journey details are kept private',
+    programs: ['Unaffiliated', 'Other'],
+    resources: [
+      {
+        name: 'SAMHSA National Helpline',
+        type: 'phone',
+        phone: '1-800-662-HELP',
+        description: 'Treatment referral and information service'
+      }
+    ]
+  },
   Other: {
     type: 'Other',
     label: 'Other Addictions',
     description: 'Recovery from other types of addiction and compulsive behaviors',
-    fellowships: ['CA', 'MA', 'HA', 'SA', 'Other'],
+    programs: ['CA', 'MA', 'HA', 'SA', 'Unaffiliated', 'Other'],
     resources: [
       {
         name: 'SAMHSA National Helpline',
@@ -111,10 +195,10 @@ export const RECOVERY_TYPES: Record<RecoveryType, RecoveryTypeInfo> = {
   }
 };
 
-// Fellowship Definitions
-export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
+// Program Definitions
+export const PROGRAMS: Record<Program, ProgramInfo> = {
   AA: {
-    fellowship: 'AA',
+    program: 'AA',
     fullName: 'Alcoholics Anonymous',
     description: 'A worldwide fellowship of men and women who have had a drinking problem',
     website: 'https://www.aa.org',
@@ -131,7 +215,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   NA: {
-    fellowship: 'NA',
+    program: 'NA',
     fullName: 'Narcotics Anonymous',
     description: 'An international fellowship of recovering addicts',
     website: 'https://www.na.org',
@@ -148,7 +232,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   GA: {
-    fellowship: 'GA',
+    program: 'GA',
     fullName: 'Gamblers Anonymous',
     description: 'A fellowship of men and women who share their experience, strength and hope',
     website: 'https://www.gamblersanonymous.org',
@@ -165,7 +249,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   CA: {
-    fellowship: 'CA',
+    program: 'CA',
     fullName: 'Cocaine Anonymous',
     description: 'A fellowship of men and women who share their experience, strength and hope',
     website: 'https://ca.org',
@@ -182,7 +266,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   MA: {
-    fellowship: 'MA',
+    program: 'MA',
     fullName: 'Marijuana Anonymous',
     description: 'A fellowship of men and women who share their experience, strength and hope',
     website: 'https://www.marijuana-anonymous.org',
@@ -199,7 +283,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   HA: {
-    fellowship: 'HA',
+    program: 'HA',
     fullName: 'Heroin Anonymous',
     description: 'A fellowship of men and women who share their experience, strength and hope',
     website: 'https://heroin-anonymous.org',
@@ -216,7 +300,7 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     concepts: 12
   },
   SA: {
-    fellowship: 'SA',
+    program: 'SA',
     fullName: 'Sexaholics Anonymous',
     description: 'A fellowship of men and women who share their experience, strength and hope',
     website: 'https://www.sa.org',
@@ -232,8 +316,20 @@ export const FELLOWSHIPS: Record<Fellowship, FellowshipInfo> = {
     traditions: 12,
     concepts: 12
   },
+  Unaffiliated: {
+    program: 'Unaffiliated',
+    fullName: 'Unaffiliated',
+    description: 'Recovery without formal program affiliation',
+    website: '',
+    phone: '',
+    meetingFinder: '',
+    literature: [],
+    steps: 0,
+    traditions: 0,
+    concepts: 0
+  },
   Other: {
-    fellowship: 'Other',
+    program: 'Other',
     fullName: 'Other Fellowship',
     description: 'Other recovery fellowship or support group',
     website: '',

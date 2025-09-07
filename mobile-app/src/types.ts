@@ -1,7 +1,7 @@
 // Core Types for Recovery Milestone Tracker
 
-export type RecoveryType = 'Alcoholism' | 'Drug_Addiction' | 'Gambling' | 'Other';
-export type Fellowship = 'AA' | 'NA' | 'GA' | 'CA' | 'MA' | 'HA' | 'SA' | 'Other';
+export type RecoveryType = 'Alcoholism' | 'Drug_Addiction' | 'Gambling' | 'Sex_Addiction' | 'Food_Addiction' | 'Undisclosed' | 'Other';
+export type Program = 'AA' | 'NA' | 'GA' | 'CA' | 'MA' | 'HA' | 'SA' | 'Unaffiliated' | 'Other';
 export type MilestoneCategory = 'early' | 'foundation' | 'extended' | 'annual';
 export type FriendType = 'manual' | 'connected';
 export type NotificationType = 'milestone' | 'friend_request' | 'encouragement';
@@ -19,7 +19,7 @@ export interface User {
 export interface UserProfile {
   recoveryType: RecoveryType;
   sobrietyDate: string;
-  fellowship: Fellowship;
+  program: Program | '';
   anonymousId: string;
   firstName?: string;
   lastInitial?: string;
@@ -61,7 +61,7 @@ export interface FriendProfile {
   anonymousId: string;
   recoveryType: RecoveryType;
   sobrietyDate: string;
-  fellowship: Fellowship;
+  program: Program;
   firstName?: string;
   lastInitial?: string;
   nickname?: string;

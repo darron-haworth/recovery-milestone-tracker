@@ -101,12 +101,12 @@ class AuthService {
 
       // Create user data object
       const userData: User = {
-        uid: response.data.uid,
-        email: response.data.email,
+        uid: (response.data as any).uid,
+        email: (response.data as any).email,
         profile: {
           recoveryType: profile.recoveryType || 'Other',
           sobrietyDate: profile.sobrietyDate || new Date().toISOString(),
-          fellowship: profile.fellowship || 'Other',
+          program: profile.program || 'Other',
           anonymousId: this.generateAnonymousId(),
           firstName: profile.firstName,
           lastInitial: profile.lastInitial,
@@ -161,16 +161,9 @@ class AuthService {
         throw new Error(response.error || 'Login failed');
       }
 
-      console.log('✅ Backend login successful:', response.data.uid);
-      console.log('🔑 API Token received:', response.data.apiToken ? 'Yes' : 'No');
-      
       // Store the API token for future API calls
-      if (response.data.apiToken) {
-        console.log('💾 Storing API token...');
-        await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.apiToken);
-        console.log('✅ API token stored successfully');
-      } else {
-        console.log('❌ No API token received from backend');
+      if ((response.data as any).apiToken) {
+        await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, (response.data as any).apiToken);
       }
       
       // Get user data from response or storage
@@ -183,16 +176,16 @@ class AuthService {
         console.log('⚠️ User data not found in storage, creating from backend response');
         // Create user profile from backend response
         const userData: User = {
-          uid: response.data.uid,
-          email: response.data.email,
+          uid: (response.data as any).uid,
+          email: (response.data as any).email,
           profile: {
             recoveryType: 'Other',
             sobrietyDate: new Date().toISOString(),
-            fellowship: 'Other',
+            program: 'Other',
             anonymousId: this.generateAnonymousId(),
-            firstName: response.data.displayName || 'User',
+            firstName: (response.data as any).displayName || 'User',
             lastInitial: 'U',
-            avatar: null,
+            avatar: undefined,
             bio: 'Welcome to Recovery Milestone Tracker!'
           },
           privacy: {
@@ -215,7 +208,6 @@ class AuthService {
         
         // Store user data
         await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-        console.log('✅ User profile created and stored');
         return userData;
       }
     } catch (error: any) {
@@ -245,7 +237,6 @@ class AuthService {
       await secureStorage.removeItem(STORAGE_KEYS.USER_DATA);
       
       this.currentUser = null;
-      console.log('✅ User signed out successfully');
     } catch (error: any) {
       console.error('❌ Sign out error:', error);
       throw new Error('Failed to sign out: ' + error.message);
