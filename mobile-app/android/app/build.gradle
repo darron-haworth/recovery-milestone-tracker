@@ -82,8 +82,8 @@ android {
         applicationId "com.recoverymilestonetracker"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
-        versionName "3.6.2"
+        versionCode 13
+        versionName "3.7.0"
     }
     
 

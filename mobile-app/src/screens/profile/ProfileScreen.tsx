@@ -54,34 +54,13 @@ const ProfileScreen: React.FC = () => {
     const loadProfileData = async () => {
       if (user?.uid && isAuthenticated) {
         setIsLoadingProfile(true);
+        // DEBUG: Show what user data we have
+        console.log('📱 User data from Redux:', JSON.stringify(user, null, 2));
+        
         try {
-          // Fetch profile data from backend API
-          const response = await apiService.get(API_ENDPOINTS.USER.PROFILE);
-          if (response.success && response.data) {
-            const profile = (response.data as any).profile || response.data;
-            // Update local state
-            setTempFirstName(profile.firstName || '');
-            setTempLastInitial(profile.lastInitial || '');
-            setTempNickname(profile.nickname || '');
-            setTempRecoveryType(profile.recoveryType || 'Undisclosed');
-            setTempProgram(profile.program || '');
-            if (profile.sobrietyDate) {
-              const date = new Date(profile.sobrietyDate);
-              setTempSobrietyDate(date);
-              setTempYear(date.getFullYear().toString());
-              setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
-              setTempDay(date.getDate().toString().padStart(2, '0'));
-            }
-            
-            // Also update Redux store if needed
-            if (!user.profile || Object.keys(user.profile).length === 0) {
-              dispatch(updateProfile(profile));
-            }
-          }
-        } catch (error) {
-          console.error('Failed to load profile from backend API:', error);
-          // Fallback to Redux store data if API fails
-          if (user?.profile) {
+          // First, try to use data from Redux store (from login)
+          if (user.profile && Object.keys(user.profile).length > 0) {
+            console.log('📱 Using profile data from Redux store');
             setTempFirstName(user.profile.firstName || '');
             setTempLastInitial(user.profile.lastInitial || '');
             setTempNickname(user.profile.nickname || '');
@@ -94,7 +73,38 @@ const ProfileScreen: React.FC = () => {
               setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
               setTempDay(date.getDate().toString().padStart(2, '0'));
             }
+          } else {
+            // Fallback: Fetch profile data from backend API
+            console.log('📱 No profile data in Redux, fetching from backend API');
+            const response = await apiService.get(API_ENDPOINTS.USER.PROFILE);
+            console.log('📱 Profile API response:', JSON.stringify(response, null, 2));
+            
+            if (response.success && response.data) {
+              const profile = (response.data as any).profile || response.data;
+              console.log('📱 Parsed profile data:', JSON.stringify(profile, null, 2));
+              
+              // DEBUG: Show what we're getting
+              
+              // Update local state
+              setTempFirstName(profile.firstName || '');
+              setTempLastInitial(profile.lastInitial || '');
+              setTempNickname(profile.nickname || '');
+              setTempRecoveryType(profile.recoveryType || 'Undisclosed');
+              setTempProgram(profile.program || '');
+              if (profile.sobrietyDate) {
+                const date = new Date(profile.sobrietyDate);
+                setTempSobrietyDate(date);
+                setTempYear(date.getFullYear().toString());
+                setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
+                setTempDay(date.getDate().toString().padStart(2, '0'));
+              }
+              
+              // Update Redux store
+              dispatch(updateProfile(profile));
+            }
           }
+        } catch (error) {
+          console.error('Failed to load profile data:', error);
         } finally {
           setIsLoadingProfile(false);
         }
@@ -161,11 +171,14 @@ const ProfileScreen: React.FC = () => {
         lastInitial: tempLastInitial.trim().toUpperCase(),
       };
       
+      console.log('📝 Updating name profile:', updatedProfile);
+      
       await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsNameModalVisible(false);
       Alert.alert('Success', 'Name updated successfully while maintaining your privacy!');
     } catch (error: any) {
+      console.error('Name update error:', error);
       Alert.alert('Error', `Failed to update name: ${error.message}`);
     }
   };
@@ -173,11 +186,15 @@ const ProfileScreen: React.FC = () => {
   const handleNicknameSave = async () => {
     try {
       const updatedProfile = { nickname: tempNickname };
+      
+      console.log('📝 Updating nickname profile:', updatedProfile);
+      
       await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsNicknameModalVisible(false);
       Alert.alert('Success', 'Nickname updated successfully!');
     } catch (error: any) {
+      console.error('Nickname update error:', error);
       Alert.alert('Error', `Failed to update nickname: ${error.message}`);
     }
   };
@@ -230,12 +247,16 @@ const ProfileScreen: React.FC = () => {
       
       const newDate = new Date(year, month, day);
       const updatedProfile = { sobrietyDate: newDate.toISOString() };
+      
+      console.log('📅 Updating sobriety date:', updatedProfile);
+      
       await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setTempSobrietyDate(newDate);
       setIsSobrietyDateModalVisible(false);
       Alert.alert('Success', 'Sobriety date updated successfully!');
     } catch (error: any) {
+      console.error('Sobriety date update error:', error);
       Alert.alert('Error', `Failed to update sobriety date: ${error.message}`);
     }
   };

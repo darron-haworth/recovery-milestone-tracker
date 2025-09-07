@@ -160,6 +160,7 @@ router.post('/login', [
     const userDoc = await db.collection('users').doc(decodedToken.uid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
 
+
     // Create a simple API token for the user (matching backend format)
     const apiToken = `user_${decodedToken.uid}_${Date.now()}`;
 
