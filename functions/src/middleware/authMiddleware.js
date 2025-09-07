@@ -1,4 +1,4 @@
-const { verifyIdToken } = require('../config/firebase');
+const { verifyIdToken } = require('../config/firebase-functions');
 
 const authenticateToken = async (req, res, next) => {
   try {
@@ -13,8 +13,21 @@ const authenticateToken = async (req, res, next) => {
     }
 
     try {
-      // Check if it's a dev token
-      if (token === 'dev-token') {
+      // Verify Firebase ID token
+      const decodedToken = await verifyIdToken(token);
+      
+      // Add user info to request
+      req.user = {
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        emailVerified: decodedToken.email_verified,
+        ...decodedToken,
+      };
+
+      next();
+    } catch (tokenError) {
+      // In development mode, we can provide a mock user for testing
+      if (process.env.NODE_ENV === 'development' && token === 'dev-token') {
         console.log('🔧 Development mode: Using mock user for testing');
         req.user = {
           uid: 'dev-user-123',
@@ -22,51 +35,12 @@ const authenticateToken = async (req, res, next) => {
           emailVerified: true,
         };
         next();
-        return;
-      }
-
-      // Check if it's our API token format: user_{uid}_{timestamp}
-      if (token.startsWith('user_')) {
-        const parts = token.split('_');
-        if (parts.length >= 2) {
-          const uid = parts[1];
-          console.log('🔧 Using API token for user:', uid);
-          req.user = {
-            uid: uid,
-            email: 'user@example.com', // You might want to fetch this from Firestore
-            emailVerified: true,
-          };
-          next();
-          return;
-        }
-      }
-
-      // Try to verify as Firebase ID token
-      try {
-        const decodedToken = await verifyIdToken(token);
-        
-        req.user = {
-          uid: decodedToken.uid,
-          email: decodedToken.email,
-          emailVerified: decodedToken.email_verified,
-          ...decodedToken,
-        };
-
-        next();
-        return;
-      } catch (idTokenError) {
-        console.error('Token verification failed:', idTokenError.message);
+      } else {
         return res.status(401).json({
           success: false,
           error: 'Invalid or expired token',
         });
       }
-    } catch (tokenError) {
-      console.error('Token verification failed:', tokenError.message);
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid or expired token',
-      });
     }
   } catch (error) {
     console.error('Authentication middleware error:', error);

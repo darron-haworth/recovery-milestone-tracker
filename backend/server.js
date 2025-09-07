@@ -23,6 +23,11 @@ const notificationsRoutes = require('./src/routes/notifications');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy for production environments (optional for local development)
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', true);
+}
+
 // Initialize Firebase Admin SDK
 initializeFirebaseAdmin();
 
@@ -102,7 +107,7 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Recovery Milestone Tracker API',
-    version: '1.0.0',
+    version: '2.0.0',
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',

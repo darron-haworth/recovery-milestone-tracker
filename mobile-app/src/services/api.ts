@@ -1,12 +1,10 @@
-import { authService } from './auth';
-import { storageService } from './storage';
+import { STORAGE_KEYS } from '../constants';
 
-import { FIREBASE_CONFIG } from '../config/firebase';
 
 // API Configuration
 const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000'  // Development: local backend
-  : 'https://recovery-milestone-tracker-default-rtdb.firebaseio.com'; // Production: Firebase
+  ? 'http://10.0.2.2:3000'  // Development: Android emulator localhost mapping
+  : 'https://us-central1-recovery-milestone-tracker.cloudfunctions.net/api'; // Production: Firebase Functions
 
 const API_TIMEOUT = 10000; // 10 seconds
 
@@ -84,13 +82,16 @@ class ApiService {
   // Get auth token
   private async getAuthToken(): Promise<string | null> {
     try {
-      const user = await authService.getCurrentUser();
-      if (user) {
-        // TODO: Implement getIdToken method in auth service
-        // const token = await authService.getIdToken();
-        // return token;
-        return null; // Temporarily return null
+      // Get stored API token from secure storage (using secureStorage, not storageService)
+      const { secureStorage } = await import('./storage');
+      const token = await secureStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
+      if (token) {
+        console.log('✅ Using stored API token');
+        return token;
       }
+      
+      // No token found - this means user is not properly authenticated
+      console.log('⚠️ No API token found in storage');
       return null;
     } catch (error) {
       console.error('Failed to get auth token:', error);
@@ -109,11 +110,12 @@ class ApiService {
     // Add auth token if required
     if (config.requiresAuth !== false) {
       const token = await this.getAuthToken();
+      console.log('🔑 Token for API request:', token ? 'Present' : 'Missing');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
-      } else if (__DEV__) {
-        // Use dev token for development
-        headers.set('Authorization', 'Bearer dev-token');
+        console.log('✅ Authorization header set');
+      } else {
+        console.log('❌ No token available - request will fail');
       }
     }
 

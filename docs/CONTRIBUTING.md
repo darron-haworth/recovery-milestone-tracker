@@ -12,7 +12,7 @@ Before you can contribute, you'll need to install the following dependencies:
 
 ### Required Tools
 
-- **Node.js 18+**: Required for the backend and mobile app
+- **Node.js 20+**: Required for the backend and mobile app
 - **React Native CLI**: For mobile app development
 - **Android Studio**: For Android development
 - **Xcode**: For iOS development (macOS only)

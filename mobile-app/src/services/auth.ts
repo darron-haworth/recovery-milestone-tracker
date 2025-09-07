@@ -1,33 +1,10 @@
-// Firebase Authentication Service
-import { User, UserProfile, PrivacySettings } from '../types';
-import { secureStorage } from './storage';
+// Backend Authentication Service
 import { STORAGE_KEYS } from '../constants';
+import { PrivacySettings, User, UserProfile } from '../types';
+import { API_ENDPOINTS, apiService } from './api';
+import { secureStorage } from './storage';
 
-// Lazy load Firebase auth to avoid initialization errors
-let auth: any = null;
-let createUserWithEmailAndPassword: any = null;
-let signInWithEmailAndPassword: any = null;
-let sendPasswordResetEmail: any = null;
-let updateProfile: any = null;
-let signOut: any = null;
-
-// Initialize Firebase auth when needed
-const initializeFirebaseAuth = () => {
-  if (!auth) {
-    try {
-      const firebaseAuth = require('@react-native-firebase/auth');
-      auth = firebaseAuth.default;
-      createUserWithEmailAndPassword = firebaseAuth.createUserWithEmailAndPassword;
-      signInWithEmailAndPassword = firebaseAuth.signInWithEmailAndPassword;
-      sendPasswordResetEmail = firebaseAuth.sendPasswordResetEmail;
-      updateProfile = firebaseAuth.updateProfile;
-      signOut = firebaseAuth.signOut;
-      console.log('✅ Firebase Auth initialized in auth service');
-    } catch (error) {
-      console.error('❌ Failed to initialize Firebase Auth:', error);
-    }
-  }
-};
+// Backend authentication service - no Firebase client SDK needed
 
 class AuthService {
   private currentUser: any = null;
@@ -41,32 +18,16 @@ class AuthService {
   }
 
   /**
-   * Initialize the auth service when Firebase is ready
+   * Initialize the auth service
    */
   initialize(): void {
     if (this._isInitialized) return;
     
     try {
-      console.log('🚀 Initializing auth service...');
+      console.log('🚀 Initializing backend auth service...');
       
-      initializeFirebaseAuth();
-      console.log('🔑 Firebase auth module loaded:', !!auth);
-      
-      if (auth) {
-        this.setupAuthStateListener();
-        this._isInitialized = true;
-        console.log('✅ Auth service initialized');
-        
-        // Test Firebase auth connection
-        try {
-          const currentUser = auth().currentUser;
-          console.log('👤 Current Firebase user:', currentUser ? 'Logged in' : 'Not logged in');
-        } catch (authTestError) {
-          console.error('❌ Firebase auth test failed:', authTestError);
-        }
-      } else {
-        console.error('❌ Firebase auth not available');
-      }
+      this._isInitialized = true;
+      console.log('✅ Backend auth service initialized');
     } catch (error) {
       console.error('❌ Auth service initialization failed:', error);
     }
@@ -79,35 +40,35 @@ class AuthService {
     return this._isInitialized;
   }
 
-  /**
-   * Setup authentication state listener
-   */
-  private setupAuthStateListener(): void {
-    if (!auth) return;
-    
-    auth().onAuthStateChanged((user: any) => {
-      this.currentUser = user;
-      console.log('Auth state changed:', user ? 'User logged in' : 'User logged out');
-    });
-  }
+  // No auth state listener needed for backend authentication
 
   /**
-   * Get current Firebase user
+   * Get current user from stored data
    */
-  getCurrentUser(): any {
-    if (!auth) return null;
-    return this.currentUser || auth().currentUser;
+  async getCurrentUser(): Promise<any> {
+    try {
+      // Get user data from secure storage
+      const userDataString = await secureStorage.getItem(STORAGE_KEYS.USER_DATA);
+      if (userDataString) {
+        return JSON.parse(userDataString);
+      }
+      return null;
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return null;
+    }
   }
 
   /**
    * Check if user is authenticated
    */
-  isAuthenticated(): boolean {
-    return this.getCurrentUser() !== null;
+  async isAuthenticated(): Promise<boolean> {
+    const user = await this.getCurrentUser();
+    return user !== null;
   }
 
   /**
-   * Sign up with email and password
+   * Sign up with email and password via backend API
    */
   async signUp(
     email: string, 
@@ -115,26 +76,33 @@ class AuthService {
     profile: Partial<UserProfile>
   ): Promise<User> {
     try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth(),
+      // Import API service
+      const { apiService, API_ENDPOINTS } = await import('./api');
+      
+      // Call backend signup endpoint with profile data
+      const signupData = {
         email,
-        password
-      );
+        password,
+        displayName: profile.firstName || 'Anonymous',
+        profile: {
+          firstName: profile.firstName,
+          lastInitial: profile.lastInitial,
+          nickname: profile.nickname,
+          recoveryType: profile.recoveryType,
+          sobrietyDate: profile.sobrietyDate
+        }
+      };
+      console.log('📤 Sending signup data:', signupData);
+      const response = await apiService.post(API_ENDPOINTS.AUTH.SIGNUP, signupData);
 
-      const user = userCredential.user;
-
-      // Update user profile
-      if (user) {
-        await updateProfile(user, {
-          displayName: profile.firstName || 'Anonymous',
-          photoURL: profile.avatar
-        });
+      if (!response.success) {
+        throw new Error(response.error || 'Signup failed');
       }
 
-      // Create user document in Firestore
+      // Create user data object
       const userData: User = {
-        uid: user.uid,
-        email: user.email || email,
+        uid: response.data.uid,
+        email: response.data.email,
         profile: {
           recoveryType: profile.recoveryType || 'Other',
           sobrietyDate: profile.sobrietyDate || new Date().toISOString(),
@@ -169,58 +137,62 @@ class AuthService {
       return userData;
     } catch (error: any) {
       console.error('Sign up error:', error);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      throw new Error(error.message || 'Signup failed');
     }
   }
 
   /**
-   * Sign in with email and password
+   * Sign in with email and password via backend API
    */
   async signIn(email: string, password: string): Promise<User> {
     try {
       console.log('🔐 Attempting sign in for:', email);
-      console.log('🔑 Auth service initialized:', this._isInitialized);
-      console.log('🔥 Firebase auth available:', !!auth);
       
-      if (!this._isInitialized) {
-        console.log('⚠️ Auth service not initialized, initializing now...');
-        this.initialize();
-      }
+      // Import API service
+      const { apiService, API_ENDPOINTS } = await import('./api');
       
-      if (!auth) {
-        throw new Error('Firebase Auth not available');
-      }
-      
-      console.log('🚀 Calling Firebase signInWithEmailAndPassword...');
-      const userCredential = await signInWithEmailAndPassword(
-        auth(),
+      // Call backend login endpoint
+      const response = await apiService.post(API_ENDPOINTS.AUTH.LOGIN, {
         email,
         password
-      );
+      });
+
+      if (!response.success) {
+        throw new Error(response.error || 'Login failed');
+      }
+
+      console.log('✅ Backend login successful:', response.data.uid);
+      console.log('🔑 API Token received:', response.data.apiToken ? 'Yes' : 'No');
       
-      console.log('✅ Firebase sign in successful:', userCredential.user.uid);
-      const user = userCredential.user;
+      // Store the API token for future API calls
+      if (response.data.apiToken) {
+        console.log('💾 Storing API token...');
+        await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, response.data.apiToken);
+        console.log('✅ API token stored successfully');
+      } else {
+        console.log('❌ No API token received from backend');
+      }
       
-      // Get user data from secure storage or Firestore
+      // Get user data from response or storage
       const userDataString = await secureStorage.getItem(STORAGE_KEYS.USER_DATA);
       
       if (userDataString) {
         console.log('📱 User data found in storage');
         return JSON.parse(userDataString);
       } else {
-        console.log('⚠️ User data not found in storage, creating default profile');
-        // Create default user profile
-        const defaultUser: User = {
-          uid: user.uid,
-          email: user.email || email,
+        console.log('⚠️ User data not found in storage, creating from backend response');
+        // Create user profile from backend response
+        const userData: User = {
+          uid: response.data.uid,
+          email: response.data.email,
           profile: {
             recoveryType: 'Other',
             sobrietyDate: new Date().toISOString(),
             fellowship: 'Other',
             anonymousId: this.generateAnonymousId(),
-            firstName: user.displayName || 'User',
+            firstName: response.data.displayName || 'User',
             lastInitial: 'U',
-            avatar: user.photoURL,
+            avatar: null,
             bio: 'Welcome to Recovery Milestone Tracker!'
           },
           privacy: {
@@ -242,15 +214,13 @@ class AuthService {
         };
         
         // Store user data
-        await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(defaultUser));
-        console.log('✅ Default user profile created and stored');
-        return defaultUser;
+        await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+        console.log('✅ User profile created and stored');
+        return userData;
       }
     } catch (error: any) {
       console.error('❌ Sign in error:', error);
-      console.error('❌ Error code:', error.code);
-      console.error('❌ Error message:', error.message);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      throw new Error(error.message || 'Login failed');
     }
   }
 
@@ -259,20 +229,26 @@ class AuthService {
    */
   async signOut(): Promise<void> {
     try {
-      if (auth) {
-        await signOut(auth());
-      }
+      console.log('🚪 Starting sign out process...');
+      
+      // Since we're using backend authentication, we don't need to call Firebase client SDK
+      // Just clear the stored authentication data
       
       // Clear secure storage
+      console.log('🗑️ Clearing AUTH_TOKEN...');
       await secureStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
+      
+      console.log('🗑️ Clearing REFRESH_TOKEN...');
       await secureStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+      
+      console.log('🗑️ Clearing USER_DATA...');
       await secureStorage.removeItem(STORAGE_KEYS.USER_DATA);
       
       this.currentUser = null;
-      console.log('User signed out successfully');
+      console.log('✅ User signed out successfully');
     } catch (error: any) {
-      console.error('Sign out error:', error);
-      throw new Error('Failed to sign out');
+      console.error('❌ Sign out error:', error);
+      throw new Error('Failed to sign out: ' + error.message);
     }
   }
 
@@ -292,15 +268,26 @@ class AuthService {
   }
 
   /**
-   * Send password reset email
+   * Send password reset email via backend API
    */
   async sendPasswordResetEmail(email: string): Promise<void> {
     try {
-      await sendPasswordResetEmail(auth(), email);
-      console.log('Password reset email sent');
+      // Import API service
+      const { apiService, API_ENDPOINTS } = await import('./api');
+      
+      // Call backend forgot password endpoint
+      const response = await apiService.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, {
+        email
+      });
+
+      if (!response.success) {
+        throw new Error(response.error || 'Password reset failed');
+      }
+
+      console.log('Password reset email sent via backend');
     } catch (error: any) {
       console.error('Password reset error:', error);
-      throw new Error(this.getAuthErrorMessage(error.code));
+      throw new Error(error.message || 'Password reset failed');
     }
   }
 
@@ -309,16 +296,19 @@ class AuthService {
    */
   async updateProfile(updates: Partial<UserProfile>): Promise<void> {
     try {
-      const user = this.getCurrentUser();
+      const user = await this.getCurrentUser();
       if (!user) {
         throw new Error('No authenticated user');
       }
 
-      // Update Firebase profile
-      await updateProfile(user, {
-        displayName: updates.firstName || user.displayName,
-        photoURL: updates.avatar || user.photoURL
+      // Update profile via backend API
+      const response = await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, {
+        profile: updates
       });
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update profile');
+      }
 
       // Update local user data
       const userDataString = await secureStorage.getItem(STORAGE_KEYS.USER_DATA);
@@ -363,16 +353,17 @@ class AuthService {
    */
   async deleteAccount(): Promise<void> {
     try {
-      const user = this.getCurrentUser();
+      const user = await this.getCurrentUser();
       if (!user) {
         throw new Error('No authenticated user');
       }
 
-      // Delete user data from Firestore first
-      // This would be implemented with Firestore service
+      // Delete account via backend API
+      const response = await apiService.delete(API_ENDPOINTS.AUTH.DELETE_ACCOUNT);
 
-      // Delete Firebase user
-      await user.delete();
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to delete account');
+      }
 
       // Clear secure storage
       await secureStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
@@ -433,7 +424,7 @@ class AuthService {
    */
   async needsReauthentication(): Promise<boolean> {
     try {
-      const user = this.getCurrentUser();
+      const user = await this.getCurrentUser();
       if (!user) return false;
 
       // Check if user needs re-authentication for sensitive operations

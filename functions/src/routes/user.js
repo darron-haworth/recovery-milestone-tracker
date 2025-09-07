@@ -1,7 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { authenticateToken } = require('../middleware/authMiddleware');
-const { getFirestore } = require('../config/firebase');
+const { getFirestore } = require('../config/firebase-functions');
 
 const router = express.Router();
 
@@ -16,40 +16,13 @@ router.get('/profile', authenticateToken, async (req, res) => {
     const userDoc = await db.collection('users').doc(uid).get();
     
     if (!userDoc.exists) {
-      // Return empty profile for new users
-      return res.json({
-        success: true,
-        data: {
-          uid,
-          email: req.user.email,
-          emailVerified: req.user.emailVerified,
-          profile: {
-            anonymousId: '',
-            avatar: null,
-            bio: '',
-            fellowship: 'Other',
-            firstName: '',
-            lastInitial: '',
-            nickname: '',
-            recoveryType: 'Alcoholism',
-            sobrietyDate: null,
-          },
-        },
+      return res.status(404).json({
+        success: false,
+        error: 'User profile not found',
       });
     }
 
     const userData = userDoc.data();
-    console.log('📋 User data from Firestore:', userData);
-    
-    // Extract profile data from nested profile object (new schema format)
-    const profileData = {
-      firstName: userData.profile?.firstName || userData.firstName || '',
-      lastInitial: userData.profile?.lastInitial || userData.lastInitial || '',
-      nickname: userData.profile?.nickname || userData.nickname || '',
-      recoveryType: userData.profile?.recoveryType || userData.recoveryType || 'Alcoholism',
-      sobrietyDate: userData.profile?.sobrietyDate || userData.sobrietyDate || null,
-    };
-    console.log('📤 Returning profile data:', profileData);
     
     res.json({
       success: true,
@@ -57,7 +30,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
         uid,
         email: req.user.email,
         emailVerified: req.user.emailVerified,
-        profile: profileData,
+        ...userData,
       },
     });
   } catch (error) {
@@ -96,61 +69,37 @@ router.put('/profile', [
     const { profile, ...otherData } = req.body;
     const db = getFirestore();
 
-    // Prepare update data for new schema format
+    // Prepare update data
     const updateData = {
       updatedAt: new Date(),
     };
 
-    // Check if user document exists first
-    const userDoc = await db.collection('users').doc(uid).get();
-    const existingProfile = userDoc.exists ? userDoc.data().profile || {} : {};
-
-    // If profile object is provided, merge it into the nested profile structure
+    // If profile object is provided, merge it
     if (profile) {
-      updateData.profile = {
-        ...existingProfile,
-        ...profile,
-      };
+      updateData.profile = profile;
     }
 
-    // Add other direct fields (non-profile fields)
+    // Add other direct fields
     Object.keys(otherData).forEach(key => {
-      if (otherData[key] !== undefined && key !== 'profile') {
+      if (otherData[key] !== undefined) {
         updateData[key] = otherData[key];
       }
     });
+
+    // Check if user document exists first
+    const userDoc = await db.collection('users').doc(uid).get();
     
     if (userDoc.exists) {
       // Document exists, update it
       await db.collection('users').doc(uid).update(updateData);
     } else {
-      // Document doesn't exist, create it with the new schema format
+      // Document doesn't exist, create it with the profile data
       const newUserData = {
         uid,
         email: req.user.email,
         displayName: req.user.displayName || null,
         emailVerified: req.user.emailVerified || false,
         createdAt: new Date(),
-        // Default profile structure for new users
-        profile: {
-          anonymousId: '',
-          avatar: null,
-          bio: '',
-          fellowship: 'Other',
-          firstName: '',
-          lastInitial: '',
-          nickname: '',
-          recoveryType: 'Alcoholism',
-          sobrietyDate: null,
-          ...updateData.profile,
-        },
-        milestones: [],
-        friends: [],
-        settings: {
-          notifications: true,
-          privacy: 'friends',
-          theme: 'light'
-        },
         ...updateData,
       };
       await db.collection('users').doc(uid).set(newUserData);
