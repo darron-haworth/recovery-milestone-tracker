@@ -86,7 +86,6 @@ class ApiService {
       const { secureStorage } = await import('./storage');
       const token = await secureStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       if (token) {
-        console.log('✅ Using stored API token');
         return token;
       }
       
@@ -113,9 +112,6 @@ class ApiService {
       console.log('🔑 Token for API request:', token ? 'Present' : 'Missing');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
-        console.log('✅ Authorization header set');
-      } else {
-        console.log('❌ No token available - request will fail');
       }
     }
 

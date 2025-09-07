@@ -14,9 +14,9 @@ export const MILESTONE_CATEGORIES: Record<MilestoneCategory, string> = {
 export const STANDARD_MILESTONES: Record<MilestoneCategory, Milestone[]> = {
   early: [
     { days: 1, timeUnit: 'days', label: '24 Hours', category: 'early', description: 'One day at a time' },
-    { days: 30, timeUnit: 'days', label: '30 Days', category: 'early', description: 'One month milestone' },
-    { days: 60, timeUnit: 'days', label: '60 Days', category: 'early', description: 'Two months strong' },
-    { days: 90, timeUnit: 'days', label: '90 Days', category: 'early', description: 'Quarter year achievement' }
+    { days: 30, timeUnit: 'days', label: '30 Days', category: 'early', description: '30 day milestone' },
+    { days: 60, timeUnit: 'days', label: '60 Days', category: 'early', description: '60 days strong' },
+    { days: 90, timeUnit: 'days', label: '90 Days', category: 'early', description: '90 day achievement' }
   ],
   foundation: [
     { days: 180, timeUnit: 'months', months: 6, label: '6 Months', category: 'foundation', description: 'Half year foundation' },

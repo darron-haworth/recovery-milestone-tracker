@@ -15,11 +15,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
+import { RECOVERY_TYPES } from '../../recoveryTypes';
 import { API_ENDPOINTS, apiService } from '../../services/api';
 import { AppDispatch, RootState } from '../../store';
 import { signOut } from '../../store/slices/authSlice';
 import { updateProfile } from '../../store/slices/userSlice';
-import { RecoveryType } from '../../types';
+import { Program, RecoveryType } from '../../types';
 
 const ProfileScreen: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -32,6 +33,7 @@ const ProfileScreen: React.FC = () => {
   const [isNameModalVisible, setIsNameModalVisible] = useState(false);
   const [isNicknameModalVisible, setIsNicknameModalVisible] = useState(false);
   const [isRecoveryTypeModalVisible, setIsRecoveryTypeModalVisible] = useState(false);
+  const [isProgramModalVisible, setIsProgramModalVisible] = useState(false);
   const [isSobrietyDateModalVisible, setIsSobrietyDateModalVisible] = useState(false);
 
   const [tempYear, setTempYear] = useState('');
@@ -43,7 +45,8 @@ const ProfileScreen: React.FC = () => {
   const [tempFirstName, setTempFirstName] = useState('');
   const [tempLastInitial, setTempLastInitial] = useState('');
   const [tempNickname, setTempNickname] = useState('');
-  const [tempRecoveryType, setTempRecoveryType] = useState<RecoveryType>('Alcoholism');
+  const [tempRecoveryType, setTempRecoveryType] = useState<RecoveryType>('Undisclosed');
+  const [tempProgram, setTempProgram] = useState<Program | ''>('');
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -60,7 +63,8 @@ const ProfileScreen: React.FC = () => {
             setTempFirstName(profile.firstName || '');
             setTempLastInitial(profile.lastInitial || '');
             setTempNickname(profile.nickname || '');
-            setTempRecoveryType(profile.recoveryType || 'Alcoholism');
+            setTempRecoveryType(profile.recoveryType || 'Undisclosed');
+            setTempProgram(profile.program || '');
             if (profile.sobrietyDate) {
               const date = new Date(profile.sobrietyDate);
               setTempSobrietyDate(date);
@@ -81,7 +85,8 @@ const ProfileScreen: React.FC = () => {
             setTempFirstName(user.profile.firstName || '');
             setTempLastInitial(user.profile.lastInitial || '');
             setTempNickname(user.profile.nickname || '');
-            setTempRecoveryType(user.profile.recoveryType || 'Alcoholism');
+            setTempRecoveryType(user.profile.recoveryType || 'Undisclosed');
+            setTempProgram(user.profile.program || '');
             if (user.profile.sobrietyDate) {
               const date = new Date(user.profile.sobrietyDate);
               setTempSobrietyDate(date);
@@ -179,13 +184,31 @@ const ProfileScreen: React.FC = () => {
 
   const handleRecoveryTypeSave = async () => {
     try {
-      const updatedProfile = { recoveryType: tempRecoveryType };
+      const updatedProfile = { 
+        recoveryType: tempRecoveryType,
+        program: tempProgram 
+      };
       await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsRecoveryTypeModalVisible(false);
-      Alert.alert('Success', 'Recovery type updated successfully!');
+      Alert.alert('Success', 'Recovery type and program updated successfully!');
     } catch (error: any) {
       Alert.alert('Error', `Failed to update recovery type: ${error.message}`);
+    }
+  };
+
+  const handleProgramSave = async () => {
+    try {
+      const updatedProfile = { 
+        recoveryType: tempRecoveryType,
+        program: tempProgram 
+      };
+      await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
+      dispatch(updateProfile(updatedProfile));
+      setIsProgramModalVisible(false);
+      Alert.alert('Success', 'Recovery type and program updated successfully!');
+    } catch (error: any) {
+      Alert.alert('Error', `Failed to update program: ${error.message}`);
     }
   };
 
@@ -244,7 +267,6 @@ const ProfileScreen: React.FC = () => {
               try {
                 setIsLoggingOut(true);
                 await dispatch(signOut());
-                console.log('✅ ProfileScreen: Logout completed');
               } catch (error: any) {
                 console.error('❌ ProfileScreen: Logout error:', error);
                 Alert.alert('Error', 'Failed to logout: ' + error.message);
@@ -290,16 +312,6 @@ const ProfileScreen: React.FC = () => {
   const displayName = tempFirstName && tempLastInitial ? `${tempFirstName} ${tempLastInitial}` : 'Set Your Name';
   const initials = displayName !== 'Set Your Name' ? displayName.split(' ').map(n => n[0]).join('') : '?';
 
-  // Debug current values
-  console.log('🎯 ProfileScreen current values:', {
-    tempFirstName,
-    tempLastInitial,
-    tempNickname,
-    tempRecoveryType,
-    displayName,
-    isAuthenticated,
-    userUid: user?.uid
-  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
@@ -336,7 +348,7 @@ const ProfileScreen: React.FC = () => {
           </View>
 
           {/* New User Setup Message */}
-          {(!tempFirstName || !tempLastInitial) && (
+          {(!tempFirstName || !tempLastInitial || (tempRecoveryType === 'Undisclosed' && !tempProgram)) && (
             <View style={{
               backgroundColor: 'rgba(255, 255, 255, 0.2)',
               padding: 16,
@@ -358,7 +370,10 @@ const ProfileScreen: React.FC = () => {
                 opacity: 0.9,
                 lineHeight: 20,
               }}>
-                Your account was created with the information from signup. Please review and complete your recovery profile below.
+                {(!tempFirstName || !tempLastInitial) 
+                  ? "Your account was created with the information from signup. Please review and complete your recovery profile below."
+                  : "Please set your recovery type and program to complete your profile setup."
+                }
               </Text>
             </View>
           )}
@@ -486,10 +501,7 @@ const ProfileScreen: React.FC = () => {
                 shadowRadius: 4,
                 elevation: 3,
               }}
-              onPress={() => {
-                console.log('🔧 Name modal button pressed');
-                setIsNameModalVisible(true);
-              }}
+              onPress={() => setIsNameModalVisible(true)}
             >
               <View style={{
                 flexDirection: 'row',
@@ -537,10 +549,7 @@ const ProfileScreen: React.FC = () => {
                 shadowRadius: 4,
                 elevation: 3,
               }}
-              onPress={() => {
-                console.log('🔧 Nickname modal button pressed');
-                setIsNicknameModalVisible(true);
-              }}
+              onPress={() => setIsNicknameModalVisible(true)}
             >
               <View style={{
                 flexDirection: 'row',
@@ -593,10 +602,7 @@ const ProfileScreen: React.FC = () => {
               shadowRadius: 4,
               elevation: 3,
             }}
-            onPress={() => {
-              console.log('🔧 Recovery type modal button pressed');
-              setIsRecoveryTypeModalVisible(true);
-            }}
+            onPress={() => setIsRecoveryTypeModalVisible(true)}
           >
             <View style={{
               flexDirection: 'row',
@@ -627,14 +633,32 @@ const ProfileScreen: React.FC = () => {
                   Recovery Journey
                 </Text>
               </View>
-              <Text style={{
-                fontSize: 14,
-                color: '#4169E1',
-                fontWeight: '500',
-                marginLeft: 8,
-              }}>
-                {tempRecoveryType.replace(/_/g, ' ')}
-              </Text>
+              <View style={{ marginLeft: 8 }}>
+                <Text style={{
+                  fontSize: 14,
+                  color: '#4169E1',
+                  fontWeight: '500',
+                }}>
+                  {tempRecoveryType.replace(/_/g, ' ')}
+                </Text>
+                <Text style={{
+                  fontSize: 12,
+                  color: '#64748b',
+                  fontWeight: '500',
+                  marginTop: 2,
+                }}>
+                  {!tempProgram ? 'Not set' :
+                   tempProgram === 'AA' ? 'Alcoholics Anonymous' :
+                   tempProgram === 'NA' ? 'Narcotics Anonymous' :
+                   tempProgram === 'GA' ? 'Gamblers Anonymous' :
+                   tempProgram === 'CA' ? 'Cocaine Anonymous' :
+                   tempProgram === 'MA' ? 'Marijuana Anonymous' :
+                   tempProgram === 'HA' ? 'Heroin Anonymous' :
+                   tempProgram === 'SA' ? 'Sex Addicts Anonymous' :
+                   tempProgram === 'Unaffiliated' ? 'Unaffiliated' :
+                   tempProgram}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
 
@@ -651,10 +675,7 @@ const ProfileScreen: React.FC = () => {
               shadowRadius: 4,
               elevation: 3,
             }}
-            onPress={() => {
-              console.log('🔧 Sobriety date modal button pressed');
-              setIsSobrietyDateModalVisible(true);
-            }}
+            onPress={() => setIsSobrietyDateModalVisible(true)}
           >
             <View style={{
               flexDirection: 'row',
@@ -990,7 +1011,7 @@ const ProfileScreen: React.FC = () => {
               Select Recovery Type
             </Text>
             <ScrollView style={{ maxHeight: 300 }}>
-              {['Alcoholism', 'Drug_Addiction', 'Gambling', 'Food_Addiction', 'Other'].map((type) => (
+              {['Alcoholism', 'Drug_Addiction', 'Gambling', 'Sex_Addiction', 'Food_Addiction', 'Undisclosed', 'Other'].map((type) => (
                 <TouchableOpacity
                   key={type}
                   style={{
@@ -1001,7 +1022,27 @@ const ProfileScreen: React.FC = () => {
                     borderWidth: 1,
                     borderColor: tempRecoveryType === type ? '#2E8B57' : '#e2e8f0',
                   }}
-                  onPress={() => setTempRecoveryType(type as RecoveryType)}
+                  onPress={() => {
+                    const selectedType = type as RecoveryType;
+                    setTempRecoveryType(selectedType);
+                    
+                    // Get available programs for this recovery type
+                    const recoveryTypeInfo = RECOVERY_TYPES[selectedType];
+                    if (recoveryTypeInfo && recoveryTypeInfo.programs.length > 0) {
+                      // If only one program, set it automatically
+                      if (recoveryTypeInfo.programs.length === 1) {
+                        setTempProgram(recoveryTypeInfo.programs[0]);
+                      } else {
+                        // If multiple programs, show program selection modal
+                        setTempProgram(recoveryTypeInfo.programs[0]); // Set default
+                        setIsRecoveryTypeModalVisible(false);
+                        setIsProgramModalVisible(true);
+                      }
+                    } else {
+                      // No programs available, clear the program
+                      setTempProgram('');
+                    }
+                  }}
                 >
                   <Text style={{
                     fontSize: 16,
@@ -1047,6 +1088,124 @@ const ProfileScreen: React.FC = () => {
                   alignItems: 'center',
                 }}
                 onPress={handleRecoveryTypeSave}
+              >
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: '#ffffff',
+                }}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Program Selection Modal */}
+      <Modal
+        visible={isProgramModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsProgramModalVisible(false)}
+      >
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <View style={{
+            backgroundColor: '#ffffff',
+            borderRadius: 20,
+            padding: 24,
+            margin: 20,
+            maxWidth: 400,
+            maxHeight: '80%',
+          }}>
+            <Text style={{
+              fontSize: 20,
+              fontWeight: '700',
+              color: '#1e293b',
+              marginBottom: 20,
+              textAlign: 'center',
+            }}>
+              Select Program
+            </Text>
+            <Text style={{
+              fontSize: 14,
+              color: '#64748b',
+              marginBottom: 20,
+              textAlign: 'center',
+            }}>
+              Choose your recovery program for {tempRecoveryType.replace(/_/g, ' ')}
+            </Text>
+            <ScrollView style={{ maxHeight: 300 }}>
+              {RECOVERY_TYPES[tempRecoveryType]?.programs.map((program) => (
+                <TouchableOpacity
+                  key={program}
+                  style={{
+                    padding: 16,
+                    borderRadius: 12,
+                    backgroundColor: tempProgram === program ? '#2E8B57' : '#f8fafc',
+                    marginBottom: 8,
+                    borderWidth: 1,
+                    borderColor: tempProgram === program ? '#2E8B57' : '#e2e8f0',
+                  }}
+                  onPress={() => setTempProgram(program)}
+                >
+                  <Text style={{
+                    fontSize: 16,
+                    fontWeight: '600',
+                    color: tempProgram === program ? '#ffffff' : '#1e293b',
+                  }}>
+                    {program === 'AA' ? 'Alcoholics Anonymous' :
+                     program === 'NA' ? 'Narcotics Anonymous' :
+                     program === 'GA' ? 'Gamblers Anonymous' :
+                     program === 'CA' ? 'Cocaine Anonymous' :
+                     program === 'MA' ? 'Marijuana Anonymous' :
+                     program === 'HA' ? 'Heroin Anonymous' :
+                     program === 'SA' ? 'Sex Addicts Anonymous' :
+                     program === 'Unaffiliated' ? 'Unaffiliated' :
+                     program}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <View style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginTop: 20,
+            }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  padding: 16,
+                  borderRadius: 12,
+                  backgroundColor: '#f1f5f9',
+                  marginRight: 8,
+                  alignItems: 'center',
+                }}
+                onPress={() => setIsProgramModalVisible(false)}
+              >
+                <Text style={{
+                  fontSize: 16,
+                  fontWeight: '600',
+                  color: '#64748b',
+                }}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  padding: 16,
+                  borderRadius: 12,
+                  backgroundColor: '#2E8B57',
+                  marginLeft: 8,
+                  alignItems: 'center',
+                }}
+                onPress={handleProgramSave}
               >
                 <Text style={{
                   fontSize: 16,

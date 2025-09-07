@@ -31,12 +31,12 @@ export const COLORS = {
   grayDark: '#424242',
   
   // Background Colors
-  background: '#FAFAFA',
+  background: '#757575', // Even lighter gray
   surface: '#FFFFFF',
   card: '#FFFFFF',
   
   // Text Colors
-  textPrimary: '#212121',
+  textPrimary: '#FFFFFF', // White text for system gray background
   textSecondary: '#757575',
   textDisabled: '#BDBDBD',
   

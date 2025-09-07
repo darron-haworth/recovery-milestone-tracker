@@ -14,19 +14,18 @@ export const MILESTONE_CATEGORIES: Record<MilestoneCategory, string> = {
 export const STANDARD_MILESTONES: Record<MilestoneCategory, Milestone[]> = {
   early: [
     { days: 1, label: '24 Hours', category: 'early', description: 'One day at a time' },
-    { days: 7, label: '1 Week', category: 'early', description: 'First week complete' },
-    { days: 30, label: '1 Month', category: 'early', description: 'One month milestone' },
-    { days: 60, label: '2 Months', category: 'early', description: 'Two months strong' },
-    { days: 90, label: '3 Months', category: 'early', description: 'Quarter year achievement' }
+    { days: 30, label: '30 Days', category: 'early', description: '30 day milestone' },
+    { days: 60, label: '60 Days', category: 'early', description: '60 days strong' },
+    { days: 90, label: '90 Days', category: 'early', description: '90 day achievement' }
   ],
   foundation: [
     { days: 180, label: '6 Months', category: 'foundation', description: 'Half year foundation' },
     { days: 365, label: '1 Year', category: 'foundation', description: 'First year complete' },
-    { days: 547, label: '1.5 Years', category: 'foundation', description: 'Eighteen months' },
-    { days: 730, label: '2 Years', category: 'foundation', description: 'Two years strong' }
-  ],
-  extended: [
+    { days: 547, label: '18 Months', category: 'foundation', description: 'Eighteen months' },
+    { days: 730, label: '2 Years', category: 'foundation', description: 'Two years strong' },
     { days: 1095, label: '3 Years', category: 'extended', description: 'Three years of recovery' },
+  ],
+  extended: [    
     { days: 1460, label: '4 Years', category: 'extended', description: 'Four years milestone' },
     { days: 1825, label: '5 Years', category: 'extended', description: 'Five years achievement' },
     { days: 2555, label: '7 Years', category: 'extended', description: 'Seven years strong' }

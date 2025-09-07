@@ -8,7 +8,7 @@ set -e  # Exit on any error
 echo "🚀 Starting Recovery Milestone Tracker Development Environment..."
 
 # Get the project root directory
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 MOBILE_APP_DIR="$PROJECT_ROOT/mobile-app"
 
@@ -21,8 +21,8 @@ setup_android_env() {
     echo "🔧 Setting up Android environment variables..."
     
     # Source the Android environment setup script if it exists
-    if [ -f "$MOBILE_APP_DIR/setup-android-env.sh" ]; then
-        source "$MOBILE_APP_DIR/setup-android-env.sh"
+    if [ -f "$PROJECT_ROOT/dev-scripts/setup-android-env.sh" ]; then
+        source "$PROJECT_ROOT/dev-scripts/setup-android-env.sh"
         return $?
     fi
     
@@ -154,28 +154,6 @@ start_metro() {
     fi
 }
 
-# Function to launch React Native app
-launch_rn_app() {
-    echo "📱 Launching React Native app..."
-    
-    cd "$MOBILE_APP_DIR"
-    
-    # Wait a bit more for Metro to fully stabilize
-    echo "⏳ Waiting for Metro to stabilize..."
-    sleep 5
-    
-    # Launch the app in background
-    echo "🚀 Launching React Native app on Android..."
-    nohup npx react-native run-android > "$PROJECT_ROOT/rn-app.log" 2>&1 &
-    RN_APP_PID=$!
-    
-    # Save PID to file for later cleanup
-    echo $RN_APP_PID > "$PROJECT_ROOT/rn-app.pid"
-    
-    echo "✅ React Native app launch initiated (PID: $RN_APP_PID)"
-    echo "   Check $PROJECT_ROOT/rn-app.log for build progress"
-}
-
 # Function to cleanup background processes
 cleanup() {
     echo "🧹 Cleaning up background processes..."
@@ -200,16 +178,6 @@ cleanup() {
         rm -f "$PROJECT_ROOT/metro.pid"
     fi
     
-    # Kill React Native app if PID file exists
-    if [ -f "$PROJECT_ROOT/rn-app.pid" ]; then
-        RN_APP_PID=$(cat "$PROJECT_ROOT/rn-app.pid")
-        if kill -0 $RN_APP_PID 2>/dev/null; then
-            echo "🛑 Stopping React Native app (PID: $RN_APP_PID)..."
-            kill $RN_APP_PID
-        fi
-        rm -f "$PROJECT_ROOT/rn-app.pid"
-    fi
-    
     echo "✅ Cleanup complete"
 }
 
@@ -228,19 +196,18 @@ start_backend
 # Start Metro bundler
 start_metro
 
-# Launch React Native app
-launch_rn_app
-
 echo ""
 echo "🎉 Development environment is ready!"
 echo ""
 echo "📋 Services running:"
 echo "   🔧 Backend Server: http://localhost:3000"
 echo "   📱 Metro Bundler: http://localhost:8081"
-echo "   📱 React Native App: Building and launching..."
 echo ""
-echo "📱 App launch status:"
-echo "   Check $PROJECT_ROOT/rn-app.log for build progress"
+echo "📱 To run your Android app:"
+echo "   cd $MOBILE_APP_DIR && npx react-native run-android"
+echo ""
+echo "📱 To run your iOS app:"
+echo "   cd $MOBILE_APP_DIR && npx react-native run-ios"
 echo ""
 echo "🛑 Press Ctrl+C to stop all services"
 echo ""
