@@ -100,19 +100,19 @@ class AuthService {
         throw new Error(response.error || 'Signup failed');
       }
 
-      // Create user data object
+      // Create user data object from backend response (which includes Firestore data)
       const userData: User = {
         uid: (response.data as any).uid,
         email: (response.data as any).email,
         profile: {
-          recoveryType: profile.recoveryType || 'Other',
-          sobrietyDate: profile.sobrietyDate || new Date().toISOString(),
-          program: profile.program || 'Other',
-          anonymousId: this.generateAnonymousId(),
-          firstName: profile.firstName,
-          lastInitial: profile.lastInitial,
-          avatar: profile.avatar,
-          bio: profile.bio
+          recoveryType: (response.data as any).profile?.recoveryType || profile.recoveryType || 'Other',
+          sobrietyDate: (response.data as any).profile?.sobrietyDate || profile.sobrietyDate || new Date().toISOString(),
+          program: (response.data as any).profile?.program || profile.program || 'Other',
+          anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
+          firstName: (response.data as any).profile?.firstName || profile.firstName,
+          lastInitial: (response.data as any).profile?.lastInitial || profile.lastInitial,
+          avatar: (response.data as any).profile?.avatar || profile.avatar,
+          bio: (response.data as any).profile?.bio || profile.bio
         },
         privacy: {
           isAnonymous: profile.firstName ? false : true,
@@ -128,8 +128,8 @@ class AuthService {
             emailEnabled: true
           }
         },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: (response.data as any).createdAt || new Date().toISOString(),
+        updatedAt: (response.data as any).updatedAt || new Date().toISOString()
       };
 
       // Store user data securely
