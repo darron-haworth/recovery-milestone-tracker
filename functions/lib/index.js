@@ -27,23 +27,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.api = void 0;
-const functions = __importStar(require("firebase-functions"));
-const admin = __importStar(require("firebase-admin"));
-const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const helmet_1 = __importDefault(require("helmet"));
-const morgan_1 = __importDefault(require("morgan"));
 const compression_1 = __importDefault(require("compression"));
+const cors_1 = __importDefault(require("cors"));
+const express_1 = __importDefault(require("express"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const express_slow_down_1 = __importDefault(require("express-slow-down"));
+const admin = __importStar(require("firebase-admin"));
+const functions = __importStar(require("firebase-functions"));
+const helmet_1 = __importDefault(require("helmet"));
+const morgan_1 = __importDefault(require("morgan"));
 // Initialize Firebase Admin
 admin.initializeApp();
 // Import routes
-const auth_1 = __importDefault(require("./routes/auth"));
-const user_1 = __importDefault(require("./routes/user"));
-const friends_1 = __importDefault(require("./routes/friends"));
-const milestones_1 = __importDefault(require("./routes/milestones"));
-const notifications_1 = __importDefault(require("./routes/notifications"));
+const auth_js_1 = __importDefault(require("./routes/auth.js"));
+const friends_js_1 = __importDefault(require("./routes/friends.js"));
+const milestones_js_1 = __importDefault(require("./routes/milestones.js"));
+const notifications_js_1 = __importDefault(require("./routes/notifications.js"));
+const user_js_1 = __importDefault(require("./routes/user.js"));
 const app = (0, express_1.default)();
 // Security middleware
 app.use((0, helmet_1.default)({
@@ -129,11 +129,11 @@ app.get('/health', (req, res) => {
     });
 });
 // API routes
-app.use('/api/auth', auth_1.default);
-app.use('/api/user', user_1.default);
-app.use('/api/friends', friends_1.default);
-app.use('/api/milestones', milestones_1.default);
-app.use('/api/notifications', notifications_1.default);
+app.use('/api/auth', auth_js_1.default);
+app.use('/api/user', user_js_1.default);
+app.use('/api/friends', friends_js_1.default);
+app.use('/api/milestones', milestones_js_1.default);
+app.use('/api/notifications', notifications_js_1.default);
 // 404 handler
 app.use('*', (req, res) => {
     res.status(404).json({
