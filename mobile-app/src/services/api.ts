@@ -86,15 +86,28 @@ class ApiService {
       const { secureStorage } = await import('./storage');
       const token = await secureStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
       console.log('🔑 Retrieved token from storage:', token ? `${token.substring(0, 20)}...` : 'null');
+      
       if (token) {
         return token;
       }
       
       // No token found - this means user is not properly authenticated
       console.log('⚠️ No API token found in storage');
+      
+      // DEBUG: Show user-visible alert for debugging
+      if (typeof alert !== 'undefined') {
+        alert('DEBUG: No API token found in storage!');
+      }
+      
       return null;
     } catch (error) {
       console.error('Failed to get auth token:', error);
+      
+      // DEBUG: Show user-visible alert for debugging
+      if (typeof alert !== 'undefined') {
+        alert(`DEBUG: Token retrieval error: ${error.message}`);
+      }
+      
       return null;
     }
   }
@@ -111,11 +124,22 @@ class ApiService {
     if (config.requiresAuth !== false) {
       const token = await this.getAuthToken();
       console.log('🔑 Token for API request:', token ? 'Present' : 'Missing');
+      
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
         console.log('🔐 Authorization header set:', `Bearer ${token.substring(0, 20)}...`);
+        
+        // DEBUG: Show user-visible alert for debugging
+        if (typeof alert !== 'undefined') {
+          alert(`DEBUG: Token found and set: ${token.substring(0, 20)}...`);
+        }
       } else {
         console.log('❌ No token available for authenticated request');
+        
+        // DEBUG: Show user-visible alert for debugging
+        if (typeof alert !== 'undefined') {
+          alert('DEBUG: No token available for authenticated request!');
+        }
       }
     } else {
       console.log('🔓 Request does not require authentication');
@@ -162,6 +186,11 @@ class ApiService {
       const url = `${this.baseURL}${endpoint}`;
       const headers = await this.createHeaders(config);
 
+      // DEBUG: Show user-visible alert for debugging
+      if (typeof alert !== 'undefined') {
+        alert(`DEBUG: Making API request to: ${url}`);
+      }
+
       const response = await this.requestWithTimeout(url, {
         ...config,
         headers,
@@ -170,6 +199,11 @@ class ApiService {
       return await this.handleResponse<ApiResponse<T>>(response);
     } catch (error) {
       console.error(`API request failed for ${endpoint}:`, error);
+      
+      // DEBUG: Show user-visible alert for debugging
+      if (typeof alert !== 'undefined') {
+        alert(`DEBUG: API request failed: ${error.message}`);
+      }
       
       if (error instanceof ApiError) {
         throw error;

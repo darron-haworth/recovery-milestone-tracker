@@ -160,8 +160,8 @@ router.post('/login', [
     const userDoc = await db.collection('users').doc(decodedToken.uid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
 
-    // Create a custom token for the user
-    const customToken = await auth.createCustomToken(decodedToken.uid);
+    // Create a simple API token for the user (matching backend format)
+    const apiToken = `user_${decodedToken.uid}_${Date.now()}`;
 
     res.json({
       success: true,
@@ -171,8 +171,8 @@ router.post('/login', [
         email: decodedToken.email,
         displayName: decodedToken.name,
         emailVerified: decodedToken.email_verified,
-        customToken,
         ...userData,
+        apiToken, // This will be used for API authentication - placed after spread to ensure it's not overwritten
       },
     });
   } catch (error) {

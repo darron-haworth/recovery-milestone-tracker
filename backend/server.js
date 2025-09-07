@@ -107,7 +107,7 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Recovery Milestone Tracker API',
-          version: '3.6.1',
+          version: '3.6.2',
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',
