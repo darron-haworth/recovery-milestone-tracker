@@ -7,9 +7,11 @@ const {
   updateUserProfile, 
   deleteUser,
   getFirestore 
-} = require('../config/firebase');
+} = require('../config/firebase-functions');
 
 const router = express.Router();
+
+console.log('Auth routes loaded');
 
 // @route   POST /api/auth/signup
 // @desc    Register a new user
@@ -18,7 +20,6 @@ router.post('/signup', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
   body('displayName').optional().trim().isLength({ min: 2, max: 50 }),
-  body('profile').optional().isObject(),
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -31,8 +32,7 @@ router.post('/signup', [
       });
     }
 
-    const { email, password, displayName, profile } = req.body;
-    console.log('📥 Received signup data:', { email, displayName, profile });
+    const { email, password, displayName } = req.body;
 
     // Get Firebase Auth instance
     const auth = getAuth();
@@ -46,7 +46,7 @@ router.post('/signup', [
       emailVerified: false,
     });
 
-    // Create user document in Firestore with new schema format
+    // Create user document in Firestore
     const userData = {
       uid: userRecord.uid,
       email: userRecord.email,
@@ -54,19 +54,8 @@ router.post('/signup', [
       emailVerified: userRecord.emailVerified,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      // Profile data in nested profile object (new schema)
-      profile: {
-        anonymousId: '',
-        avatar: null,
-        bio: '',
-        fellowship: 'Other',
-        firstName: profile?.firstName || '',
-        lastInitial: profile?.lastInitial || '',
-        nickname: profile?.nickname || profile?.firstName || '',
-        recoveryType: profile?.recoveryType || 'Alcoholism',
-        sobrietyDate: profile?.sobrietyDate || null,
-      },
-      // Additional user fields
+      // Add any additional user fields here
+      recoveryStartDate: null,
       milestones: [],
       friends: [],
       settings: {
@@ -76,9 +65,7 @@ router.post('/signup', [
       }
     };
 
-    console.log('💾 Storing user data in Firestore:', userData);
     await db.collection('users').doc(userRecord.uid).set(userData);
-    console.log('✅ User data stored successfully in Firestore');
 
     res.status(201).json({
       success: true,
@@ -158,17 +145,12 @@ router.post('/login', [
       throw error;
     }
 
-    // For backend authentication, we'll use a simple approach
-    // In a real app, you'd want to implement proper session management
-    // For now, we'll create a simple token that the middleware can recognize
-    
+    // Create a custom token for the user
+    const customToken = await auth.createCustomToken(userRecord.uid);
+
     // Get user data from Firestore
     const userDoc = await db.collection('users').doc(userRecord.uid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
-
-    // Create a simple token for API authentication
-    // In production, you might want to use JWT or another token system
-    const apiToken = `user_${userRecord.uid}_${Date.now()}`;
 
     res.json({
       success: true,
@@ -178,7 +160,7 @@ router.post('/login', [
         email: userRecord.email,
         displayName: userRecord.displayName,
         emailVerified: userRecord.emailVerified,
-        apiToken, // This will be used for API authentication
+        customToken,
         ...userData,
       },
     });

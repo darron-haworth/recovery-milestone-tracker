@@ -24,6 +24,7 @@ const SignUpScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const navigation = useNavigation();
 
   const handleSignUp = async () => {
@@ -66,9 +67,8 @@ const SignUpScreen: React.FC = () => {
       // Attempt to sign up
       const user = await authService.signUp(email, password, profile);
       console.log('Sign up successful:', user);
-      Alert.alert('Success', 'Account created successfully!');
-      
-      // TODO: Navigate to main app or update auth state
+      setSignupSuccess(true);
+      Alert.alert('Success', 'Account created successfully! You can now sign in.');
     } catch (error: any) {
       console.error('Sign up error:', error);
       Alert.alert('Sign Up Failed', error.message || 'An error occurred during sign up');
@@ -241,14 +241,23 @@ const SignUpScreen: React.FC = () => {
               />
             </View>
 
+            {/* Success Message */}
+            {signupSuccess && (
+              <View style={styles.successMessage}>
+                <Text style={styles.successText}>
+                  ✅ Account created successfully! Click "Sign In" to continue.
+                </Text>
+              </View>
+            )}
+
             {/* Sign Up Button */}
             <TouchableOpacity 
-              style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]} 
-              onPress={handleSignUp}
+              style={[styles.signUpButton, (isLoading || signupSuccess) && styles.signUpButtonDisabled]} 
+              onPress={signupSuccess ? handleSignInPress : handleSignUp}
               disabled={isLoading}
             >
               <LinearGradient
-                colors={['#2E8B57', '#66CDAA']}
+                colors={signupSuccess ? ['#4CAF50', '#66BB6A'] : ['#2E8B57', '#66CDAA']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.buttonGradient}
@@ -256,7 +265,9 @@ const SignUpScreen: React.FC = () => {
                 {isLoading ? (
                   <ActivityIndicator color="#ffffff" size="small" />
                 ) : (
-                  <Text style={styles.signUpButtonText}>Create Account</Text>
+                  <Text style={styles.signUpButtonText}>
+                    {signupSuccess ? 'Sign In' : 'Create Account'}
+                  </Text>
                 )}
               </LinearGradient>
             </TouchableOpacity>
@@ -503,6 +514,20 @@ const styles = StyleSheet.create({
     color: '#6366f1',
     fontSize: 16,
     fontWeight: '700',
+  },
+  successMessage: {
+    backgroundColor: '#E8F5E8',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
+  },
+  successText: {
+    color: '#2E7D32',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

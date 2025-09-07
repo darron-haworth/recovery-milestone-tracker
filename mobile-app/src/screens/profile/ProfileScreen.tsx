@@ -15,7 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useDispatch, useSelector } from 'react-redux';
-import { firebaseService } from '../../services/firebaseService';
+import { API_ENDPOINTS, apiService } from '../../services/api';
 import { AppDispatch, RootState } from '../../store';
 import { signOut } from '../../store/slices/authSlice';
 import { updateProfile } from '../../store/slices/userSlice';
@@ -45,36 +45,61 @@ const ProfileScreen: React.FC = () => {
   const [tempNickname, setTempNickname] = useState('');
   const [tempRecoveryType, setTempRecoveryType] = useState<RecoveryType>('Alcoholism');
   const [tempSobrietyDate, setTempSobrietyDate] = useState<Date | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const loadProfileData = async () => {
       if (user?.uid && isAuthenticated) {
         setIsLoadingProfile(true);
         try {
-          // Fetch profile data from Firebase
-          const profile = await firebaseService.getUserProfile();
-          if (profile) {
-            // Update local state
-            setTempFirstName(profile.firstName || '');
-            setTempLastInitial(profile.lastInitial || '');
-            setTempNickname(profile.nickname || '');
-            setTempRecoveryType(profile.recoveryType || 'Alcoholism');
-            if (profile.sobrietyDate) {
-              const date = new Date(profile.sobrietyDate);
-              setTempSobrietyDate(date);
-              setTempYear(date.getFullYear().toString());
-              setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
-              setTempDay(date.getDate().toString().padStart(2, '0'));
+          // Fetch profile data from backend API
+            const response = await apiService.get(API_ENDPOINTS.USER.PROFILE);
+            console.log('🔍 Profile API response:', response);
+            if (response.success && response.data) {
+              try {
+                const profile = (response.data as any).profile || response.data;
+                console.log('📋 Profile data extracted:', profile);
+                // Update local state
+                console.log('🔄 Setting profile fields:');
+                console.log('  firstName:', profile.firstName);
+                console.log('  lastInitial:', profile.lastInitial);
+                console.log('  nickname:', profile.nickname);
+                console.log('  recoveryType:', profile.recoveryType);
+                
+                setTempFirstName(profile.firstName || '');
+                setTempLastInitial(profile.lastInitial || '');
+                setTempNickname(profile.nickname || '');
+                setTempRecoveryType(profile.recoveryType || 'Alcoholism');
+                if (profile.sobrietyDate) {
+                  const date = new Date(profile.sobrietyDate);
+                  if (!isNaN(date.getTime())) {
+                    setTempSobrietyDate(date);
+                    setTempYear(date.getFullYear().toString());
+                    setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
+                    setTempDay(date.getDate().toString().padStart(2, '0'));
+                  } else {
+                    console.error('Invalid sobriety date:', profile.sobrietyDate);
+                  }
+                }
+              } catch (profileError) {
+                console.error('Error processing profile data:', profileError);
+                console.error('Profile data that caused error:', response.data);
+              }
             }
             
             // Also update Redux store if needed
             if (!user.profile || Object.keys(user.profile).length === 0) {
+              const profile = (response.data as any).profile || response.data;
               dispatch(updateProfile(profile));
             }
+          } else if (response.status === 404) {
+            // User profile doesn't exist yet - this is normal for new users
+            console.log('No profile found - user needs to create one');
+            // Keep default values (empty form)
           }
         } catch (error) {
-          console.error('Failed to load profile from Firebase:', error);
-          // Fallback to Redux store data if Firebase fails
+          console.error('Failed to load profile from backend API:', error);
+          // Fallback to Redux store data if API fails
           if (user?.profile) {
             setTempFirstName(user.profile.firstName || '');
             setTempLastInitial(user.profile.lastInitial || '');
@@ -154,7 +179,7 @@ const ProfileScreen: React.FC = () => {
         lastInitial: tempLastInitial.trim().toUpperCase(),
       };
       
-      await firebaseService.updateUserProfile(updatedProfile);
+      await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsNameModalVisible(false);
       Alert.alert('Success', 'Name updated successfully while maintaining your privacy!');
@@ -166,7 +191,7 @@ const ProfileScreen: React.FC = () => {
   const handleNicknameSave = async () => {
     try {
       const updatedProfile = { nickname: tempNickname };
-      await firebaseService.updateUserProfile(updatedProfile);
+      await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsNicknameModalVisible(false);
       Alert.alert('Success', 'Nickname updated successfully!');
@@ -178,7 +203,7 @@ const ProfileScreen: React.FC = () => {
   const handleRecoveryTypeSave = async () => {
     try {
       const updatedProfile = { recoveryType: tempRecoveryType };
-      await firebaseService.updateUserProfile(updatedProfile);
+      await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setIsRecoveryTypeModalVisible(false);
       Alert.alert('Success', 'Recovery type updated successfully!');
@@ -205,7 +230,7 @@ const ProfileScreen: React.FC = () => {
       
       const newDate = new Date(year, month, day);
       const updatedProfile = { sobrietyDate: newDate.toISOString() };
-      await firebaseService.updateUserProfile(updatedProfile);
+      await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: updatedProfile });
       dispatch(updateProfile(updatedProfile));
       setTempSobrietyDate(newDate);
       setIsSobrietyDateModalVisible(false);
@@ -218,10 +243,44 @@ const ProfileScreen: React.FC = () => {
 
 
   const handleLogout = async () => {
+    if (isLoggingOut) {
+      console.log('🚪 Logout already in progress, ignoring...');
+      return;
+    }
+
     try {
-      await dispatch(signOut());
+      console.log('🚪 ProfileScreen: Starting logout...');
+      
+      // Show confirmation dialog
+      Alert.alert(
+        'Sign Out',
+        'Are you sure you want to sign out?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Sign Out',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                setIsLoggingOut(true);
+                await dispatch(signOut());
+                console.log('✅ ProfileScreen: Logout completed');
+              } catch (error: any) {
+                console.error('❌ ProfileScreen: Logout error:', error);
+                Alert.alert('Error', 'Failed to logout: ' + error.message);
+              } finally {
+                setIsLoggingOut(false);
+              }
+            },
+          },
+        ]
+      );
     } catch (error: any) {
-      Alert.alert('Error', 'Failed to logout: ' + error.message);
+      console.error('❌ ProfileScreen: Logout setup error:', error);
+      Alert.alert('Error', 'Failed to setup logout: ' + error.message);
     }
   };
 
@@ -243,9 +302,27 @@ const ProfileScreen: React.FC = () => {
     );
   }
 
-  const sobrietyTime = tempSobrietyDate ? calculateSobrietyTime(tempSobrietyDate) : { years: 0, months: 0, days: 0, totalDays: 0 };
+  // Safe calculation with error handling
+  let sobrietyTime = { years: 0, months: 0, days: 0, totalDays: 0 };
+  try {
+    sobrietyTime = tempSobrietyDate ? calculateSobrietyTime(tempSobrietyDate) : { years: 0, months: 0, days: 0, totalDays: 0 };
+  } catch (error) {
+    console.error('Error calculating sobriety time:', error);
+  }
+
   const displayName = tempFirstName && tempLastInitial ? `${tempFirstName} ${tempLastInitial}` : 'Set Your Name';
   const initials = displayName !== 'Set Your Name' ? displayName.split(' ').map(n => n[0]).join('') : '?';
+
+  // Debug current values
+  console.log('🎯 ProfileScreen current values:', {
+    tempFirstName,
+    tempLastInitial,
+    tempNickname,
+    tempRecoveryType,
+    displayName,
+    isAuthenticated,
+    userUid: user?.uid
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
@@ -280,6 +357,34 @@ const ProfileScreen: React.FC = () => {
               Manage recovery profile for {displayName}
             </Text>
           </View>
+
+          {/* New User Setup Message */}
+          {(!tempFirstName || !tempLastInitial) && (
+            <View style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              padding: 16,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: 'rgba(255, 255, 255, 0.3)',
+            }}>
+              <Text style={{
+                fontSize: 16,
+                fontWeight: '600',
+                color: '#FFFFFF',
+                marginBottom: 8,
+              }}>
+                Welcome! Complete Your Profile
+              </Text>
+              <Text style={{
+                fontSize: 14,
+                color: '#FFFFFF',
+                opacity: 0.9,
+                lineHeight: 20,
+              }}>
+                Your account was created with the information from signup. Please review and complete your recovery profile below.
+              </Text>
+            </View>
+          )}
 
         </LinearGradient>
 
