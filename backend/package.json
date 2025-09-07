@@ -1,6 +1,6 @@
 {
   "name": "recovery-milestone-tracker-backend",
-  "version": "3.4.0",
+  "version": "3.5.0",
   "description": "Backend API for Recovery Milestone Tracker",
   "main": "server.js",
   "scripts": {
