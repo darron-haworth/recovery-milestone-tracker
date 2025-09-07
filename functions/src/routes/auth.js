@@ -20,6 +20,7 @@ router.post('/signup', [
   body('email').isEmail().normalizeEmail(),
   body('password').isLength({ min: 6 }),
   body('displayName').optional().trim().isLength({ min: 2, max: 50 }),
+  body('profile').optional().isObject(),
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -32,7 +33,7 @@ router.post('/signup', [
       });
     }
 
-    const { email, password, displayName } = req.body;
+    const { email, password, displayName, profile } = req.body;
 
     // Get Firebase Auth instance
     const auth = getAuth();
@@ -46,7 +47,7 @@ router.post('/signup', [
       emailVerified: false,
     });
 
-    // Create user document in Firestore
+    // Create user document in Firestore with new schema format
     const userData = {
       uid: userRecord.uid,
       email: userRecord.email,
@@ -54,8 +55,19 @@ router.post('/signup', [
       emailVerified: userRecord.emailVerified,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      // Add any additional user fields here
-      recoveryStartDate: null,
+      // Profile data in nested profile object (new schema)
+      profile: {
+        anonymousId: '',
+        avatar: null,
+        bio: '',
+        program: profile?.program || '',
+        firstName: profile?.firstName || '',
+        lastInitial: profile?.lastInitial || '',
+        nickname: profile?.nickname || profile?.firstName || '',
+        recoveryType: profile?.recoveryType || 'Undisclosed',
+        sobrietyDate: profile?.sobrietyDate || null,
+      },
+      // Additional user fields
       milestones: [],
       friends: [],
       settings: {
@@ -75,6 +87,9 @@ router.post('/signup', [
         email: userRecord.email,
         displayName: userRecord.displayName,
         emailVerified: userRecord.emailVerified,
+        profile: userData.profile,
+        createdAt: userData.createdAt,
+        updatedAt: userData.updatedAt,
       },
     });
   } catch (error) {
