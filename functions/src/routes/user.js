@@ -79,14 +79,25 @@ router.put('/profile', [
     const { profile, ...otherData } = req.body;
     const db = getFirestore();
 
+    // Get existing user document for merging and existence check
+    const userDoc = await db.collection('users').doc(uid).get();
+    const existingData = userDoc.exists ? userDoc.data() : {};
+
     // Prepare update data
     const updateData = {
       updatedAt: new Date(),
     };
 
-    // If profile object is provided, merge it
+    // If profile object is provided, merge it with existing profile data
     if (profile) {
-      updateData.profile = profile;
+      const existingProfile = existingData.profile || {};
+      
+      // Merge new profile data with existing profile data
+      updateData.profile = {
+        ...existingProfile,
+        ...profile
+      };
+      
     }
 
     // Add other direct fields
@@ -96,9 +107,7 @@ router.put('/profile', [
       }
     });
 
-    // Check if user document exists first
-    const userDoc = await db.collection('users').doc(uid).get();
-    
+    // Update the user document (we already checked if it exists above for profile merging)
     if (userDoc.exists) {
       // Document exists, update it
       await db.collection('users').doc(uid).update(updateData);

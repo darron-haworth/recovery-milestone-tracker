@@ -170,41 +170,31 @@ class AuthService {
       });
 
       if (!response.success) {
-        throw new Error(response.error || 'Login failed');
+        throw new Error(response.error || 'Login failed')
       }
 
-      // DEBUG: Show what's in the response
-      console.log('🔍 Login response data:', JSON.stringify(response.data, null, 2));
-      if (typeof alert !== 'undefined') {
-        alert(`DEBUG: Login response keys: ${Object.keys(response.data).join(', ')}`);
-      }
 
       // Store the API token for future API calls
       if ((response.data as any).apiToken) {
         await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, (response.data as any).apiToken);
         console.log('✅ API token stored successfully');
-        if (typeof alert !== 'undefined') {
-          alert(`DEBUG: API token stored: ${(response.data as any).apiToken.substring(0, 20)}...`);
-        }
       } else {
         console.log('❌ No apiToken in response');
-        if (typeof alert !== 'undefined') {
-          alert('DEBUG: No apiToken found in login response!');
-        }
       }
       
       // Create user profile from backend response (which includes Firestore data)
+      // The Firebase Functions spreads userData, so profile data is at the root level
       const userData: User = {
         uid: firebaseUser.uid,
         email: firebaseUser.email || '',
         profile: {
           recoveryType: (response.data as any).profile?.recoveryType || 'Other',
-          sobrietyDate: (response.data as any).profile?.sobrietyDate || new Date().toISOString(),
+          sobrietyDate: (response.data as any).profile?.sobrietyDate || (response.data as any).sobrietyDate || new Date().toISOString(),
           program: (response.data as any).profile?.program || 'Other',
           anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
           firstName: (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
           lastInitial: (response.data as any).profile?.lastInitial || 'U',
-          nickname: (response.data as any).profile?.nickname || (response.data as any).profile?.firstName || 'User',
+          nickname: (response.data as any).profile?.nickname || (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
           avatar: (response.data as any).profile?.avatar || undefined,
           bio: (response.data as any).profile?.bio || 'Welcome to Recovery Milestone Tracker!'
         },
@@ -229,6 +219,37 @@ class AuthService {
       // Store user data
       await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
       console.log('📱 User profile loaded from backend and stored');
+      
+      // Check if profile needs migration (missing fields in Firestore)
+      const needsMigration = !(response.data as any).profile?.firstName || 
+                            !(response.data as any).profile?.lastInitial || 
+                            !(response.data as any).profile?.nickname;
+      
+      if (needsMigration) {
+        console.log('🔄 Profile needs migration - updating Firestore with missing fields');
+        try {
+          // Import API service for profile update
+          const { apiService, API_ENDPOINTS } = await import('./api');
+          
+          // Update profile with missing fields
+          const migrationProfile = {
+            firstName: userData.profile.firstName,
+            lastInitial: userData.profile.lastInitial,
+            nickname: userData.profile.nickname,
+            recoveryType: userData.profile.recoveryType,
+            program: userData.profile.program,
+            anonymousId: userData.profile.anonymousId,
+            bio: userData.profile.bio
+          };
+          
+                 console.log('🔄 Migrating profile with data:', migrationProfile);
+                 await apiService.put(API_ENDPOINTS.USER.UPDATE_PROFILE, { profile: migrationProfile });
+                 console.log('✅ Profile migration completed');
+        } catch (error) {
+          console.error('❌ Profile migration failed:', error);
+        }
+      }
+      
       return userData;
     } catch (error: any) {
       console.error('❌ Sign in error:', error);
@@ -422,12 +443,12 @@ class AuthService {
         email: response.data.email,
         profile: {
           recoveryType: response.data.profile?.recoveryType || 'Other',
-          sobrietyDate: response.data.profile?.sobrietyDate || new Date().toISOString(),
+          sobrietyDate: response.data.profile?.sobrietyDate || response.data.sobrietyDate || new Date().toISOString(),
           program: response.data.profile?.program || 'Other',
           anonymousId: response.data.profile?.anonymousId || this.generateAnonymousId(),
           firstName: response.data.profile?.firstName || response.data.displayName || 'User',
           lastInitial: response.data.profile?.lastInitial || 'U',
-          nickname: response.data.profile?.nickname || response.data.profile?.firstName || 'User',
+          nickname: response.data.profile?.nickname || response.data.profile?.firstName || response.data.displayName || 'User',
           avatar: response.data.profile?.avatar || undefined,
           bio: response.data.profile?.bio || 'Welcome to Recovery Milestone Tracker!'
         },
