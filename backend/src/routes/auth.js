@@ -120,8 +120,7 @@ router.post('/signup', [
 // @desc    Authenticate user & get token
 // @access  Public
 router.post('/login', [
-  body('email').isEmail().normalizeEmail(),
-  body('password').notEmpty(),
+  body('idToken').notEmpty(),
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -134,26 +133,23 @@ router.post('/login', [
       });
     }
 
-    const { email, password } = req.body;
+    const { idToken } = req.body;
 
     // Get Firebase Auth instance
     const auth = getAuth();
     const db = getFirestore();
 
-    // Verify user credentials and get custom token
-    // Note: Firebase Admin SDK doesn't have a direct login method
-    // We need to verify the user exists and create a custom token
-    let userRecord;
+    // Verify the Firebase ID token
+    let decodedToken;
     try {
-      userRecord = await auth.getUserByEmail(email);
+      decodedToken = await auth.verifyIdToken(idToken);
+      console.log(`🔐 User ${decodedToken.email} authenticated successfully`);
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid credentials',
-        });
-      }
-      throw error;
+      console.error('Token verification error:', error);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token',
+      });
     }
 
     // For backend authentication, we'll use a simple approach
@@ -161,21 +157,21 @@ router.post('/login', [
     // For now, we'll create a simple token that the middleware can recognize
     
     // Get user data from Firestore
-    const userDoc = await db.collection('users').doc(userRecord.uid).get();
+    const userDoc = await db.collection('users').doc(decodedToken.uid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
 
     // Create a simple token for API authentication
     // In production, you might want to use JWT or another token system
-    const apiToken = `user_${userRecord.uid}_${Date.now()}`;
+    const apiToken = `user_${decodedToken.uid}_${Date.now()}`;
 
     res.json({
       success: true,
       message: 'Login successful',
       data: {
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName,
-        emailVerified: userRecord.emailVerified,
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        displayName: decodedToken.name || null,
+        emailVerified: decodedToken.email_verified || false,
         apiToken, // This will be used for API authentication
         ...userData,
       },

@@ -256,54 +256,54 @@ export const apiService = new ApiService(API_BASE_URL, API_TIMEOUT);
 export const API_ENDPOINTS = {
   // Auth
   AUTH: {
-    SIGNUP: '/api/auth/signup',
-    LOGIN: '/api/auth/login',
-    LOGOUT: '/api/auth/logout',
-    FORGOT_PASSWORD: '/api/auth/forgot-password',
-    RESET_PASSWORD: '/api/auth/reset-password',
-    VERIFY_EMAIL: '/api/auth/verify-email',
-    ME: '/api/auth/me',
-    DELETE_ACCOUNT: '/api/auth/account',
+    SIGNUP: '/auth/signup',
+    LOGIN: '/auth/login',
+    LOGOUT: '/auth/logout',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+    VERIFY_EMAIL: '/auth/verify-email',
+    ME: '/auth/me',
+    DELETE_ACCOUNT: '/auth/account',
   },
   
   // User
   USER: {
-    PROFILE: '/api/user/profile',
-    UPDATE_PROFILE: '/api/user/profile',
-    PRIVACY: '/api/user/privacy',
-    STATS: '/api/user/stats',
-    AVATAR: '/api/user/avatar',
+    PROFILE: '/user/profile',
+    UPDATE_PROFILE: '/user/profile',
+    PRIVACY: '/user/privacy',
+    STATS: '/user/stats',
+    AVATAR: '/user/avatar',
   },
   
   // Friends
   FRIENDS: {
-    LIST: '/api/friends',
-    ADD: '/api/friends',
-    REMOVE: (friendId: string) => `/api/friends/${friendId}`,
-    REQUESTS: '/api/friends/requests',
-    ACCEPT: (requestId: string) => `/api/friends/requests/${requestId}/accept`,
-    DECLINE: (requestId: string) => `/api/friends/requests/${requestId}/decline`,
-    SUGGESTIONS: '/api/friends/suggestions',
+    LIST: '/friends',
+    ADD: '/friends',
+    REMOVE: (friendId: string) => `/friends/${friendId}`,
+    REQUESTS: '/friends/requests',
+    ACCEPT: (requestId: string) => `/friends/requests/${requestId}/accept`,
+    DECLINE: (requestId: string) => `/friends/requests/${requestId}/decline`,
+    SUGGESTIONS: '/friends/suggestions',
   },
   
   // Milestones
   MILESTONES: {
-    LIST: '/api/milestones',
-    CREATE: '/api/milestones',
-    UPDATE: (id: string) => `/api/milestones/${id}`,
-    DELETE: (id: string) => `/api/milestones/${id}`,
-    ACHIEVE: (id: string) => `/api/milestones/${id}/achieve`,
-    STANDARD: '/api/milestones/standard',
+    LIST: '/milestones',
+    CREATE: '/milestones',
+    UPDATE: (id: string) => `/milestones/${id}`,
+    DELETE: (id: string) => `/milestones/${id}`,
+    ACHIEVE: (id: string) => `/milestones/${id}/achieve`,
+    STANDARD: '/milestones/standard',
   },
   
   // Notifications
   NOTIFICATIONS: {
-    LIST: '/api/notifications',
-    MARK_READ: (id: string) => `/api/notifications/${id}/read`,
-    MARK_ALL_READ: '/api/notifications/read-all',
-    DELETE: (id: string) => `/api/notifications/${id}`,
-    UNREAD_COUNT: '/api/notifications/unread-count',
-    TEST: '/api/notifications/test',
+    LIST: '/notifications',
+    MARK_READ: (id: string) => `/notifications/${id}/read`,
+    MARK_ALL_READ: '/notifications/read-all',
+    DELETE: (id: string) => `/notifications/${id}`,
+    UNREAD_COUNT: '/notifications/unread-count',
+    TEST: '/notifications/test',
   },
   
   // Health

@@ -1,10 +1,11 @@
-// Backend Authentication Service
+// Authentication Service
+import auth from '@react-native-firebase/auth';
 import { STORAGE_KEYS } from '../constants';
 import { PrivacySettings, User, UserProfile } from '../types';
 import { API_ENDPOINTS, apiService } from './api';
 import { secureStorage } from './storage';
 
-// Backend authentication service - no Firebase client SDK needed
+// Hybrid authentication service - Firebase client SDK for local dev, backend API for production
 
 class AuthService {
   private currentUser: any = null;
@@ -148,13 +149,23 @@ class AuthService {
     try {
       console.log('🔐 Attempting sign in for:', email);
       
+      // Use Firebase Client SDK to authenticate
+      const userCredential = await auth().signInWithEmailAndPassword(email, password);
+      const firebaseUser = userCredential.user;
+      
+      if (!firebaseUser) {
+        throw new Error('No user returned from Firebase');
+      }
+
+      // Get the ID token
+      const idToken = await firebaseUser.getIdToken();
+      
       // Import API service
       const { apiService, API_ENDPOINTS } = await import('./api');
       
-      // Call backend login endpoint
+      // Send ID token to backend for verification and get API token
       const response = await apiService.post(API_ENDPOINTS.AUTH.LOGIN, {
-        email,
-        password
+        idToken: idToken
       });
 
       if (!response.success) {
@@ -176,8 +187,8 @@ class AuthService {
         console.log('⚠️ User data not found in storage, creating from backend response');
         // Create user profile from backend response
         const userData: User = {
-          uid: (response.data as any).uid,
-          email: (response.data as any).email,
+          uid: firebaseUser.uid,
+          email: firebaseUser.email || '',
           profile: {
             recoveryType: 'Other',
             sobrietyDate: new Date().toISOString(),

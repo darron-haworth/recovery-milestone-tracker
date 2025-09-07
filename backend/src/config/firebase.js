@@ -32,18 +32,36 @@ const initializeFirebaseAdmin = () => {
       console.warn(`   1. GOOGLE_APPLICATION_CREDENTIALS env var: ${googleCredentialsPath || 'not set'}`);
       console.warn(`   2. FIREBASE_SERVICE_ACCOUNT_PATH env var: ${process.env.FIREBASE_SERVICE_ACCOUNT_PATH || 'not set'}`);
       console.warn(`   3. Local file: ${serviceAccountPath}`);
-      console.warn('   Firebase features will be disabled in development mode');
-      console.warn('   To enable Firebase features:');
-      console.warn('   1. Set GOOGLE_APPLICATION_CREDENTIALS environment variable');
-      console.warn('   2. Or set FIREBASE_SERVICE_ACCOUNT_PATH environment variable');
-      console.warn('   3. Or place firebase-admin-key.json in the backend directory');
+      console.warn('   Trying Application Default Credentials...');
       
-      // In development, we can continue without Firebase
-      if (process.env.NODE_ENV === 'development') {
-        console.log('🚀 Starting server in development mode without Firebase');
-        return null;
-      } else {
-        throw new Error('Firebase Admin SDK service account file is required in production');
+      // Try Firebase CLI token first, then Application Default Credentials
+      try {
+        if (process.env.FIREBASE_TOKEN) {
+          // Use Firebase CLI token
+          firebaseApp = admin.initializeApp({
+            projectId: 'recovery-milestone-tracker',
+            credential: admin.credential.refreshToken(process.env.FIREBASE_TOKEN),
+          });
+          console.log('✅ Firebase Admin initialized with Firebase CLI token');
+          return firebaseApp;
+        } else {
+          // Try Application Default Credentials
+          firebaseApp = admin.initializeApp({
+            projectId: 'recovery-milestone-tracker',
+          });
+          console.log('✅ Firebase Admin initialized with Application Default Credentials');
+          return firebaseApp;
+        }
+      } catch (error) {
+        console.error('❌ Failed to initialize Firebase Admin:', error.message);
+        
+        // In development, we can continue without Firebase
+        if (process.env.NODE_ENV === 'development') {
+          console.log('🚀 Starting server in development mode without Firebase');
+          return null;
+        } else {
+          throw new Error('Firebase Admin SDK service account file is required in production');
+        }
       }
     }
 
