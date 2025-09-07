@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+th    <!-- Allow cleartext traffic for development (emulator) -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+    
+    <!-- Allow HTTPS traffic to Firebase Functions -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">us-central1-recovery-milestone-tracker.cloudfunctions.net</domain>
+        <domain includeSubdomains="true">cloudfunctions.net</domain>
     </domain-config>
 </network-security-config>

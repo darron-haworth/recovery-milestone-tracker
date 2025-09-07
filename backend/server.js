@@ -107,7 +107,7 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({
     message: 'Recovery Milestone Tracker API',
-    version: '2.1.0',
+    version: '2.2.0',
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',
@@ -121,11 +121,11 @@ app.get('/', (req, res) => {
 });
 
 // API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/friends', friendsRoutes);
-app.use('/api/milestones', milestonesRoutes);
-app.use('/api/notifications', notificationsRoutes);
+app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
+app.use('/friends', friendsRoutes);
+app.use('/milestones', milestonesRoutes);
+app.use('/notifications', notificationsRoutes);
 
 // 404 handler
 app.use(notFound);

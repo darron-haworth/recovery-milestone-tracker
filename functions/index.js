@@ -88,6 +88,7 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  trustProxy: false, // Disable trust proxy for rate limiting
 });
 
 app.use(limiter);
@@ -96,7 +97,8 @@ app.use(limiter);
 const speedLimiter = slowDown({
   windowMs: 15 * 60 * 1000, // 15 minutes
   delayAfter: 50, // allow 50 requests per 15 minutes, then...
-  delayMs: 500, // begin adding 500ms of delay per request above 50
+  delayMs: () => 500, // begin adding 500ms of delay per request above 50
+  trustProxy: false, // Disable trust proxy for slow down
 });
 
 app.use(speedLimiter);
@@ -112,18 +114,25 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'production',
-    version: '2.1.0',
+    version: '2.2.0',
   });
+});
+
+// Debug middleware to log all requests
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.originalUrl}`);
+  console.log(`Path: ${req.path}, Base URL: ${req.baseUrl}`);
+  next();
 });
 
 // API routes
 console.log('Mounting routes...');
 console.log('Auth routes:', authRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/friends', friendsRoutes);
-app.use('/api/milestones', milestonesRoutes);
-app.use('/api/notifications', notificationsRoutes);
+app.use('/auth', authRoutes);  // Firebase Functions strips /api prefix
+app.use('/user', userRoutes);
+app.use('/friends', friendsRoutes);
+app.use('/milestones', milestonesRoutes);
+app.use('/notifications', notificationsRoutes);
 console.log('Routes mounted successfully');
 
 // 404 handler
