@@ -173,9 +173,24 @@ class AuthService {
         throw new Error(response.error || 'Login failed');
       }
 
+      // DEBUG: Show what's in the response
+      console.log('🔍 Login response data:', JSON.stringify(response.data, null, 2));
+      if (typeof alert !== 'undefined') {
+        alert(`DEBUG: Login response keys: ${Object.keys(response.data).join(', ')}`);
+      }
+
       // Store the API token for future API calls
       if ((response.data as any).apiToken) {
         await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, (response.data as any).apiToken);
+        console.log('✅ API token stored successfully');
+        if (typeof alert !== 'undefined') {
+          alert(`DEBUG: API token stored: ${(response.data as any).apiToken.substring(0, 20)}...`);
+        }
+      } else {
+        console.log('❌ No apiToken in response');
+        if (typeof alert !== 'undefined') {
+          alert('DEBUG: No apiToken found in login response!');
+        }
       }
       
       // Create user profile from backend response (which includes Firestore data)

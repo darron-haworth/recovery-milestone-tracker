@@ -176,8 +176,8 @@ router.post('/login', [
         email: decodedToken.email,
         displayName: decodedToken.name || null,
         emailVerified: decodedToken.email_verified || false,
-        apiToken, // This will be used for API authentication
         ...userData,
+        apiToken, // This will be used for API authentication - placed after spread to ensure it's not overwritten
       },
     });
   } catch (error) {

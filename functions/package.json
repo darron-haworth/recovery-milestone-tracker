@@ -1,6 +1,6 @@
 {
   "name": "recovery-milestone-tracker-functions",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "description": "Cloud Functions for Recovery Milestone Tracker",
   "scripts": {
     "build": "tsc",
