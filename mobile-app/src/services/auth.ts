@@ -177,50 +177,42 @@ class AuthService {
         await secureStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, (response.data as any).apiToken);
       }
       
-      // Get user data from response or storage
-      const userDataString = await secureStorage.getItem(STORAGE_KEYS.USER_DATA);
+      // Create user profile from backend response (which includes Firestore data)
+      const userData: User = {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        profile: {
+          recoveryType: (response.data as any).profile?.recoveryType || 'Other',
+          sobrietyDate: (response.data as any).profile?.sobrietyDate || new Date().toISOString(),
+          program: (response.data as any).profile?.program || 'Other',
+          anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
+          firstName: (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
+          lastInitial: (response.data as any).profile?.lastInitial || 'U',
+          avatar: (response.data as any).profile?.avatar || undefined,
+          bio: (response.data as any).profile?.bio || 'Welcome to Recovery Milestone Tracker!'
+        },
+        privacy: {
+          isAnonymous: false,
+          shareMilestones: true,
+          allowFriendRequests: true,
+          showInDirectory: false,
+          notificationSettings: {
+            milestoneReminders: true,
+            friendRequests: true,
+            encouragementMessages: true,
+            dailyMotivation: true,
+            pushEnabled: true,
+            emailEnabled: true
+          }
+        },
+        createdAt: (response.data as any).createdAt || new Date().toISOString(),
+        updatedAt: (response.data as any).updatedAt || new Date().toISOString()
+      };
       
-      if (userDataString) {
-        console.log('📱 User data found in storage');
-        return JSON.parse(userDataString);
-      } else {
-        console.log('⚠️ User data not found in storage, creating from backend response');
-        // Create user profile from backend response
-        const userData: User = {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || '',
-          profile: {
-            recoveryType: 'Other',
-            sobrietyDate: new Date().toISOString(),
-            program: 'Other',
-            anonymousId: this.generateAnonymousId(),
-            firstName: (response.data as any).displayName || 'User',
-            lastInitial: 'U',
-            avatar: undefined,
-            bio: 'Welcome to Recovery Milestone Tracker!'
-          },
-          privacy: {
-            isAnonymous: false,
-            shareMilestones: true,
-            allowFriendRequests: true,
-            showInDirectory: false,
-            notificationSettings: {
-              milestoneReminders: true,
-              friendRequests: true,
-              encouragementMessages: true,
-              dailyMotivation: true,
-              pushEnabled: true,
-              emailEnabled: true
-            }
-          },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        };
-        
-        // Store user data
-        await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-        return userData;
-      }
+      // Store user data
+      await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+      console.log('📱 User profile loaded from backend and stored');
+      return userData;
     } catch (error: any) {
       console.error('❌ Sign in error:', error);
       throw new Error(error.message || 'Login failed');
@@ -390,6 +382,62 @@ class AuthService {
     } catch (error) {
       console.error('Get user data error:', error);
       return null;
+    }
+  }
+
+  /**
+   * Refresh user profile data from backend
+   */
+  async refreshProfile(): Promise<User> {
+    try {
+      const { apiService, API_ENDPOINTS } = await import('./api');
+      
+      // Get current user data
+      const response = await apiService.get(API_ENDPOINTS.AUTH.ME);
+      
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to fetch profile');
+      }
+
+        // Update local user data with backend data
+        const userData: User = {
+          uid: (response.data as any).uid,
+          email: (response.data as any).email,
+          profile: {
+            recoveryType: (response.data as any).profile?.recoveryType || 'Other',
+            sobrietyDate: (response.data as any).profile?.sobrietyDate || new Date().toISOString(),
+            program: (response.data as any).profile?.program || 'Other',
+            anonymousId: (response.data as any).profile?.anonymousId || this.generateAnonymousId(),
+            firstName: (response.data as any).profile?.firstName || (response.data as any).displayName || 'User',
+            lastInitial: (response.data as any).profile?.lastInitial || 'U',
+            avatar: (response.data as any).profile?.avatar || undefined,
+            bio: (response.data as any).profile?.bio || 'Welcome to Recovery Milestone Tracker!'
+          },
+          privacy: {
+            isAnonymous: false,
+            shareMilestones: true,
+            allowFriendRequests: true,
+            showInDirectory: false,
+            notificationSettings: {
+              milestoneReminders: true,
+              friendRequests: true,
+              encouragementMessages: true,
+              dailyMotivation: true,
+              pushEnabled: true,
+              emailEnabled: true
+            }
+          },
+          createdAt: (response.data as any).createdAt || new Date().toISOString(),
+          updatedAt: (response.data as any).updatedAt || new Date().toISOString()
+        };
+      
+      // Store updated user data
+      await secureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+      console.log('📱 Profile refreshed from backend');
+      return userData;
+    } catch (error: any) {
+      console.error('Profile refresh error:', error);
+      throw new Error('Failed to refresh profile: ' + error.message);
     }
   }
 
