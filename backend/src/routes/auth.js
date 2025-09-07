@@ -32,7 +32,11 @@ router.post('/signup', [
     }
 
     const { email, password, displayName, profile } = req.body;
-    console.log('📥 Received signup data:', { email, displayName, profile });
+    console.log('📥 Received signup data:', { 
+      email: email ? `${email.split('@')[0]}@***` : 'not provided', 
+      displayName, 
+      profile: profile ? 'provided' : 'not provided' 
+    });
 
     // Get Firebase Auth instance
     const auth = getAuth();
@@ -143,7 +147,7 @@ router.post('/login', [
     let decodedToken;
     try {
       decodedToken = await auth.verifyIdToken(idToken);
-      console.log(`🔐 User ${decodedToken.email} authenticated successfully`);
+      console.log(`🔐 User authenticated successfully (UID: ${decodedToken.uid})`);
     } catch (error) {
       console.error('Token verification error:', error);
       return res.status(401).json({

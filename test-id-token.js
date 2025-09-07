@@ -1,9 +1,10 @@
 const admin = require('firebase-admin');
+require('dotenv').config();
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
-  projectId: 'recovery-milestone-tracker',
-  credential: admin.credential.cert('/home/darron/Documents/dh_code/recovery-milestone-tracker/backend/firebase-admin-key.json')
+  projectId: process.env.FIREBASE_PROJECT_ID || 'recovery-milestone-tracker',
+  credential: admin.credential.cert(process.env.GOOGLE_APPLICATION_CREDENTIALS || './firebase-admin-key.json')
 });
 
 async function testIdToken() {

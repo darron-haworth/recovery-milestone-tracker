@@ -38,9 +38,10 @@ echo "   Storage Bucket: recovery-milestone-tracker.firebasestorage.app"
 echo "   Using Firestore: true"
 echo ""
 echo "🚀 Next steps:"
-echo "   1. Run: export GOOGLE_APPLICATION_CREDENTIALS=\"/home/darron/firebase-keys/recovery-milestone-tracker-firebase-adminsdk-fbsvc-b5a53edc5c.json\""
+echo "   1. Set your Firebase service account key path:"
+echo "      export GOOGLE_APPLICATION_CREDENTIALS=\"/path/to/your/firebase-service-account-key.json\""
 echo "   2. Run: npm run dev"
-echo "   3. Test: curl http://localhost:3000/api/health"
+echo "   3. Test: curl http://localhost:3000/health"
 
 
 

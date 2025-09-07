@@ -45,7 +45,7 @@ After enabling the database, restart your backend:
 ```bash
 cd backend
 pkill -f "node server.js"
-export GOOGLE_APPLICATION_CREDENTIALS="/home/darron/firebase-keys/recovery-milestone-tracker-firebase-adminsdk-fbsvc-b5a53edc5c.json"
+export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/firebase-service-account-key.json"
 nohup node server.js > server.log 2>&1 &
 ```
 
