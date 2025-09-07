@@ -3,13 +3,13 @@ import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Modal,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -53,49 +53,26 @@ const ProfileScreen: React.FC = () => {
         setIsLoadingProfile(true);
         try {
           // Fetch profile data from backend API
-            const response = await apiService.get(API_ENDPOINTS.USER.PROFILE);
-            console.log('🔍 Profile API response:', response);
-            if (response.success && response.data) {
-              try {
-                const profile = (response.data as any).profile || response.data;
-                console.log('📋 Profile data extracted:', profile);
-                // Update local state
-                console.log('🔄 Setting profile fields:');
-                console.log('  firstName:', profile.firstName);
-                console.log('  lastInitial:', profile.lastInitial);
-                console.log('  nickname:', profile.nickname);
-                console.log('  recoveryType:', profile.recoveryType);
-                
-                setTempFirstName(profile.firstName || '');
-                setTempLastInitial(profile.lastInitial || '');
-                setTempNickname(profile.nickname || '');
-                setTempRecoveryType(profile.recoveryType || 'Alcoholism');
-                if (profile.sobrietyDate) {
-                  const date = new Date(profile.sobrietyDate);
-                  if (!isNaN(date.getTime())) {
-                    setTempSobrietyDate(date);
-                    setTempYear(date.getFullYear().toString());
-                    setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
-                    setTempDay(date.getDate().toString().padStart(2, '0'));
-                  } else {
-                    console.error('Invalid sobriety date:', profile.sobrietyDate);
-                  }
-                }
-              } catch (profileError) {
-                console.error('Error processing profile data:', profileError);
-                console.error('Profile data that caused error:', response.data);
-              }
+          const response = await apiService.get(API_ENDPOINTS.USER.PROFILE);
+          if (response.success && response.data) {
+            const profile = (response.data as any).profile || response.data;
+            // Update local state
+            setTempFirstName(profile.firstName || '');
+            setTempLastInitial(profile.lastInitial || '');
+            setTempNickname(profile.nickname || '');
+            setTempRecoveryType(profile.recoveryType || 'Alcoholism');
+            if (profile.sobrietyDate) {
+              const date = new Date(profile.sobrietyDate);
+              setTempSobrietyDate(date);
+              setTempYear(date.getFullYear().toString());
+              setTempMonth((date.getMonth() + 1).toString().padStart(2, '0'));
+              setTempDay(date.getDate().toString().padStart(2, '0'));
             }
             
             // Also update Redux store if needed
             if (!user.profile || Object.keys(user.profile).length === 0) {
-              const profile = (response.data as any).profile || response.data;
               dispatch(updateProfile(profile));
             }
-          } else if (response.status === 404) {
-            // User profile doesn't exist yet - this is normal for new users
-            console.log('No profile found - user needs to create one');
-            // Keep default values (empty form)
           }
         } catch (error) {
           console.error('Failed to load profile from backend API:', error);
@@ -509,7 +486,10 @@ const ProfileScreen: React.FC = () => {
                 shadowRadius: 4,
                 elevation: 3,
               }}
-              onPress={() => setIsNameModalVisible(true)}
+              onPress={() => {
+                console.log('🔧 Name modal button pressed');
+                setIsNameModalVisible(true);
+              }}
             >
               <View style={{
                 flexDirection: 'row',
@@ -557,7 +537,10 @@ const ProfileScreen: React.FC = () => {
                 shadowRadius: 4,
                 elevation: 3,
               }}
-              onPress={() => setIsNicknameModalVisible(true)}
+              onPress={() => {
+                console.log('🔧 Nickname modal button pressed');
+                setIsNicknameModalVisible(true);
+              }}
             >
               <View style={{
                 flexDirection: 'row',
@@ -610,7 +593,10 @@ const ProfileScreen: React.FC = () => {
               shadowRadius: 4,
               elevation: 3,
             }}
-            onPress={() => setIsRecoveryTypeModalVisible(true)}
+            onPress={() => {
+              console.log('🔧 Recovery type modal button pressed');
+              setIsRecoveryTypeModalVisible(true);
+            }}
           >
             <View style={{
               flexDirection: 'row',
@@ -665,7 +651,10 @@ const ProfileScreen: React.FC = () => {
               shadowRadius: 4,
               elevation: 3,
             }}
-            onPress={() => setIsSobrietyDateModalVisible(true)}
+            onPress={() => {
+              console.log('🔧 Sobriety date modal button pressed');
+              setIsSobrietyDateModalVisible(true);
+            }}
           >
             <View style={{
               flexDirection: 'row',
