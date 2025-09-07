@@ -479,7 +479,7 @@ If you're in crisis or need immediate support:
 
 ## 📱 Current Build Status
 
-- **App Version**: 2.2.0
+- **App Version**: 3.0.0
 - **Version Code**: 4
 - **Package Name**: `com.recoverymilestonetracker`
 - **Bundle ID**: `com.recoverymilestonetracker` (iOS)
