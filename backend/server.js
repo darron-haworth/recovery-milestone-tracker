@@ -111,11 +111,11 @@ app.get('/', (req, res) => {
     environment: process.env.NODE_ENV || 'development',
     endpoints: {
       health: '/health',
-      auth: '/api/auth',
-      user: '/api/user',
-      friends: '/api/friends',
-      milestones: '/api/milestones',
-      notifications: '/api/notifications',
+      auth: '/auth',
+      user: '/user',
+      friends: '/friends',
+      milestones: '/milestones',
+      notifications: '/notifications',
     },
   });
 });

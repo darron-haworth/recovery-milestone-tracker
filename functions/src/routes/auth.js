@@ -109,8 +109,7 @@ router.post('/signup', [
 // @desc    Authenticate user & get token
 // @access  Public
 router.post('/login', [
-  body('email').isEmail().normalizeEmail(),
-  body('password').notEmpty(),
+  body('idToken').notEmpty(),
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -123,43 +122,40 @@ router.post('/login', [
       });
     }
 
-    const { email, password } = req.body;
+    const { idToken } = req.body;
 
     // Get Firebase Auth instance
     const auth = getAuth();
     const db = getFirestore();
 
-    // Verify user credentials and get custom token
-    // Note: Firebase Admin SDK doesn't have a direct login method
-    // We need to verify the user exists and create a custom token
-    let userRecord;
+    // Verify the Firebase ID token
+    let decodedToken;
     try {
-      userRecord = await auth.getUserByEmail(email);
+      decodedToken = await auth.verifyIdToken(idToken);
+      console.log(`🔐 User authenticated successfully (UID: ${decodedToken.uid})`);
     } catch (error) {
-      if (error.code === 'auth/user-not-found') {
-        return res.status(401).json({
-          success: false,
-          error: 'Invalid credentials',
-        });
-      }
-      throw error;
+      console.error('Token verification error:', error);
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid token',
+      });
     }
 
-    // Create a custom token for the user
-    const customToken = await auth.createCustomToken(userRecord.uid);
-
     // Get user data from Firestore
-    const userDoc = await db.collection('users').doc(userRecord.uid).get();
+    const userDoc = await db.collection('users').doc(decodedToken.uid).get();
     const userData = userDoc.exists ? userDoc.data() : {};
+
+    // Create a custom token for the user
+    const customToken = await auth.createCustomToken(decodedToken.uid);
 
     res.json({
       success: true,
       message: 'Login successful',
       data: {
-        uid: userRecord.uid,
-        email: userRecord.email,
-        displayName: userRecord.displayName,
-        emailVerified: userRecord.emailVerified,
+        uid: decodedToken.uid,
+        email: decodedToken.email,
+        displayName: decodedToken.name,
+        emailVerified: decodedToken.email_verified,
         customToken,
         ...userData,
       },
@@ -168,15 +164,20 @@ router.post('/login', [
     console.error('Login error:', error);
     
     // Handle specific Firebase Auth errors
-    if (error.code === 'auth/user-not-found') {
+    if (error.code === 'auth/invalid-id-token') {
       return res.status(401).json({
         success: false,
-        error: 'Invalid credentials',
+        error: 'Invalid token',
       });
-    } else if (error.code === 'auth/invalid-email') {
-      return res.status(400).json({
+    } else if (error.code === 'auth/id-token-expired') {
+      return res.status(401).json({
         success: false,
-        error: 'Invalid email address',
+        error: 'Token expired',
+      });
+    } else if (error.code === 'auth/user-disabled') {
+      return res.status(401).json({
+        success: false,
+        error: 'Account has been disabled',
       });
     }
 

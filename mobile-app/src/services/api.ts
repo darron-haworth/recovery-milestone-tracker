@@ -4,7 +4,7 @@ import { STORAGE_KEYS } from '../constants';
 // API Configuration
 const API_BASE_URL = __DEV__ 
   ? 'http://10.0.2.2:3001'  // Development: Android emulator localhost mapping
-  : 'https://us-central1-recovery-milestone-tracker.cloudfunctions.net/api'; // Production: Firebase Functions
+  : 'https://us-central1-recovery-milestone-tracker.cloudfunctions.net'; // Production: Firebase Functions
 
 const API_TIMEOUT = 10000; // 10 seconds
 
