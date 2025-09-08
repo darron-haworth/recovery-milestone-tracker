@@ -1,5 +1,6 @@
-// Firebase Configuration for Recovery Milestone Tracker
-// This configuration is extracted from google-services.json and GoogleService-Info.plist
+// Firebase Configuration Template for Recovery Milestone Tracker
+// Copy this file to firebase.ts and fill in your actual values
+// DO NOT commit firebase.ts to version control
 
 export const FIREBASE_CONFIG = {
   // Project Information
@@ -10,7 +11,7 @@ export const FIREBASE_CONFIG = {
   android: {
     packageName: 'com.recoverymilestonetracker',
     googleServicesFile: 'google-services.json',
-    apiKey: 'YOUR_API_KEY_HERE',
+    apiKey: 'YOUR_ANDROID_API_KEY_HERE',
     appId: '1:677302029618:android:6cf1aaf684d27cccd49b2b',
   },
   
@@ -18,7 +19,7 @@ export const FIREBASE_CONFIG = {
   ios: {
     bundleId: 'org.reactjs.native.example.RecoveryMilestoneTracker',
     googleServicesFile: 'GoogleService-Info.plist',
-    apiKey: 'YOUR_API_KEY_HERE',
+    apiKey: 'YOUR_IOS_API_KEY_HERE',
     appId: '1:677302029618:ios:d800cea79d8cbb20d49b2b',
   },
   
