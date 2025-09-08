@@ -438,19 +438,20 @@ class AuthService {
       }
 
       // Update local user data with backend data
+      const data = response.data as any;
       const userData: User = {
-        uid: response.data.uid,
-        email: response.data.email,
+        uid: data.uid,
+        email: data.email,
         profile: {
-          recoveryType: response.data.profile?.recoveryType || 'Other',
-          sobrietyDate: response.data.profile?.sobrietyDate || response.data.sobrietyDate || new Date().toISOString(),
-          program: response.data.profile?.program || 'Other',
-          anonymousId: response.data.profile?.anonymousId || this.generateAnonymousId(),
-          firstName: response.data.profile?.firstName || response.data.displayName || 'User',
-          lastInitial: response.data.profile?.lastInitial || 'U',
-          nickname: response.data.profile?.nickname || response.data.profile?.firstName || response.data.displayName || 'User',
-          avatar: response.data.profile?.avatar || undefined,
-          bio: response.data.profile?.bio || 'Welcome to Recovery Milestone Tracker!'
+          recoveryType: data.profile?.recoveryType || 'Other',
+          sobrietyDate: data.profile?.sobrietyDate || data.sobrietyDate || new Date().toISOString(),
+          program: data.profile?.program || 'Other',
+          anonymousId: data.profile?.anonymousId || this.generateAnonymousId(),
+          firstName: data.profile?.firstName || data.displayName || 'User',
+          lastInitial: data.profile?.lastInitial || 'U',
+          nickname: data.profile?.nickname || data.profile?.firstName || data.displayName || 'User',
+          avatar: data.profile?.avatar || undefined,
+          bio: data.profile?.bio || 'Welcome to Recovery Milestone Tracker!'
         },
         privacy: {
           isAnonymous: false,
@@ -466,8 +467,8 @@ class AuthService {
             emailEnabled: true
           }
         },
-        createdAt: response.data.createdAt || new Date().toISOString(),
-        updatedAt: response.data.updatedAt || new Date().toISOString()
+        createdAt: data.createdAt || new Date().toISOString(),
+        updatedAt: data.updatedAt || new Date().toISOString()
       };
       
       // Store updated user data
