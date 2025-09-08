@@ -11,7 +11,7 @@ export const FIREBASE_CONFIG = {
   android: {
     packageName: 'com.recoverymilestonetracker',
     googleServicesFile: 'google-services.json',
-    apiKey: 'YOUR_ANDROID_API_KEY_HERE',
+    apiKey: 'YOUR_ANDROID_API_KEY_HERE', // Get from Firebase Console
     appId: '1:677302029618:android:6cf1aaf684d27cccd49b2b',
   },
   
@@ -19,7 +19,7 @@ export const FIREBASE_CONFIG = {
   ios: {
     bundleId: 'org.reactjs.native.example.RecoveryMilestoneTracker',
     googleServicesFile: 'GoogleService-Info.plist',
-    apiKey: 'YOUR_IOS_API_KEY_HERE',
+    apiKey: 'YOUR_IOS_API_KEY_HERE', // Get from Firebase Console
     appId: '1:677302029618:ios:d800cea79d8cbb20d49b2b',
   },
   
