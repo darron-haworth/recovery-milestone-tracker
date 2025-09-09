@@ -2,7 +2,7 @@
 
 **Tagline:** One Day at a Time - Track Your Progress, Celebrate Each 24 Hours
 
-## Logo Design
+## Logo Design Specs
 
 ### Primary Logo
 - **Style:** Alarm clock emoji (⏰) with "24 hrs" badge
