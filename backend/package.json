@@ -43,7 +43,7 @@
     "joi": "^17.11.0",
     "uuid": "^9.0.1",
     "moment": "^2.29.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.23"
   },
   "devDependencies": {
     "nodemon": "^3.0.2",
